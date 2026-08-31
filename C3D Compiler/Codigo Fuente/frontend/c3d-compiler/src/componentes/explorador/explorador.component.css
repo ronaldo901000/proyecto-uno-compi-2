@@ -1,0 +1,4 @@
+.explorer-container {
+  font-family: var(--bs-font-monospace);
+  overflow: hidden;
+}

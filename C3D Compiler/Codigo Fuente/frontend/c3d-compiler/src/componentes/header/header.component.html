@@ -1,0 +1,25 @@
+<nav
+  class="header-fijo navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm"
+>
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <span class="text-white">C3D  <span class="text-warning">Compiler</span></span>
+    </a >
+    <button class="m-2"
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-success btn-sm fw-bold" (click)="compilar()">
+          <i class="bi bi-play-fill me-1"></i> COMPILAR
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

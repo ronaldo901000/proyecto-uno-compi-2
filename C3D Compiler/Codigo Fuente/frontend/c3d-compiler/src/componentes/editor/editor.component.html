@@ -1,0 +1,57 @@
+<div class="editor-container d-flex flex-column bg-dark text-light h-100">
+
+  <!-- PESTAÑA ACTIVA -->
+  <div class="editor-tabs border-bottom border-secondary d-flex">
+    @if (archivoActivo) {
+      <div class="tab d-flex align-items-center px-3 py-2 active-tab">
+        <i class="bi me-2" [ngClass]="obtenerIconoEditor(archivoActivo.extension)" style="font-size:14px;"></i>
+        <span class="small">{{ archivoActivo.nombre }}{{ archivoActivo.extension ? '.' + archivoActivo.extension : '' }}</span>
+      </div>
+    } @else {
+      <div class="tab px-3 py-2">
+        <span class="small text-secondary">Sin archivo abierto</span>
+      </div>
+    }
+  </div>
+
+  <!--EDITOR -->
+  @if (archivoActivo) {
+    <div class="editor-body d-flex flex-grow-1 overflow-hidden">
+
+      <!-- CONTADOR DE LINEAS -->
+      <div #lineCounter id="line-counter" class="line-counter text-secondary text-end py-3 pe-2 select-none">
+        @for (linea of lineas; track linea) {
+          <div class="line-number">{{ linea }}</div>
+        }
+      </div>
+
+      <!-- TEXTAREA ESCUCHANDO CLICS Y NAVEGACION POR FLECHAS -->
+      <textarea
+        #editorTextarea
+        class="editor-textarea py-3 px-2 flex-grow-1 bg-transparent text-light border-0"
+        [value]="contenido"
+        (input)="onContenidoCambia($any($event.target).value, $event)"
+        (keydown)="manejarTabulacion($event)"
+        (keyup)="actualizarPosicionCursor($any($event.target))"
+        (click)="actualizarPosicionCursor($any($event.target))"
+        (scroll)="sincronizarScroll($event)"
+        spellcheck="false"
+      ></textarea>
+
+    </div>
+
+    <!-- BARRA DE ESTADO LINEA Y COLUMNA-->
+    <div class="editor-statusbar border-top border-secondary px-3 py-1 bg-dark d-flex justify-content-end text-light small select-none">
+      <span class="me-3">Ln {{ lineaActual }}, Col {{ columnaActual }}</span>
+    </div>
+
+  } @else {
+    <div class="editor-body d-flex align-items-center justify-content-center text-secondary flex-grow-1">
+      <div class="text-center">
+        <i class="bi bi-file-earmark-code d-block mb-2" style="font-size: 3rem;"></i>
+        <span class="small">Selecciona un archivo del explorador</span>
+      </div>
+    </div>
+  }
+
+</div>

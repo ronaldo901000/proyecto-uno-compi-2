@@ -1,0 +1,40 @@
+<div class="nodo-contenedor">
+  <!-- Fila del nodo actual -->
+  <div
+    class="item-nodo d-flex align-items-center py-1 px-2 cursor-pointer select-none"
+    [ngClass]="{ 'nodo-seleccionado': nodo.estaSeleccionado }"
+    (click)="seleccionar($event)"
+  >
+    <!-- Icono de expansión para carpetas -->
+    @if (nodo.tipo === "carpeta") {
+      <i
+        class="bi me-1"
+        [ngClass]="desplegado ? 'bi-chevron-down' : 'bi-chevron-right'"
+        (click)="toggleDespliegue($event)"
+      ></i>
+      <i class="bi bi-folder-fill text-warning me-2"></i>
+    } @else {
+
+      <i
+        class="bi me-2 ms-3"
+        [ngClass]="obtenerIconoArchivo(nodo.extension)"
+      ></i>
+    }
+
+    <!-- Nombre del nodo -->
+    <span class="text-truncate flex-grow-1 small">
+      {{ nodo.nombre }}{{ nodo.tipo === "archivo" ? "." + nodo.extension : "" }}
+    </span>
+  </div>
+
+  <!-- Renderizado recursivo de los hijos si es carpeta y está desplegada -->
+  @if (
+    nodo.tipo === "carpeta" && desplegado && nodo.hijos && nodo.hijos.length > 0
+  ) {
+    <div class="hijos-contenedor ms-3 border-start border-secondary ps-1">
+      @for (hijo of nodo.hijos; track hijo.ruta) {
+        <app-nodo-arbol [nodo]="hijo" />
+      }
+    </div>
+  }
+</div>

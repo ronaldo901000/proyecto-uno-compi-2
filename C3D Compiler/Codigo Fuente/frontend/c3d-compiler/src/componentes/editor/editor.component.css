@@ -1,0 +1,62 @@
+.editor-container {
+  height: 80vh;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.editor-tabs {
+  min-height: 38px;
+  height: 59px;
+  max-height: 70px;
+  background: #1e1e1e;
+  flex-shrink: 0;
+}
+
+.tab {
+  font-family: var(--bs-font-monospace);
+  border-right: 1px solid #333;
+}
+
+.active-tab {
+  background: #252526;
+  border-top: 1px solid #007acc;
+  color: #fff;
+}
+
+.editor-body {
+  height: calc(100vh - 38px);
+  overflow: hidden;
+}
+
+.line-counter {
+  background: #1e1e1e;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  min-width: 48px;
+  overflow: hidden; 
+  border-right: 1px solid #333;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.line-number {
+  height: calc(14px * 1.6);
+  font-size: 13px;
+}
+
+.editor-textarea {
+  resize: none;
+  border: none;
+  outline: none;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  tab-size: 2;
+  -moz-tab-size: 2;
+}

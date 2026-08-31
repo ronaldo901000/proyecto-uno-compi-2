@@ -1,0 +1,65 @@
+<div class="modal-overlay" (click)="onCerrar()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="modal-header-custom d-flex justify-content-between align-items-center mb-3">
+      <span class="fw-bold">
+        {{ tipo === "archivo" ? "Nuevo archivo" : "Nueva carpeta" }}
+      </span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="onCerrar()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <!-- Input de Nombre -->
+    <div class="mb-3">
+      <label class="form-label small text-secondary">Nombre</label>
+      <input
+        type="text"
+        class="form-control form-control-sm bg-dark text-light border-secondary"
+        [(ngModel)]="nombre"
+        [placeholder]="tipo === 'archivo' ? 'miArchivo' : 'miCarpeta'"
+        (keydown.enter)="onConfirmar()"
+        autofocus
+      />
+    </div>
+
+    <!-- Selección de Extensión (Solo si es tipo archivo) -->
+    @if (tipo === "archivo") {
+      <div class="mb-3">
+        <label class="form-label small text-secondary">Extensión</label>
+        <div class="d-flex gap-2">
+          @for (ext of opcionesExtension; track ext) {
+            <button
+              type="button"
+              class="btn btn-sm flex-grow-1"
+              [class.btn-primary]="extension === ext"
+              [class.btn-outline-secondary]="extension !== ext"
+              (click)="extension = ext"
+            >
+              .{{ ext }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    @if (error) {
+      <div class="alert alert-danger py-1 px-2 small mb-5">{{ error }}</div>
+    }
+
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn btn-sm btn-outline-secondary" (click)="onCerrar()">
+        Cancelar
+      </button>
+      <button 
+        class="btn btn-sm btn-primary" 
+        [disabled]="!nombre.trim()" 
+        (click)="onConfirmar()"
+      >
+        Crear
+      </button>
+    </div>
+
+  </div>
+</div>

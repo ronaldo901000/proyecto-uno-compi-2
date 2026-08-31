@@ -1,0 +1,1 @@
+export type ExtensionArchivo = 'y' | 'z' | 'pig';

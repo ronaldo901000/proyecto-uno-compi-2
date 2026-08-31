@@ -1,0 +1,71 @@
+<div class="contenedor-explorador bg-dark text-light h-100 d-flex flex-column">
+  <div
+    class="p-2 border-bottom border-secondary d-flex justify-content-between align-items-center"
+  >
+    <small class="fw-bold text-uppercase text-secondary">Explorador</small>
+
+    <div class="d-flex gap-1">
+      @if (arbolService.hayProyecto$ | async) {
+        <!-- Botones visibles únicamente cuando SÍ hay proyecto -->
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          title="Nuevo archivo"
+          [disabled]="!(arbolService.puedeCrearEnSeleccion$ | async)"
+          (click)="abrirModal('archivo')"
+        >
+          <i class="bi bi-file-earmark-plus"></i>
+        </button>
+
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          title="Nueva carpeta"
+          [disabled]="!(arbolService.puedeCrearEnSeleccion$ | async)"
+          (click)="abrirModal('carpeta')"
+        >
+          <i class="bi bi-folder-plus"></i>
+        </button>
+
+        <button
+          class="btn btn-sm btn-outline-danger"
+          title="Eliminar"
+          [disabled]="!(arbolService.puedeEliminarSeleccion$ | async)"
+          (click)="eliminar()"
+        >
+          <i class="bi bi-trash"></i>
+        </button>
+      } @else {
+        <!-- Boton visible unicamente cuando NO hay proyecto -->
+        <button
+          class="btn btn-sm btn-primary"
+          title="Crear Proyecto"
+          (click)="abrirModalProyecto()"
+        >
+          <i class="bi bi-folder-plus me-1"></i> Nuevo Proyecto
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (arbolService.arbol$ | async; as raiz) {
+    <div class="flex-grow-1 overflow-auto p-2">
+      <app-nodo-arbol [nodo]="raiz" />
+    </div>
+  } @else {
+    <div
+      class="d-flex flex-column align-items-center justify-content-center flex-grow-1 text-muted p-3 text-center"
+    >
+      <i class="bi bi-folder2-open display-4 mb-2"></i>
+      <p class="small mb-0">No hay un proyecto abierto.</p>
+    </div>
+  }
+</div>
+
+<!-- Modal para Archivos / Carpetas -->
+@if (modalVisible) {
+  <app-modal-archivos
+    [tipo]="tipoCreacion"
+    [error]="modalError"
+    (cerrar)="cerrarModal()"
+    (confirmar)="procesarCreacion($event)"
+  />
+}
