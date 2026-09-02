@@ -1,6 +1,7 @@
 package com.ronaldo.cd3.compiler.api.resources;
 
 import com.ronaldo.cd3.compiler.api.dtos.entrada.EntradaDTO;
+import com.ronaldo.cd3.compiler.api.services.analisis.Analizador;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -20,5 +21,7 @@ public class AnalisisResorce {
     @Produces(MediaType.APPLICATION_JSON)
     public Response analizar(EntradaDTO entrada) {
 
+        Analizador analizador = new Analizador();
+        return Response.ok(analizador.iniciar(entrada)).build();
     }
 }

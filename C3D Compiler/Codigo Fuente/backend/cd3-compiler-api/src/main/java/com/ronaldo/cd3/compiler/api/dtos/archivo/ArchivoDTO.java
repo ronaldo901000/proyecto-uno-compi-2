@@ -1,4 +1,7 @@
-package com.ronaldo.cd3.compiler.api.dtos.entrada;
+package com.ronaldo.cd3.compiler.api.dtos.archivo;
+
+import com.ronaldo.cd3.compiler.api.exceptions.EntradaException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -41,6 +44,12 @@ public class ArchivoDTO {
 
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+
+    public void verificarContenido() throws EntradaException {
+        if (StringUtils.isBlank(contenido)) {
+            throw new EntradaException("El Archivo " + this.nombre + "no tiene contenido");
+        }
     }
 
 }

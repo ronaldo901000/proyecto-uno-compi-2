@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.dtos.entrada;
 
+import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import java.util.List;
 
 /**

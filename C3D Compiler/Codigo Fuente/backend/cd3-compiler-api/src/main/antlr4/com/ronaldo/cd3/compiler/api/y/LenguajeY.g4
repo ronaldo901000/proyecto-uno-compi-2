@@ -1,23 +1,41 @@
 grammar LenguajeY;
 
-tokens {INDENT, DEDENT}
-    
-/**ANALISIS SINTACTICO**/
+tokens { INDENT, DEDENT }
+
+@lexer::header {
+import com.yuvalshavit.antlr4.DenterHelper;
+}
+
+@lexer::members {
+    private final DenterHelper denter = DenterHelper.builder()
+        .nl(NL)
+        .indent(LenguajeYParser.INDENT)
+        .dedent(LenguajeYParser.DEDENT)
+        .pullToken(LenguajeYLexer.super::nextToken);
+
+    @Override
+    public Token nextToken() {
+        return denter.nextToken();
+    }
+}
+
+/** ANALISIS SINTACTICO **/
+
 lenguaje
-    : bloque_estructuras? bloque_funciones
+    : NL* bloque_estructuras? NL* bloque_funciones? NL* EOF
     ;
 
 /**BLOQUE DE ESTRUCTURAS**/
 bloque_estructuras
-    : ESTRUCTURAS NEWLINE+ estructura*
+    : ESTRUCTURAS NL+ estructura+
     ;
 
 estructura
-    : ESTRUCTURA ID_STRUCTURA DOS_P atributo_struct* NEWLINE*
+    : ESTRUCTURA ID_STRUCTURA DOS_P INDENT atributo_struct+ DEDENT NL*
     ;
 
 atributo_struct
-    : NEWLINE+ tipo_dato_general ID (CORCH_A NUM_ENTERO CORCH_C)?
+    : tipo_dato_general ID (CORCH_A NUM_ENTERO CORCH_C)? NL+
     ;
 
 tipo_dato_general
@@ -27,12 +45,12 @@ tipo_dato_general
 
 /**BLOQUE DE FUNCIONES**/
 bloque_funciones
-    : FUNCIONES NEWLINE+ funcion+
+    : FUNCIONES NL+ funcion+
     ;
 
 funcion
-    : funcion_void NEWLINE*
-    | funcion_retorno NEWLINE*
+    : funcion_void NL*
+    | funcion_retorno NL*
     ;
 
 funcion_void
@@ -44,8 +62,7 @@ funcion_retorno
     ;
 
 params
-    : params COMA param
-    | param
+    : param (COMA param)*
     ;
 
 param
@@ -54,25 +71,31 @@ param
     | LLAVE_A LLAVE_C ID_STRUCTURA ID
     ;
 
+/** INSTRUCCIONES Y BLOQUES **/
+
+bloque
+    : INDENT instruccion+ DEDENT
+    ;
+
 instruccion
-    : declaracion NEWLINE
-    | fun_leer NEWLINE
-    | asignacion NEWLINE
-    | suma_resta_abrev NEWLINE
+    : ( declaracion
+      | fun_leer
+      | asignacion
+      | suma_resta_abrev
+      | fun_imprimir
+      | llamada_funcion
+      | ROMPER
+      | CONTINUAR
+      | retorno
+      ) NL+
     | inst_si
     | inst_elegir 
     | ciclo_para
     | ciclo_mientras
-    | ciclo_hacer NEWLINE
-    | fun_imprimir NEWLINE
-    | ROMPER NEWLINE
-    | CONTINUAR NEWLINE
-    | retorno NEWLINE
+    | ciclo_hacer NL+
+    | NL
     ;
 
-bloque
-    : NEWLINE INDENT instruccion+ DEDENT
-    ;
 
 /**DECLARACION DE VARIABLES: SIMPLES, ARRAYS Y ESTRUCTURAS**/
 declaracion
@@ -86,30 +109,36 @@ dec_var_simple
     ;
 
 dec_array
-    : tipo_dato_primitivo ID (CORCH_A expresion CORCH_C)+ (EQ LLAVE_A valores_iniciales LLAVE_C)?
+    : tipo_dato_primitivo ID (CORCH_A expresion CORCH_C)+ (EQ LLAVE_A valores_iniciales? LLAVE_C)?
     ;
 
 dec_estruct
-    : ID_STRUCTURA ID (EQ LLAVE_A valores_iniciales LLAVE_C)?
+    : ID_STRUCTURA ID ( (EQ LLAVE_A valores_iniciales? LLAVE_C)? | (EQ expresion)? )
     ;
 
-/**ASIGNACION**/
+/** ASIGNACION Y L-VALUES **/
+
+lvalue
+    : ID
+    | lvalue CORCH_A expresion CORCH_C
+    | lvalue PUNTO ID
+    ;
+
 asignacion
-    : expresion EQ expresion
+    : lvalue EQ expresion
     ;
 
 valores_iniciales
-    : valores_iniciales COMA expresion
-    | expresion
+    : expresion (COMA expresion)*
     ;
 
 /**CONDICIONAL SI**/
 inst_si
-    : SI PAR_A expresion PAR_C ENTONCES bloque (bifurcacion)?
+    : SI PAR_A expresion PAR_C ENTONCES bloque bifurcacion?
     ;
 
 bifurcacion
-    : SINO PAR_A expresion PAR_C ENTONCES bloque (bifurcacion)?
+    : SINO PAR_A expresion PAR_C ENTONCES bloque bifurcacion?
     | CONTRARIO bloque
     ;
 
@@ -119,7 +148,7 @@ inst_elegir
     ;
 
 casos
-    :  NEWLINE INDENT caso+ DEDENT
+    : INDENT caso+ DEDENT
     ;
 
 caso
@@ -131,9 +160,7 @@ caso
 
 /**PARA (FOR)**/
 ciclo_para
-    : PARA PAR_A 
-            dec_iterador P_COMA expresion P_COMA (suma_resta_abrev | asignacion) 
-      PAR_C DOS_P bloque
+    : PARA PAR_A dec_iterador P_COMA expresion P_COMA (suma_resta_abrev | asignacion) PAR_C DOS_P bloque
     ;
 
 dec_iterador
@@ -153,26 +180,35 @@ ciclo_hacer
 
 /**FUNCIONES ESPECIALES**/
 fun_imprimir
-    :IMPRIMIR PAR_A expresion PAR_C 
+    : IMPRIMIR PAR_A expresion PAR_C
     ;
 
 fun_leer
-    : LEER PAR_A expresion PAR_C
+    : LEER PAR_A PAR_C
+    ;
+
+llamada_funcion
+    : ID PAR_A argumentos? PAR_C
+    ;
+
+argumentos
+    : expresion (COMA expresion)*
     ;
 
 suma_resta_abrev
-    : ID MAS_MAS
-    | ID MENOS_MENOS
+    : lvalue MAS_MAS
+    | lvalue MENOS_MENOS
     ;
 
 retorno
-    : RETORNAR expresion
+    : RETORNAR expresion?
     ;
 
 
 /**GENERALES**/
 expresion
     : PAR_A expresion PAR_C                         # expParentesis
+    | llamada_funcion                               # expLlamada
     | expresion PUNTO ID                            # expAcceso
     | expresion CORCH_A expresion CORCH_C           # expIndice
     | fun_leer                                      # expFunLeer
@@ -180,7 +216,7 @@ expresion
     | MENOS expresion                               # expNegativo
     | expresion (MULTI | DIV) expresion             # expMultDiv
     | expresion (MAS | MENOS) expresion             # expSuma
-    | expresion (MENOR_Q | MENOR_EQ_Q
+    | expresion (MENOR_Q | MENOR_EQ_Q 
                | MAYOR_Q | MAYOR_EQ_Q) expresion    # expRelacional
     | expresion (EQ_EQ | NO_EQ) expresion           # expIgualdad
     | expresion AND expresion                       # expAnd
@@ -272,8 +308,7 @@ LIT_CADENA : '"' .*? '"' ;
 CHAR : '\'' . '\'' ;
 
 
-
-NEWLINE: ('\r'? '\n' | '\r') [ \t]*;
-WS: [ \t]+ -> skip;
-COMENTARIO_LINEA : '//' ~[\r\n]* -> channel(HIDDEN) ;
+NL          : ('\r'? '\n' | '\r') [ \t\u00A0]* ;
+WS          : [ \t\u00A0]+ -> skip ;
+COMENTARIO_LINEA  : '//' ~[\r\n]* -> channel(HIDDEN) ;
 COMENTARIO_BLOQUE : '/*' .*? '*/' -> channel(HIDDEN) ;

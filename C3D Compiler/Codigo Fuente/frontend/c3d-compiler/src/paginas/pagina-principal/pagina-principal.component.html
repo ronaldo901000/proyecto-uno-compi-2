@@ -1,8 +1,11 @@
-<div class="row g-2">
-  <div class="col-3">
-    <app-explorador></app-explorador>
+<div class="page-container d-flex flex-column flex-grow-1">
+  <div class="row g-2 flex-grow-1 min-h-0">
+    <div class="col-3 d-flex flex-column min-h-0">
+      <app-explorador class="flex-grow-1"></app-explorador>
+    </div>
+    <div class="col-md-9 d-flex flex-column min-h-0">
+      <app-editor class="flex-grow-1"></app-editor>
+    </div>
   </div>
-  <div class="col-md-9">
-    <app-editor></app-editor>
-  </div>
+  <app-tabla-errores></app-tabla-errores>
 </div>

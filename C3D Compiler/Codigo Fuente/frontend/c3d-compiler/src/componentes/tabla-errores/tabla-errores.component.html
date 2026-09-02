@@ -1,0 +1,28 @@
+@if (respuestaService.respuesta$ | async; as respuesta) {
+  @if (respuesta.hayErrores) {
+    <table>
+      <thead>
+        <tr>
+          <th>Ubicacion</th>
+          <th>Fila</th>
+          <th>Columna</th>
+          <th>Tipo</th>
+          <th>Lexema</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (error of respuesta.errores; track $index) {
+          <tr>
+            <td>{{ error.ruta}}</td>
+            <td>{{ error.fila }}</td>
+            <td>{{ error.columna }}</td>
+            <td>{{ error.tipo }}</td>
+            <td>{{ error.lexema }}</td>
+            <td>{{ error.descripcion }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+}

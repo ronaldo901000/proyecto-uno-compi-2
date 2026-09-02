@@ -1,3 +1,19 @@
+:host {
+  display: flex;              
+  flex-direction: column;
+  min-height: 100vh;          
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .main-content {
   padding-top: 65px;
+  flex: none;         
+  min-height: auto;          
+  overflow-y: visible;       
+  overflow-x: hidden;
 }

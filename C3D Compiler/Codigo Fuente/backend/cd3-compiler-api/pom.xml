@@ -14,12 +14,31 @@
         <restapi>3.1.5</restapi>
     </properties>
     
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.17.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    
     <dependencies>
 
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
             <version>${antlr.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.yuvalshavit</groupId>
+            <artifactId>antlr-denter</artifactId>
+            <version>1.1</version>
         </dependency>
     
         <dependency>
@@ -78,6 +97,13 @@
             <version>11.0.13</version>
             <type>jar</type>
         </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+            <version>2.17.0</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
