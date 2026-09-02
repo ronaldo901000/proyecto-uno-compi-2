@@ -9,11 +9,10 @@ import { ColoreadoService } from '../../servicios/coloreado/Coloreado.service';
 import { ColorToken } from '../../modelos/color-token/ColorToken';
 
 @Component({
-  selector: 'app-editor',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './editor.component.html',
-  styleUrl: './editor.component.css'
+    selector: 'app-editor',
+    imports: [CommonModule],
+    templateUrl: './editor.component.html',
+    styleUrl: './editor.component.css'
 })
 export class EditorComponent implements OnInit, OnDestroy {
   public arbolService = inject(ArbolTrabajoService);

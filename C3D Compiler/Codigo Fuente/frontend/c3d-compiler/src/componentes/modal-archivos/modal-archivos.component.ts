@@ -1,14 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ExtensionArchivo } from '../../modelos/extension-archivo/ExtensionArchivo';
 import { TipoNodo } from '../../modelos/tipo-nodo/TipoNodo';
 @Component({
-  selector: 'app-modal-archivos',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './modal-archivos.component.html',
-  styleUrl: './modal-archivos.component.css'
+    selector: 'app-modal-archivos',
+    imports: [FormsModule],
+    templateUrl: './modal-archivos.component.html',
+    styleUrl: './modal-archivos.component.css'
 })
 export class ModalArchivosComponent {
   @Input() tipo: TipoNodo = 'archivo';

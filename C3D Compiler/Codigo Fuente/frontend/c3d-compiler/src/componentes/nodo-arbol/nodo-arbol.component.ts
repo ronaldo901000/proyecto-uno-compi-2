@@ -4,11 +4,10 @@ import { NodoArchivo } from '../../modelos/nodo-archivo/NodoArchivo';
 import { ArbolTrabajoService } from '../../servicios/arbol-trabajo/ArbolTrabajo.service';
 
 @Component({
-  selector: 'app-nodo-arbol',
-  standalone: true,
-  imports: [CommonModule, NodoArbolComponent],
-  templateUrl: './nodo-arbol.component.html',
-  styleUrl: './nodo-arbol.component.css'
+    selector: 'app-nodo-arbol',
+    imports: [CommonModule, NodoArbolComponent],
+    templateUrl: './nodo-arbol.component.html',
+    styleUrl: './nodo-arbol.component.css'
 })
 export class NodoArbolComponent {
   @Input({ required: true }) nodo!: NodoArchivo;

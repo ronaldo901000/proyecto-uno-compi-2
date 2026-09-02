@@ -3,11 +3,10 @@ import { RespuestaCompilacionService } from '../../servicios/respuesta-compilaci
 import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-tabla-errores',
-  standalone: true,
-  imports: [AsyncPipe],
-  templateUrl: './tabla-errores.component.html',
-  styleUrl: './tabla-errores.component.css'
+    selector: 'app-tabla-errores',
+    imports: [AsyncPipe],
+    templateUrl: './tabla-errores.component.html',
+    styleUrl: './tabla-errores.component.css'
 })
 export class TablaErroresComponent {
 constructor(public respuestaService:RespuestaCompilacionService){}

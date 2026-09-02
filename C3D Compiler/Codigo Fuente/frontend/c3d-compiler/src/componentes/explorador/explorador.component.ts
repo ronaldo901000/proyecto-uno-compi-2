@@ -7,11 +7,10 @@ import { ArbolTrabajoService } from '../../servicios/arbol-trabajo/ArbolTrabajo.
 import { NodoArbolComponent } from '../nodo-arbol/nodo-arbol.component';
 
 @Component({
-  selector: 'app-explorador',
-  standalone: true,
-  imports: [CommonModule, ModalArchivosComponent, NodoArbolComponent],
-  templateUrl: './explorador.component.html',
-  styleUrl: './explorador.component.css'
+    selector: 'app-explorador',
+    imports: [CommonModule, ModalArchivosComponent, NodoArbolComponent],
+    templateUrl: './explorador.component.html',
+    styleUrl: './explorador.component.css'
 })
 export class ExploradorComponent {
 
