@@ -7,6 +7,7 @@ package com.ronaldo.cd3.compiler.api.dtos.entrada;
 public class TextoDTO {
 
     private String texto;
+    private String opcion;
 
     public String getTexto() {
         return texto;
@@ -16,4 +17,7 @@ public class TextoDTO {
         this.texto = texto;
     }
 
+    public String getOpcion() {
+        return opcion;
+    }
 }

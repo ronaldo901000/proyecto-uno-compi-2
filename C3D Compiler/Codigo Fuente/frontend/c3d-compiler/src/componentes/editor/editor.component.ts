@@ -7,12 +7,13 @@ import { ArbolTrabajoService } from '../../servicios/arbol-trabajo/ArbolTrabajo.
 import { NodoArchivo } from '../../modelos/nodo-archivo/NodoArchivo';
 import { ColoreadoService } from '../../servicios/coloreado/Coloreado.service';
 import { ColorToken } from '../../modelos/color-token/ColorToken';
+import { Texto } from '../../modelos/texto/Texto';
 
 @Component({
-    selector: 'app-editor',
-    imports: [CommonModule],
-    templateUrl: './editor.component.html',
-    styleUrl: './editor.component.css'
+  selector: 'app-editor',
+  imports: [CommonModule],
+  templateUrl: './editor.component.html',
+  styleUrl: './editor.component.css'
 })
 export class EditorComponent implements OnInit, OnDestroy {
   public arbolService = inject(ArbolTrabajoService);
@@ -46,7 +47,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.contenido = nodo.contenido || '';
         this.actualizarLineas();
 
-        if (this.esArchivoY()) {
+        if (this.esArchivoYoZ()) {
           const cacheado = this.cacheColoreado.get(nodo);
           if (cacheado) {
             this.htmlColoreado = cacheado;
@@ -114,7 +115,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.archivoActivo.contenido = nuevoContenido;
     }
 
-    if (this.esArchivoY()) {
+    if (this.esArchivoYoZ()) {
       this.mostrarTextoPlano();
     }
 
@@ -139,7 +140,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.archivoActivo.contenido = this.contenido;
       }
 
-      if (this.esArchivoY()) {
+      if (this.esArchivoYoZ()) {
         this.mostrarTextoPlano();
       }
 
@@ -158,7 +159,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   private procesarColoreadoSiEsModuloY(): void {
-    if (this.esArchivoY()) {
+    if (this.esArchivoYoZ()) {
       this.textoSubject.next(this.contenido);
     } else {
       this.htmlColoreado = '';
@@ -167,24 +168,28 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   private solicitarColoreadoBackend(texto: string): void {
     const nodoDestino = this.archivoActivo;
+    const opcion = nodoDestino?.extension;
 
-    this.coloreadoService.obtenerInfoColor({ texto }).subscribe({
-      next: (tokens: ColorToken[]) => {
-        const htmlCrudo = this.construirHtmlColoreado(texto, tokens);
-        const htmlSeguro = this.sanitizer.bypassSecurityTrustHtml(htmlCrudo);
+    if (opcion) {
 
-        if (nodoDestino) {
-          this.cacheColoreado.set(nodoDestino, htmlSeguro);
+      this.coloreadoService.obtenerInfoColor({ texto, opcion }).subscribe({
+        next: (tokens: ColorToken[]) => {
+          const htmlCrudo = this.construirHtmlColoreado(texto, tokens);
+          const htmlSeguro = this.sanitizer.bypassSecurityTrustHtml(htmlCrudo);
+
+          if (nodoDestino) {
+            this.cacheColoreado.set(nodoDestino, htmlSeguro);
+          }
+
+          if (this.archivoActivo === nodoDestino) {
+            this.htmlColoreado = htmlSeguro;
+          }
+        },
+        error: (err) => {
+          console.error('Error al obtener coloreado de tokens:', err);
         }
-
-        if (this.archivoActivo === nodoDestino) {
-          this.htmlColoreado = htmlSeguro;
-        }
-      },
-      error: (err) => {
-        console.error('Error al obtener coloreado de tokens:', err);
-      }
-    });
+      });
+    }
   }
 
   private construirHtmlColoreado(texto: string, tokens: ColorToken[]): string {
@@ -237,7 +242,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  public esArchivoY(): boolean {
-    return this.archivoActivo?.extension?.trim().toLowerCase() === 'y';
+  public esArchivoYoZ(): boolean {
+    return this.archivoActivo?.extension?.trim().toLowerCase() === 'y' || 
+    this.archivoActivo?.extension?.trim().toLowerCase() === 'z';
   }
 }

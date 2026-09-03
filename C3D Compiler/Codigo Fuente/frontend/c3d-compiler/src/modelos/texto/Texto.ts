@@ -1,3 +1,4 @@
 export interface Texto{
-    texto:string
+    texto:string;
+    opcion:string;
 }

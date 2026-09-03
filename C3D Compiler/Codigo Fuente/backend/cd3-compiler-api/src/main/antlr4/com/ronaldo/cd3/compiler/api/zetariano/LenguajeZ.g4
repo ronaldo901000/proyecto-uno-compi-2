@@ -3,7 +3,7 @@ grammar LenguajeZ;
 
 /**ANALISIS SINTACTICO**/
 clase
-    : PUBLIC CLASS ID_CLASE LLAVE_A contenido LLAVE_C
+    : PUBLIC CLASS ID LLAVE_A contenido LLAVE_C
     ;
     
 contenido
@@ -39,7 +39,7 @@ valores_iniciales
 
 /**CONSTRUCTOR**/
 constructor
-    : PUBLIC ID_CLASE PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
+    : PUBLIC ID PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
     ;
 
 
@@ -212,7 +212,7 @@ expresion
     | expresion AND expresion                               # expAnd
     | expresion OR expresion                                # expOr
     | expresion INTERROGACION expresion DOS_P expresion     # expTernaria
-    | NEW ID_CLASE PAR_A argumentos? PAR_C                  # expNewObjeto
+    | NEW ID PAR_A argumentos? PAR_C                  # expNewObjeto
     | ENTERO                                                # expEntero
     | DECIMAL                                               # expDecimal
     | CADENA                                                # expCadena
@@ -226,7 +226,7 @@ expresion
 
 tipo_dato_general
     : tipo_dato_primitivo
-    | ID_CLASE
+    | ID
     ;
 
 tipo_dato_primitivo
@@ -304,7 +304,7 @@ INTERROGACION: '?';
 
 
 /**expresiones regulares**/
-ID_CLASE:   [A-Z][a-zA-Z0-9_]* ;
+
 ID:         [a-zA-Z_][a-zA-Z0-9_]* ;
 ENTERO:     [0-9]+ ;
 DECIMAL:    [0-9]+ '.' [0-9]+;

@@ -24,7 +24,7 @@ public class ColoreadoResource {
         ColoreadorLenguajeY coloreador = new ColoreadorLenguajeY();
 
         return Response
-                .ok(coloreador.generarColoreado(texto.getTexto()))
+                .ok(coloreador.generarColoreado(texto.getTexto(), texto.getOpcion()))
                 .build();
     }
 }

@@ -42,14 +42,14 @@
         <div
           #highlightArea
           class="code-highlight py-3 px-2"
-          [class.d-none]="!esArchivoY()"
+          [class.d-none]="!esArchivoYoZ()"
           [innerHTML]="htmlColoreado"
         ></div>
 
         <textarea
           #editorTextarea
           class="editor-textarea py-3 px-2 border-0"
-          [class.transparent-text]="esArchivoY()"
+          [class.transparent-text]="esArchivoYoZ()"
           [value]="contenido"
           (input)="onContenidoCambia($any($event.target).value, $event)"
           (keydown)="manejarTabulacion($event)"

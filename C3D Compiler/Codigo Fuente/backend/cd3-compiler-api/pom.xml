@@ -12,6 +12,7 @@
         <jakartaee>11.0.0-M1</jakartaee>
         <antlr.version>4.13.1</antlr.version>
         <restapi>3.1.5</restapi>
+        <jackson.version>2.18.0</jackson.version>
     </properties>
     
     <dependencyManagement>
@@ -19,13 +20,12 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.17.0</version>
+                <version>${jackson.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
     
     <dependencies>
 
@@ -54,54 +54,51 @@
             <scope>provided</scope>
         </dependency>      
         
-        
-        <!-- the REST API -->
+        <!-- API REST (Jakarta) -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
             <version>3.1.0</version>
         </dependency>
         
-        <!-- the Jersey implementation -->
+        <!-- Jersey implementation -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>${restapi}</version>
         </dependency>
 
-        <!-- also needed for dependency injection -->
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
             <version>${restapi}</version>
         </dependency>
 
-        <!-- support for using Jackson (JSON) with Jersey -->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>${restapi}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+        </dependency>
         
-        <!-- -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.18.0</version>
-            <type>jar</type>
         </dependency>
         
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
             <version>11.0.13</version>
-            <type>jar</type>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
-            <version>2.17.0</version>
         </dependency>
         
         <dependency>

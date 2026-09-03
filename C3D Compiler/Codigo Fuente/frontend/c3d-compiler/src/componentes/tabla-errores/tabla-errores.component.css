@@ -1,3 +1,11 @@
+/* Contenedor que activa el scroll horizontal cuando el contenido excede el ancho */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -5,9 +13,7 @@ table {
   font-size: 0.85rem;
   background-color: #0d0d0d;
   color: #e0e0e0;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  overflow: hidden;
+  /* Nota: border y border-radius pasan al .table-container para evitar cortes visuales */
 }
 
 thead {
@@ -22,6 +28,7 @@ thead th {
   padding: 12px 16px;
   border-bottom: 2px solid #2a2a2e;
   text-align: left;
+  white-space: nowrap; 
 }
 
 tbody tr {
@@ -36,17 +43,19 @@ tbody tr:hover {
 tbody td {
   padding: 10px 16px;
   color: #c9c9c9;
+  white-space: nowrap; 
 }
 
-tbody tr:has(td:nth-child(4):contains("Léxico")) {
+
+tbody tr.error-lexico {
   border-left: 3px solid #e05c5c;
 }
 
-tbody tr:has(td:nth-child(4):contains("Sintáctico")) {
+tbody tr.error-sintactico {
   border-left: 3px solid #e0a05c;
 }
 
-tbody tr:has(td:nth-child(4):contains("Semántico")) {
+tbody tr.error-semantico {
   border-left: 3px solid #5c9ae0;
 }
 

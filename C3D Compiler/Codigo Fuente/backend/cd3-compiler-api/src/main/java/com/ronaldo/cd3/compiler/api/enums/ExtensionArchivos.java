@@ -6,7 +6,7 @@ package com.ronaldo.cd3.compiler.api.enums;
  */
 public enum ExtensionArchivos {
 
-    Y("y"), Z("y"), PIG("pig");
+    Y("y"), Z("z"), PIG("pig");
 
     private String texto;
 

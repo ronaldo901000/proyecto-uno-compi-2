@@ -47,6 +47,7 @@
   line-height: 1.5 !important;
   tab-size: 4;
   box-sizing: border-box;
+  overflow-x: auto;
 }
 
 .code-highlight {

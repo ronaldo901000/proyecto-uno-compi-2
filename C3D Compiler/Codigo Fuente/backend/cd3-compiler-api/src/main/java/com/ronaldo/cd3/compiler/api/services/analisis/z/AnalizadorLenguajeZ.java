@@ -1,4 +1,4 @@
-package com.ronaldo.cd3.compiler.api.services.analisis.y;
+package com.ronaldo.cd3.compiler.api.services.analisis.z;
 
 import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorAnalisis;
@@ -6,12 +6,11 @@ import com.ronaldo.cd3.compiler.api.dtos.respuesta.RespuestaDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Analizable;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorLexicoListener;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorSintacticoListener;
-import com.ronaldo.cd3.compiler.api.y.LenguajeYLexer;
-import com.ronaldo.cd3.compiler.api.y.LenguajeYParser;
+import com.ronaldo.cd3.compiler.api.zetariano.LenguajeZLexer;
+import com.ronaldo.cd3.compiler.api.zetariano.LenguajeZParser;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenFactory;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -19,37 +18,43 @@ import org.antlr.v4.runtime.tree.ParseTree;
  *
  * @author ronaldo
  */
-public class AnalizadorLenguajeY implements Analizable{
+public class AnalizadorLenguajeZ implements Analizable {
 
     @Override
-    public void analizar(List<ArchivoDTO> archivosY, RespuestaDTO respuesta) {
+    public void analizar(List<ArchivoDTO> archivos, RespuestaDTO respuesta) {
+        for (ArchivoDTO archivo : archivos) {
+            List<ErrorAnalisis> erroresEncontrados = new ArrayList<>();
 
-        for (ArchivoDTO archivo : archivosY) {
-            List<ErrorAnalisis> erroresArchivo = new ArrayList<>();
-
-            LenguajeYLexer lexer = new LenguajeYLexer(
+            //LEXER
+            LenguajeZLexer lexer = new LenguajeZLexer(
                     CharStreams.fromString(archivo.getContenido())
             );
 
             lexer.removeErrorListeners();
-            ErrorLexicoListener listenerLexico = new ErrorLexicoListener(erroresArchivo, archivo.getRuta());
-            lexer.addErrorListener(listenerLexico);
-            lexer.setTokenFactory(CommonTokenFactory.DEFAULT);
 
+            ErrorLexicoListener listenerLexer = new ErrorLexicoListener(
+                    erroresEncontrados,
+                    archivo.getRuta());
+
+            lexer.addErrorListener(listenerLexer);
+
+            //TOKENS
             CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-            LenguajeYParser parser = new LenguajeYParser(tokens);
+            //PARSER
+            LenguajeZParser parser = new LenguajeZParser(tokens);
+
             parser.removeErrorListeners();
 
             ErrorSintacticoListener listenerParser = new ErrorSintacticoListener(
-                    erroresArchivo, archivo.getRuta()
-            );
+                    erroresEncontrados, archivo.getRuta());
+
             parser.addErrorListener(listenerParser);
 
-            ParseTree arbol = parser.lenguaje();
+            ParseTree arbol = parser.clase();
 
-            if (!erroresArchivo.isEmpty() || parser.getNumberOfSyntaxErrors() > 0) {
-                respuesta.agregarListaErrores(erroresArchivo);
+            if (!erroresEncontrados.isEmpty() || parser.getNumberOfSyntaxErrors() > 0) {
+                respuesta.agregarListaErrores(erroresEncontrados);
                 respuesta.setHayErrores(true);
 
                 continue;
@@ -57,4 +62,5 @@ public class AnalizadorLenguajeY implements Analizable{
 
         }
     }
+
 }
