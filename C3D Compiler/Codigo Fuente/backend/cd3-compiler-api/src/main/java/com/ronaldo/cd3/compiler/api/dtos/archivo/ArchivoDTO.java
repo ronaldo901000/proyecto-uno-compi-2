@@ -47,7 +47,7 @@ public class ArchivoDTO {
     }
 
     public void verificarContenido() throws EntradaException {
-        if (StringUtils.isBlank(contenido)) {
+        if (contenido == null) {
             throw new EntradaException("El Archivo " + this.nombre + "no tiene contenido");
         }
     }

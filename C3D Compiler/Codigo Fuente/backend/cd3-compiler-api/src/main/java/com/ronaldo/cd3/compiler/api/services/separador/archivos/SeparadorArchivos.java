@@ -13,10 +13,12 @@ public class SeparadorArchivos {
 
     private List<ArchivoDTO> archivosY;
     private List<ArchivoDTO> archivosZ;
+    private List<ArchivoDTO> archivosPig;
 
     public SeparadorArchivos() {
         this.archivosY = new ArrayList<>();
         this.archivosZ = new ArrayList<>();
+        this.archivosPig = new ArrayList<>();
     }
 
     public void separar(List<ArchivoDTO> lista) {
@@ -25,6 +27,8 @@ public class SeparadorArchivos {
                 archivosY.add(archivo);
             } else if (archivo.getExtension().equals(ExtensionArchivos.Z.getTexto())) {
                 archivosZ.add(archivo);
+            } else if (archivo.getExtension().equals(ExtensionArchivos.PIG.getTexto())) {
+                archivosPig.add(archivo);
             }
         }
     }
@@ -35,6 +39,10 @@ public class SeparadorArchivos {
 
     public List<ArchivoDTO> getArchivosZ() {
         return archivosZ;
+    }
+
+    public List<ArchivoDTO> getArchivosPig() {
+        return archivosPig;
     }
 
 }

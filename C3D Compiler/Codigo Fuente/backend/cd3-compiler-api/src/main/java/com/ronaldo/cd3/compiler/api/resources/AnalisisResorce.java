@@ -1,6 +1,7 @@
 package com.ronaldo.cd3.compiler.api.resources;
 
 import com.ronaldo.cd3.compiler.api.dtos.entrada.EntradaDTO;
+import com.ronaldo.cd3.compiler.api.exceptions.EntradaException;
 import com.ronaldo.cd3.compiler.api.services.analisis.Analizador;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -22,6 +23,10 @@ public class AnalisisResorce {
     public Response analizar(EntradaDTO entrada) {
 
         Analizador analizador = new Analizador();
-        return Response.ok(analizador.iniciar(entrada)).build();
+        try {
+            return Response.ok(analizador.iniciar(entrada)).build();
+        } catch (EntradaException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
     }
 }

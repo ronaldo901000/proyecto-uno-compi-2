@@ -4,6 +4,7 @@ import com.ronaldo.cd3.compiler.api.dtos.colorToken.ColorTokenDTO;
 import com.ronaldo.cd3.compiler.api.enums.ExtensionArchivos;
 import com.ronaldo.cd3.compiler.api.interfaces.Coloreable;
 import com.ronaldo.cd3.compiler.api.modelos.colorToken.ColorToken;
+import com.ronaldo.cd3.compiler.api.pig.LenguajePigLexer;
 import com.ronaldo.cd3.compiler.api.y.LenguajeYLexer;
 import com.ronaldo.cd3.compiler.api.zetariano.LenguajeZLexer;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import org.antlr.v4.runtime.Token;
  *
  * @author ronaldo
  */
-public class ColoreadorLenguajeY implements Coloreable {
+public class ColoreadorLenguajes implements Coloreable {
 
     /**
      *
@@ -38,6 +39,11 @@ public class ColoreadorLenguajeY implements Coloreable {
         } else if (opcion.equals(ExtensionArchivos.Z.getTexto())) {
 
             lexer = new LenguajeZLexer(
+                    CharStreams.fromString(texto)
+            );
+        }
+        else if(opcion.equals(ExtensionArchivos.PIG.getTexto())){
+            lexer = new LenguajePigLexer(
                     CharStreams.fromString(texto)
             );
         }

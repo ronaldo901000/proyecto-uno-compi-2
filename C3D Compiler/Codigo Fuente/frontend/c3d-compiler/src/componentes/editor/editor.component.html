@@ -38,18 +38,15 @@
 
       <!-- CAPA DE EDICION Y RESALTADO -->
       <div class="editor-wrapper flex-grow-1 position-relative overflow-hidden">
-
         <div
           #highlightArea
           class="code-highlight py-3 px-2"
-          [class.d-none]="!esArchivoYoZ()"
           [innerHTML]="htmlColoreado"
         ></div>
 
         <textarea
           #editorTextarea
-          class="editor-textarea py-3 px-2 border-0"
-          [class.transparent-text]="esArchivoYoZ()"
+          class="editor-textarea py-3 px-2 border-0 transparent-text"
           [value]="contenido"
           (input)="onContenidoCambia($any($event.target).value, $event)"
           (keydown)="manejarTabulacion($event)"

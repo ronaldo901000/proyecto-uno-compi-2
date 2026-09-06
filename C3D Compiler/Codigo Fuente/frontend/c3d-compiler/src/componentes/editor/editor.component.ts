@@ -7,7 +7,6 @@ import { ArbolTrabajoService } from '../../servicios/arbol-trabajo/ArbolTrabajo.
 import { NodoArchivo } from '../../modelos/nodo-archivo/NodoArchivo';
 import { ColoreadoService } from '../../servicios/coloreado/Coloreado.service';
 import { ColorToken } from '../../modelos/color-token/ColorToken';
-import { Texto } from '../../modelos/texto/Texto';
 
 @Component({
   selector: 'app-editor',
@@ -47,16 +46,12 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.contenido = nodo.contenido || '';
         this.actualizarLineas();
 
-        if (this.esArchivoYoZ()) {
-          const cacheado = this.cacheColoreado.get(nodo);
-          if (cacheado) {
-            this.htmlColoreado = cacheado;
-          } else {
-            this.mostrarTextoPlano();
-            this.solicitarColoreadoBackend(this.contenido);
-          }
+        const cacheado = this.cacheColoreado.get(nodo);
+        if (cacheado) {
+          this.htmlColoreado = cacheado;
         } else {
-          this.htmlColoreado = '';
+          this.mostrarTextoPlano();
+          this.solicitarColoreadoBackend(this.contenido);
         }
       } else {
         this.archivoActivo = null;
@@ -115,11 +110,8 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.archivoActivo.contenido = nuevoContenido;
     }
 
-    if (this.esArchivoYoZ()) {
-      this.mostrarTextoPlano();
-    }
-
-    this.procesarColoreadoSiEsModuloY();
+    this.mostrarTextoPlano();
+    this.procesarColoreado();
   }
 
   public manejarTabulacion(event: KeyboardEvent): void {
@@ -140,14 +132,12 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.archivoActivo.contenido = this.contenido;
       }
 
-      if (this.esArchivoYoZ()) {
-        this.mostrarTextoPlano();
-      }
+      this.mostrarTextoPlano();
 
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd = start + tabulacion.length;
         this.actualizarPosicionCursor(textarea);
-        this.procesarColoreadoSiEsModuloY();
+        this.procesarColoreado();
       }, 0);
     }
   }
@@ -158,12 +148,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     );
   }
 
-  private procesarColoreadoSiEsModuloY(): void {
-    if (this.esArchivoYoZ()) {
-      this.textoSubject.next(this.contenido);
-    } else {
-      this.htmlColoreado = '';
-    }
+  private procesarColoreado(): void {
+    this.textoSubject.next(this.contenido);
   }
 
   private solicitarColoreadoBackend(texto: string): void {
@@ -240,10 +226,5 @@ export class EditorComponent implements OnInit, OnDestroy {
       default:
         return 'bi-file-earmark-text text-info';
     }
-  }
-
-  public esArchivoYoZ(): boolean {
-    return this.archivoActivo?.extension?.trim().toLowerCase() === 'y' || 
-    this.archivoActivo?.extension?.trim().toLowerCase() === 'z';
   }
 }
