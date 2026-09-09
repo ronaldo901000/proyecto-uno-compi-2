@@ -1,8 +1,11 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.condicional;
 
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import java.util.List;
 
 /**
@@ -11,6 +14,7 @@ import java.util.List;
  */
 public class InstSi extends Nodo implements Instruccion {
 
+    private final Reglas reglas = new Reglas();
     private Expresion condicion;
     private List<Instruccion> instruccionesInternasSi;
     private List<RamaSino> ramasSino;
@@ -43,12 +47,20 @@ public class InstSi extends Nodo implements Instruccion {
         return instruccionesInternasContrario;
     }
 
-    public int getFila() {
-        return fila;
-    }
-
-    public int getColumna() {
-        return columna;
+    @Override
+    public void verificarSemantica(Contexto contexto) {
+        reglas.esCondicionValida(contexto, condicion);
+        TablaSimbolos anterior = contexto.nuevoAmbito("si");
+        reglas.verificarInstrucciones(contexto, instruccionesInternasSi);
+        contexto.restaurarAmbito(anterior);
+        if (ramasSino != null) {
+            for (RamaSino rama : ramasSino) {
+                rama.verificarSemantica(contexto);
+            }
+        }
+        anterior = contexto.nuevoAmbito("contrario");
+        reglas.verificarInstrucciones(contexto, instruccionesInternasContrario);
+        contexto.restaurarAmbito(anterior);
     }
 
 }

@@ -134,16 +134,20 @@ public class TablaTipos {
         switch (nombreTipo.toLowerCase()) {
             case "entero":
             case "int":
+            case "numerus":
                 return getEntero();
             case "flotante":
             case "decimal":
             case "double":
+            case "decimalis":
                 return getDecimal();
             case "cadena":
             case "string":
+            case "textum":
                 return getCadena();
             case "caracter":
             case "char":
+            case "littera":
                 return getCaracter();
             case "bool":
             case "boolean":

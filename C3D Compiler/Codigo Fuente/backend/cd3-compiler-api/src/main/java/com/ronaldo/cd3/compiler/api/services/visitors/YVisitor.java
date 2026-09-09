@@ -310,10 +310,11 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
 
         if (ctx.lvalue() == null) {
             // caso base: ID
-            return new Literal(ctx.ID().getText(), fila, columna);
+            return new AccesoVariable(ctx.ID().getText(), fila, columna);
         }
         if (ctx.CORCH_A() != null) {
 
+            // lvalue [ expresion ]
             Expresion arreglo = visitarLvalue(ctx.lvalue());
             Expresion indice = (Expresion) visit(ctx.expresion());
             return new ExpIndice(arreglo, indice, fila, columna);
@@ -408,7 +409,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
             actualizacion = (Instruccion) visit(ctx.asignacion());
         }
 
-        List<Instruccion> instruccionesInternas = (List<Instruccion>) visitBloque(ctx.bloque());
+        List<Instruccion> instruccionesInternas = (List<Instruccion>) visitarBloque(ctx.bloque());
 
         return new CicloPara(
                 iterador, actualizacion, instruccionesInternas,
@@ -435,7 +436,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
         int columna = ctx.start.getCharPositionInLine();
 
         Expresion condicion = (Expresion) visit(ctx.expresion());
-        List<Instruccion> cuerpo = (List<Instruccion>) visitBloque(ctx.bloque());
+        List<Instruccion> cuerpo = (List<Instruccion>) visitarBloque(ctx.bloque());
 
         return new CicloMientras(cuerpo, condicion, fila, columna);
     }
@@ -445,7 +446,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
 
-        List<Instruccion> instruccionesInternas = (List<Instruccion>) visitBloque(ctx.bloque());
+        List<Instruccion> instruccionesInternas = (List<Instruccion>) visitarBloque(ctx.bloque());
         Expresion condicion = (Expresion) visit(ctx.expresion());
 
         return new CicloHacerMientras(instruccionesInternas, condicion, fila, columna);
@@ -498,7 +499,9 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
     public Retorno visitRetorno(LenguajeYParser.RetornoContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        return new Retorno((Expresion) visit(ctx.expresion()), fila, columna);
+        Expresion expresion = (ctx.expresion() != null)
+                ? (Expresion) visit(ctx.expresion()) : null;
+        return new Retorno(expresion, fila, columna);
     }
 
     @Override

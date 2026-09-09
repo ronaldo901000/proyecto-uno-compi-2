@@ -1,15 +1,24 @@
 package com.ronaldo.cd3.compiler.api.modelos.funcionesY;
 
+import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author ronaldo
  */
-public class FuncionDef extends Nodo {
+public class FuncionDef extends Nodo implements Verificable {
 
+    private final Reglas reglas = new Reglas();
     private String nombre;
     private List<Parametro> parametros;
     private String tipoRetorno;
@@ -39,6 +48,53 @@ public class FuncionDef extends Nodo {
 
     public List<Instruccion> getCuerpo() {
         return cuerpo;
+    }
+
+    public void registrarFirma(Contexto contexto) {
+        if (contexto.getTablaSimbolos().existeLocal(nombre)) {
+            contexto.agregarError(fila, columna, nombre,
+                    "La función '" + nombre + "' ya fue declarada");
+            return;
+        }
+        Tipo tipoRetornoT;
+        if (tipoRetorno == null) {
+            tipoRetornoT = contexto.getTablaTipos().getVoid();
+        } else {
+            tipoRetornoT = reglas.resolverTipo(contexto, tipoRetorno, fila, columna);
+        }
+        List<SimboloParametro> simbolosParametros = new ArrayList<>();
+        if (parametros != null) {
+            for (Parametro parametro : parametros) {
+                parametro.verificarSemantica(contexto);
+                simbolosParametros.add(new SimboloParametro(
+                        parametro.getNombre(), parametro.getTipo(), 0));
+            }
+        }
+        SimboloFuncion simbolo = new SimboloFuncion(nombre, tipoRetornoT,
+                simbolosParametros, 0, "fun_" + nombre);
+        contexto.getTablaSimbolos().agregar(simbolo);
+    }
+
+    @Override
+    public void verificarSemantica(Contexto contexto) {
+        SimboloFuncion simbolo = contexto.getTablaSimbolos().buscarFuncion(nombre);
+        if (simbolo == null) {
+            return;
+        }
+        TablaSimbolos anterior = contexto.nuevoAmbito(nombre);
+        int posicion = 0;
+        for (SimboloParametro parametro : simbolo.getParametros()) {
+            parametro.setPosicion(posicion);
+            posicion += parametro.getTipo().tamanoBytes();
+            contexto.getAmbito().agregar(parametro);
+        }
+        contexto.getAmbito().setSiguientePosicion(posicion);
+        Tipo retornoAnterior = contexto.getTipoRetornoActual();
+        contexto.setTipoRetornoActual(simbolo.getTipoRetorno());
+        reglas.verificarInstrucciones(contexto, cuerpo);
+        simbolo.setTamanoFrame(contexto.getAmbito().getSiguientePosicion());
+        contexto.setTipoRetornoActual(retornoAnterior);
+        contexto.restaurarAmbito(anterior);
     }
 
 }

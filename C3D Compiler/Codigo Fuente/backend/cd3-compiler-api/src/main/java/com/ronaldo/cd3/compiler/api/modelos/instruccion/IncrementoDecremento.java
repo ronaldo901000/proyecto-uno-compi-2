@@ -1,8 +1,10 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion;
 
 import com.ronaldo.cd3.compiler.api.enums.Operador;
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 
 /**
  *
@@ -10,6 +12,7 @@ import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
  */
 public class IncrementoDecremento extends Nodo implements Instruccion {
 
+    private final Reglas reglas = new Reglas();
     private Expresion objetivo;
     private Operador operador;
 
@@ -25,6 +28,22 @@ public class IncrementoDecremento extends Nodo implements Instruccion {
 
     public void setOperador(Operador operador) {
         this.operador = operador;
+    }
+
+    @Override
+    public void verificarSemantica(Contexto contexto) {
+        if (objetivo == null) {
+            return;
+        }
+        objetivo.verificarSemantica(contexto);
+        if (!reglas.esLvalue(objetivo)) {
+            contexto.agregarError(fila, columna, null,
+                    "El objetivo del incremento/decremento no es un valor modificable");
+        }
+        if (!reglas.esNumerico(objetivo.getTipo())) {
+            contexto.agregarError(fila, columna, String.valueOf(operador),
+                    "No se puede aplicar '" + operador + "' a un valor no numérico");
+        }
     }
 
 }

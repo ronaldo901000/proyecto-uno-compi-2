@@ -1,7 +1,9 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion;
 
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 
 /**
  *
@@ -9,6 +11,7 @@ import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
  */
 public class Asignacion extends Nodo implements Instruccion {
 
+    private final Reglas reglas = new Reglas();
     private Expresion objetivo;
     private Expresion valor;
 
@@ -26,12 +29,25 @@ public class Asignacion extends Nodo implements Instruccion {
         return valor;
     }
 
-    public int getFila() {
-        return fila;
-    }
-
-    public int getColumna() {
-        return columna;
+    @Override
+    public void verificarSemantica(Contexto contexto) {
+        if (objetivo != null) {
+            objetivo.verificarSemantica(contexto);
+        }
+        if (valor != null) {
+            valor.verificarSemantica(contexto);
+        }
+        if (objetivo == null || valor == null) {
+            return;
+        }
+        if (!reglas.esLvalue(objetivo)) {
+            contexto.agregarError(fila, columna, null,
+                    "El objetivo de la asignación no es un valor modificable");
+        }
+        if (!reglas.esAsignable(objetivo.getTipo(), valor.getTipo())) {
+            contexto.agregarError(fila, columna, null,
+                    "Tipos incompatibles en la asignación");
+        }
     }
 
 }

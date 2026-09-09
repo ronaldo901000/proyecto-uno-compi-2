@@ -1,5 +1,7 @@
 package com.ronaldo.cd3.compiler.api.modelos.programaY;
 
+import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.estructurasY.EstructuraDef;
 import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
@@ -9,7 +11,7 @@ import java.util.List;
  *
  * @author ronaldo
  */
-public class ProgramaY extends Nodo {
+public class ProgramaY extends Nodo implements Verificable {
 
     private List<EstructuraDef> estructuras;
     private List<FuncionDef> funciones;
@@ -26,6 +28,33 @@ public class ProgramaY extends Nodo {
 
     public List<FuncionDef> getFunciones() {
         return funciones;
+    }
+
+    @Override
+    public void verificarSemantica(Contexto contexto) {
+        registrarEstructurasYFirmas(contexto);
+        verificarCuerpos(contexto);
+    }
+
+    public void registrarEstructurasYFirmas(Contexto contexto) {
+        if (estructuras != null) {
+            for (EstructuraDef estructura : estructuras) {
+                estructura.verificarSemantica(contexto);
+            }
+        }
+        if (funciones != null) {
+            for (FuncionDef funcion : funciones) {
+                funcion.registrarFirma(contexto);
+            }
+        }
+    }
+
+    public void verificarCuerpos(Contexto contexto) {
+        if (funciones != null) {
+            for (FuncionDef funcion : funciones) {
+                funcion.verificarSemantica(contexto);
+            }
+        }
     }
 
 }

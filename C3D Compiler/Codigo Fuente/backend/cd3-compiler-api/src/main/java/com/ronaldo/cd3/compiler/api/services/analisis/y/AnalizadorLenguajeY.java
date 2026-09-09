@@ -4,7 +4,9 @@ import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorAnalisis;
 import com.ronaldo.cd3.compiler.api.dtos.respuesta.RespuestaDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Analizable;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.programaY.ProgramaY;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorLexicoListener;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorSintacticoListener;
@@ -25,7 +27,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class AnalizadorLenguajeY implements Analizable{
 
     @Override
-    public void analizar(List<ArchivoDTO> archivosY, RespuestaDTO respuesta) {
+    public void analizar(List<ArchivoDTO> archivosY, RespuestaDTO respuesta,
+            TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
+            ListaCuartetas cuartetas) {
 
         for (ArchivoDTO archivo : archivosY) {
             List<ErrorAnalisis> erroresArchivo = new ArrayList<>();
@@ -60,8 +64,7 @@ public class AnalizadorLenguajeY implements Analizable{
             
             YVisitor visitor = new YVisitor();
             ProgramaY ast = (ProgramaY) visitor.visit(arbol);
-
-            TablaTipos tablaTipos = new TablaTipos();
+            respuesta.agregarProgramaY(ast);
 
         }
     }

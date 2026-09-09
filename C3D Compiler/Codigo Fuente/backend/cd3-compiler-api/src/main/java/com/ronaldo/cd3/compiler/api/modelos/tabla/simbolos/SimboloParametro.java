@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos;
 
+import com.ronaldo.cd3.compiler.api.enums.RolSimbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 
 /**
@@ -11,11 +12,15 @@ public class SimboloParametro extends Simbolo {
     private int posicion;
 
     public SimboloParametro(String id, Tipo tipo, int posicion) {
-        super(id, tipo);
+        super(id, tipo, RolSimbolo.PARAMETRO);
         this.posicion = posicion;
     }
 
     public int getPosicion() {
         return posicion;
+    }
+
+    public void setPosicion(int posicion) {
+        this.posicion = posicion;
     }
 }

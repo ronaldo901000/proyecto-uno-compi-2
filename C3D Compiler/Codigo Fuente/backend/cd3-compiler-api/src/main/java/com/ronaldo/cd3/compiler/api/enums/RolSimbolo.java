@@ -9,5 +9,7 @@ public enum RolSimbolo {
     VARIABLE,
     PARAMETRO,
     FUNCION,
+    CLASE,
+    METODO,
     TIPO_ESTRUCTURA 
 }

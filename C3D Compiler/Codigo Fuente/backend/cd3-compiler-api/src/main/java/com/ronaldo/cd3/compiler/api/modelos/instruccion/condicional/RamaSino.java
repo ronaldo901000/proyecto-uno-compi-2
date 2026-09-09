@@ -1,16 +1,21 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.condicional;
 
+import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import java.util.List;
 
 /**
  *
  * @author ronaldo
  */
-public class RamaSino extends Nodo {
+public class RamaSino extends Nodo implements Verificable {
 
+    private final Reglas reglas = new Reglas();
     private Expresion condicion;
     private List<Instruccion> instruccionesInternas;
 
@@ -26,6 +31,14 @@ public class RamaSino extends Nodo {
 
     public List<Instruccion> getInstruccionesInternas() {
         return instruccionesInternas;
+    }
+
+    @Override
+    public void verificarSemantica(Contexto contexto) {
+        reglas.esCondicionValida(contexto, condicion);
+        TablaSimbolos anterior = contexto.nuevoAmbito("sino");
+        reglas.verificarInstrucciones(contexto, instruccionesInternas);
+        contexto.restaurarAmbito(anterior);
     }
 
 }

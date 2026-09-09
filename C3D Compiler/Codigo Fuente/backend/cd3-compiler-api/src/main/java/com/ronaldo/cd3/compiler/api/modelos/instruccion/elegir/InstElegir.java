@@ -1,8 +1,10 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.elegir;
 
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.List;
 
 /**
@@ -36,20 +38,20 @@ public class InstElegir extends Nodo implements Instruccion {
         this.casos = casos;
     }
 
-    public int getFila() {
-        return fila;
-    }
-
-    public void setFila(int fila) {
-        this.fila = fila;
-    }
-
-    public int getColumna() {
-        return columna;
-    }
-
-    public void setColumna(int columna) {
-        this.columna = columna;
+    @Override
+    public void verificarSemantica(Contexto contexto) {
+        if (valorEvaluado != null) {
+            valorEvaluado.verificarSemantica(contexto);
+        }
+        Tipo tipoEvaluado = (valorEvaluado != null) ? valorEvaluado.getTipo() : null;
+        
+        contexto.setdentroDeSwitch(true);
+        if (casos != null) {
+            for (CasoSwitch caso : casos) {
+                caso.verificarSemantica(contexto, tipoEvaluado);
+            }
+        }
+        contexto.setdentroDeSwitch(false);
     }
 
 }

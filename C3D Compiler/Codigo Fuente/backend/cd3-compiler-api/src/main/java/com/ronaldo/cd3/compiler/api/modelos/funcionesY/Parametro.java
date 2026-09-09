@@ -1,17 +1,24 @@
 package com.ronaldo.cd3.compiler.api.modelos.funcionesY;
 
+import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import java.util.Collections;
 
 /**
  *
  * @author ronaldo
  */
-public class Parametro extends Nodo {
+public class Parametro extends Nodo implements Verificable {
 
+    private final Reglas reglas = new Reglas();
     private String tipoDato;
     private String nombre;
     private boolean esArreglo;
     private boolean esStruct;
+    private Tipo tipo;
 
     public Parametro(String tipoDato, String nombre, boolean esArreglo, 
             boolean esStruct, int fila, int columna) {
@@ -37,6 +44,23 @@ public class Parametro extends Nodo {
 
     public boolean isEsStruct() {
         return esStruct;
+    }
+
+    public Tipo getTipo() {
+        return tipo;
+    }
+
+    @Override
+    public void verificarSemantica(Contexto contexto) {
+        Tipo base = reglas.resolverTipo(contexto, tipoDato, fila, columna);
+        if (reglas.esError(base)) {
+            this.tipo = base;
+        } else if (esArreglo) {
+            this.tipo = contexto.getTablaTipos().getArreglo(
+                    base, Collections.singletonList(0));
+        } else {
+            this.tipo = base;
+        }
     }
 
 }

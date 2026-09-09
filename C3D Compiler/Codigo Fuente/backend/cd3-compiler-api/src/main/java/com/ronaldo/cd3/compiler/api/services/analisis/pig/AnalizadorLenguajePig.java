@@ -4,6 +4,9 @@ import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorAnalisis;
 import com.ronaldo.cd3.compiler.api.dtos.respuesta.RespuestaDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Analizable;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.pig.LenguajePigLexer;
 import com.ronaldo.cd3.compiler.api.pig.LenguajePigParser;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorLexicoListener;
@@ -21,7 +24,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class AnalizadorLenguajePig implements Analizable {
 
     @Override
-    public void analizar(List<ArchivoDTO> archivos, RespuestaDTO respuesta) {
+    public void analizar(List<ArchivoDTO> archivos, RespuestaDTO respuesta,
+            TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
+            ListaCuartetas cuartetas) {
 
         ArchivoDTO archivo = archivos.get(0);
         List<ErrorAnalisis> erroresEncontrados = new ArrayList<>();
