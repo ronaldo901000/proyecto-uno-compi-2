@@ -4,8 +4,11 @@ import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorAnalisis;
 import com.ronaldo.cd3.compiler.api.dtos.respuesta.RespuestaDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Analizable;
+import com.ronaldo.cd3.compiler.api.modelos.programaY.ProgramaY;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorLexicoListener;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorSintacticoListener;
+import com.ronaldo.cd3.compiler.api.services.visitors.YVisitor;
 import com.ronaldo.cd3.compiler.api.y.LenguajeYLexer;
 import com.ronaldo.cd3.compiler.api.y.LenguajeYParser;
 import java.util.ArrayList;
@@ -54,6 +57,11 @@ public class AnalizadorLenguajeY implements Analizable{
 
                 continue;
             }
+            
+            YVisitor visitor = new YVisitor();
+            ProgramaY ast = (ProgramaY) visitor.visit(arbol);
+
+            TablaTipos tablaTipos = new TablaTipos();
 
         }
     }
