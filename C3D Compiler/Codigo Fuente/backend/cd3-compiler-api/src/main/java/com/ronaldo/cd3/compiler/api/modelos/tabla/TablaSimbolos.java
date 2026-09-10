@@ -4,6 +4,7 @@ import com.ronaldo.cd3.compiler.api.enums.RolSimbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.Simbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class TablaSimbolos {
     private final List<TablaSimbolos> ambitos;
 
     private int siguientePosicion;
-    private int tamanoAmbito;
+    private int tamañoAmbito;
 
     public TablaSimbolos(String nombreAmbito, TablaSimbolos padre) {
         this.nombreAmbito = nombreAmbito;
@@ -31,7 +32,7 @@ public class TablaSimbolos {
         this.simbolos = new LinkedHashMap<>();
         this.ambitos = new ArrayList<>();
         this.siguientePosicion = 0;
-        this.tamanoAmbito = 0;
+        this.tamañoAmbito = 0;
     }
 
     public static TablaSimbolos nuevoGlobal() {
@@ -51,11 +52,73 @@ public class TablaSimbolos {
     }
 
     public boolean agregar(Simbolo simbolo) {
-        if (simbolos.containsKey(simbolo.getId())) {
+        String clave = claveDeSimbolo(simbolo);
+        if (simbolos.containsKey(clave)) {
             return false;
         }
-        simbolos.put(simbolo.getId(), simbolo);
+        simbolos.put(clave, simbolo);
         return true;
+    }
+
+    private String claveDeSimbolo(Simbolo simbolo) {
+        if (simbolo instanceof SimboloFuncion) {
+            SimboloFuncion funcion = (SimboloFuncion) simbolo;
+            List<Tipo> tipos = new ArrayList<>();
+            for (SimboloParametro parametro : funcion.getParametros()) {
+                tipos.add(parametro.getTipo());
+            }
+            return claveFuncion(funcion.getId(), tipos);
+        }
+        return simbolo.getId();
+    }
+
+    public static String claveFuncion(String nombre, List<Tipo> tipos) {
+        StringBuilder sb = new StringBuilder(nombre).append('(');
+        if (tipos != null) {
+            for (int i = 0; i < tipos.size(); i++) {
+                if (i > 0) {
+                    sb.append(',');
+                }
+                Tipo tipo = tipos.get(i);
+                sb.append(tipo != null ? tipo.toString() : "?");
+            }
+        }
+        return sb.append(')').toString();
+    }
+
+    public boolean hayFuncion(String id) {
+        for (TablaSimbolos ambito = this; ambito != null; ambito = ambito.padre) {
+            for (Simbolo simbolo : ambito.simbolos.values()) {
+                if (simbolo instanceof SimboloFuncion
+                        && simbolo.getId().equals(id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean existeOtroSimbolo(String id) {
+        for (TablaSimbolos ambito = this; ambito != null; ambito = ambito.padre) {
+            for (Simbolo simbolo : ambito.simbolos.values()) {
+                if (!(simbolo instanceof SimboloFuncion)
+                        && simbolo.getId().equals(id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean existeFuncion(String nombre, List<Tipo> tiposParametros) {
+        String clave = claveFuncion(nombre, tiposParametros);
+        for (TablaSimbolos ambito = this; ambito != null; ambito = ambito.padre) {
+            Simbolo simbolo = ambito.simbolos.get(clave);
+            if (simbolo instanceof SimboloFuncion) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean existe(String id) {
@@ -94,11 +157,42 @@ public class TablaSimbolos {
     }
 
     public SimboloFuncion buscarFuncion(String id) {
-        Simbolo simbolo = buscar(id);
-        if (simbolo instanceof SimboloFuncion || simbolo == null) {
-            return (SimboloFuncion) simbolo;
+        for (TablaSimbolos ambito = this; ambito != null; ambito = ambito.padre) {
+            for (Simbolo simbolo : ambito.simbolos.values()) {
+                if (simbolo instanceof SimboloFuncion
+                        && simbolo.getId().equals(id)) {
+                    return (SimboloFuncion) simbolo;
+                }
+            }
         }
         return null;
+    }
+
+    public List<SimboloFuncion> buscarSobrecargas(String id) {
+        for (TablaSimbolos ambito = this; ambito != null; ambito = ambito.padre) {
+            List<SimboloFuncion> encontradas = new ArrayList<>();
+            for (Simbolo simbolo : ambito.simbolos.values()) {
+                if (simbolo instanceof SimboloFuncion
+                        && simbolo.getId().equals(id)) {
+                    encontradas.add((SimboloFuncion) simbolo);
+                }
+            }
+            if (!encontradas.isEmpty()) {
+                return encontradas;
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public String generarEtiquetaFuncion(String id) {
+        int contador = 0;
+        for (Simbolo simbolo : simbolos.values()) {
+            if (simbolo instanceof SimboloFuncion
+                    && simbolo.getId().equals(id)) {
+                contador++;
+            }
+        }
+        return (contador == 0) ? "fun_" + id : "fun_" + id + "_" + contador;
     }
 
     public TablaSimbolos nuevoAmbito(String nombre) {
@@ -165,16 +259,16 @@ public class TablaSimbolos {
         this.siguientePosicion = siguientePosicion;
     }
 
-    public int getTamanoAmbito() {
-        return tamanoAmbito;
+    public int getTamañoAmbito() {
+        return tamañoAmbito;
     }
 
-    public void setTamanoAmbito(int tamanoAmbito) {
-        this.tamanoAmbito = tamanoAmbito;
+    public void setTamañoAmbito(int tamanoAmbito) {
+        this.tamañoAmbito = tamanoAmbito;
     }
 
     public void cerrarAmbito() {
-        this.tamanoAmbito = this.siguientePosicion;
+        this.tamañoAmbito = this.siguientePosicion;
     }
 
     @Override

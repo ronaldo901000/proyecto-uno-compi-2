@@ -1,6 +1,7 @@
 package com.ronaldo.cd3.compiler.api.services.visitors;
 
 import com.ronaldo.cd3.compiler.api.enums.Operador;
+import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.interfaces.Visitable;
 import com.ronaldo.cd3.compiler.api.modelos.estructurasY.AtributoEstructura;
 import com.ronaldo.cd3.compiler.api.modelos.estructurasY.EstructuraDef;
@@ -508,7 +509,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
     public Literal visitExpDecimal(LenguajeYParser.ExpDecimalContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        return new Literal(ctx.NUM_DECIMAL(), fila, columna);
+        return new Literal(ctx.NUM_DECIMAL(),TipoDato.DECIMAL, fila, columna);
     }
 
     @Override
@@ -572,7 +573,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
     public Literal visitExpCadena(LenguajeYParser.ExpCadenaContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        return new Literal(ctx.LIT_CADENA().getText(), fila, columna);
+        return new Literal(ctx.LIT_CADENA().getText(),TipoDato.CADENA ,fila, columna);
     }
 
     @Override
@@ -590,7 +591,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
     public Literal visitExpVerdadero(LenguajeYParser.ExpVerdaderoContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        return new Literal(ctx.VERDADERO().getText(), fila, columna);
+        return new Literal(ctx.VERDADERO().getText(),TipoDato.BOOLEAN, fila, columna);
     }
 
     @Override
@@ -622,14 +623,14 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
     public Literal visitExpChar(LenguajeYParser.ExpCharContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        return new Literal(ctx.CHAR(), fila, columna);
+        return new Literal(ctx.CHAR(),TipoDato.CHAR ,fila, columna);
     }
 
     @Override
     public Literal visitExpFalso(LenguajeYParser.ExpFalsoContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        return new Literal(ctx.FALSO().getText(), fila, columna);
+        return new Literal(ctx.FALSO().getText(),TipoDato.BOOLEAN, fila, columna);
     }
 
     @Override
@@ -662,7 +663,8 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
     public Literal visitExpEntero(LenguajeYParser.ExpEnteroContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        return new Literal(ctx.NUM_ENTERO(), fila, columna);
+        
+        return new Literal(ctx.NUM_ENTERO(),TipoDato.ENTERO, fila, columna);
     }
 
     @Override

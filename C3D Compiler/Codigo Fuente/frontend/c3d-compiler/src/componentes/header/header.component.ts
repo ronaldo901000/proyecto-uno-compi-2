@@ -32,6 +32,7 @@ export class HeaderComponent {
 
         },
         error:(error) =>{
+          alert(error.error);
           console.log(error.error);
         }
       });

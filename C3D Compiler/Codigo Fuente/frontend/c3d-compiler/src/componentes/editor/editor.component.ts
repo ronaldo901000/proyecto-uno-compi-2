@@ -6,6 +6,7 @@ import { debounceTime } from 'rxjs/operators';
 import { ArbolTrabajoService } from '../../servicios/arbol-trabajo/ArbolTrabajo.service';
 import { NodoArchivo } from '../../modelos/nodo-archivo/NodoArchivo';
 import { ColoreadoService } from '../../servicios/coloreado/Coloreado.service';
+import { IndentacionService } from '../../servicios/indentacion/Indentacion.service';
 import { ColorToken } from '../../modelos/color-token/ColorToken';
 
 @Component({
@@ -21,7 +22,6 @@ export class EditorComponent implements OnInit, OnDestroy {
   private textoSubject = new Subject<string>();
   private subColoreado!: Subscription;
 
-  // guarda el archivo que ya ha sido coloreado antes
   private cacheColoreado = new Map<NodoArchivo, SafeHtml>();
 
   archivoActivo: NodoArchivo | null = null;
@@ -36,6 +36,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   constructor(
     private coloreadoService: ColoreadoService,
+    private indentacionService: IndentacionService,
     private sanitizer: DomSanitizer
   ) { }
 
@@ -67,12 +68,8 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.subSeleccion) {
-      this.subSeleccion.unsubscribe();
-    }
-    if (this.subColoreado) {
-      this.subColoreado.unsubscribe();
-    }
+    this.subSeleccion?.unsubscribe();
+    this.subColoreado?.unsubscribe();
   }
 
   private actualizarLineas(): void {
@@ -101,17 +98,39 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   onContenidoCambia(nuevoContenido: string, event?: Event) {
-    this.contenido = nuevoContenido;
-    this.actualizarLineas();
-    if (event?.target) {
-      this.actualizarPosicionCursor(event.target as HTMLTextAreaElement);
+    const textarea = event?.target as HTMLTextAreaElement | undefined;
+    const cursorAntes = textarea?.selectionStart ?? null;
+
+    const contenidoNormalizado = this.indentacionService.normalizar(nuevoContenido);
+
+    let nuevoCursor = cursorAntes;
+    if (textarea && cursorAntes !== null && contenidoNormalizado !== nuevoContenido) {
+      nuevoCursor = this.indentacionService.recalcularCursor(
+        nuevoContenido,
+        contenidoNormalizado,
+        cursorAntes
+      );
     }
+
+    this.contenido = contenidoNormalizado;
+    this.actualizarLineas();
+
     if (this.archivoActivo) {
-      this.archivoActivo.contenido = nuevoContenido;
+      this.archivoActivo.contenido = this.contenido;
     }
 
     this.mostrarTextoPlano();
     this.procesarColoreado();
+
+    if (textarea && nuevoCursor !== null) {
+      setTimeout(() => {
+        textarea.value = this.contenido;
+        textarea.selectionStart = textarea.selectionEnd = nuevoCursor!;
+        this.actualizarPosicionCursor(textarea);
+      }, 0);
+    } else if (textarea) {
+      this.actualizarPosicionCursor(textarea);
+    }
   }
 
   public manejarTabulacion(event: KeyboardEvent): void {
@@ -120,13 +139,13 @@ export class EditorComponent implements OnInit, OnDestroy {
       const textarea = event.target as HTMLTextAreaElement;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const tabulacion = '    ';
 
-      this.contenido =
+      const contenidoConTab =
         this.contenido.substring(0, start) +
-        tabulacion +
+        '\t' +
         this.contenido.substring(end);
 
+      this.contenido = this.indentacionService.normalizar(contenidoConTab);
       this.actualizarLineas();
       if (this.archivoActivo) {
         this.archivoActivo.contenido = this.contenido;
@@ -134,8 +153,11 @@ export class EditorComponent implements OnInit, OnDestroy {
 
       this.mostrarTextoPlano();
 
+      const nuevoCursor = start + 4;
+
       setTimeout(() => {
-        textarea.selectionStart = textarea.selectionEnd = start + tabulacion.length;
+        textarea.value = this.contenido;
+        textarea.selectionStart = textarea.selectionEnd = nuevoCursor;
         this.actualizarPosicionCursor(textarea);
         this.procesarColoreado();
       }, 0);
@@ -144,7 +166,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   private mostrarTextoPlano(): void {
     this.htmlColoreado = this.sanitizer.bypassSecurityTrustHtml(
-      this.escaparHtml(this.contenido) + '&nbsp;'
+      this.coloreadoService.escaparHtml(this.contenido) + '&nbsp;'
     );
   }
 
@@ -157,10 +179,9 @@ export class EditorComponent implements OnInit, OnDestroy {
     const opcion = nodoDestino?.extension;
 
     if (opcion) {
-
       this.coloreadoService.obtenerInfoColor({ texto, opcion }).subscribe({
         next: (tokens: ColorToken[]) => {
-          const htmlCrudo = this.construirHtmlColoreado(texto, tokens);
+          const htmlCrudo = this.coloreadoService.construirHtmlColoreado(texto, tokens);
           const htmlSeguro = this.sanitizer.bypassSecurityTrustHtml(htmlCrudo);
 
           if (nodoDestino) {
@@ -176,43 +197,6 @@ export class EditorComponent implements OnInit, OnDestroy {
         }
       });
     }
-  }
-
-  private construirHtmlColoreado(texto: string, tokens: ColorToken[]): string {
-    if (!tokens || tokens.length === 0) return this.escaparHtml(texto);
-
-    tokens.sort((a, b) => a.inicio - b.inicio);
-
-    let html = '';
-    let ultimoIndice = 0;
-
-    for (const t of tokens) {
-      if (t.inicio < ultimoIndice) continue;
-
-      if (t.inicio > ultimoIndice) {
-        html += this.escaparHtml(texto.substring(ultimoIndice, t.inicio));
-      }
-
-      const valorToken = texto.substring(t.inicio, t.fin + 1);
-      html += `<span style="color: ${t.color}">${this.escaparHtml(valorToken)}</span>`;
-
-      ultimoIndice = t.fin + 1;
-    }
-
-    if (ultimoIndice < texto.length) {
-      html += this.escaparHtml(texto.substring(ultimoIndice));
-    }
-
-    return html + '&nbsp;';
-  }
-
-  private escaparHtml(str: string): string {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
   }
 
   public obtenerIconoEditor(extension?: string): string {

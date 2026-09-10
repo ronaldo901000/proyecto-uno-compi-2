@@ -11,7 +11,7 @@ import java.util.List;
 public class SimboloFuncion extends Simbolo {
 
     private final List<SimboloParametro> parametros;
-    private int tamanoFrame;
+    private int tamañoFrame;
     private String etiquetaInicio;
     private String nombreClase;
     private boolean esMetodo;
@@ -21,7 +21,7 @@ public class SimboloFuncion extends Simbolo {
             int tamanoFrame, String etiquetaInicio) {
         super(id, tipoRetorno, RolSimbolo.FUNCION);
         this.parametros = parametros;
-        this.tamanoFrame = tamanoFrame;
+        this.tamañoFrame = tamanoFrame;
         this.etiquetaInicio = etiquetaInicio;
         this.nombreClase = null;
         this.esMetodo = false;
@@ -39,12 +39,12 @@ public class SimboloFuncion extends Simbolo {
         this.setTipo(tipoRetorno);
     }
 
-    public int getTamanoFrame() {
-        return tamanoFrame;
+    public int getTamañoFrame() {
+        return tamañoFrame;
     }
 
-    public void setTamanoFrame(int tamanoFrame) {
-        this.tamanoFrame = tamanoFrame;
+    public void setTamañoFrame(int tamanoFrame) {
+        this.tamañoFrame = tamanoFrame;
     }
 
     public String getEtiquetaInicio() {

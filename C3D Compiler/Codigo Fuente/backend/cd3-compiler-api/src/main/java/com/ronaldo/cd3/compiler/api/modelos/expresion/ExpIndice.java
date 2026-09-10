@@ -1,10 +1,12 @@
 package com.ronaldo.cd3.compiler.api.modelos.expresion;
 
+import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
+import java.util.List;
 
 /**
  *
@@ -43,9 +45,11 @@ public class ExpIndice extends Expresion implements Verificable {
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
-        if (indice != null && !reglas.esNumerico(indice.getTipo())) {
-            contexto.agregarError(indice.getFila(), indice.getColumna(), indice.resultado.toString(),
-                    "El índice de un arreglo debe ser numerico");
+        if (indice != null && (indice.getTipo() == null
+                || indice.getTipo().getTipoDato() != TipoDato.ENTERO)) {
+            contexto.agregarError(indice.getFila(), indice.getColumna(),
+                    indice.getResultado() != null ? indice.getResultado().toString() : null,
+                    "El índice de un arreglo debe ser un valor entero");
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
@@ -55,7 +59,38 @@ public class ExpIndice extends Expresion implements Verificable {
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
-        setTipo(((TipoArreglo) tipoArreglo).getTipoBase());
+        TipoArreglo arregloTipado = (TipoArreglo) tipoArreglo;
+        verificarLimites(contexto, arregloTipado);
+        setTipo(tipoDeIndice(contexto, arregloTipado));
+    }
+
+    private void verificarLimites(Contexto contexto, TipoArreglo arregloTipado) {
+        if (indice == null || arregloTipado.getNumeroDimensiones() == 0) {
+            return;
+        }
+        Integer constante = reglas.constanteEntera(indice);
+        if (constante == null) {
+            return;
+        }
+        int tamano = arregloTipado.getDimensiones().get(0);
+        if (tamano <= 0) {
+            return;
+        }
+        if (constante < 0 || constante >= tamano) {
+            contexto.agregarError(indice.getFila(), indice.getColumna(),
+                    String.valueOf(constante),
+                    "Índice " + constante + " fuera de los límites del arreglo "
+                    + "(se esperaba un valor entre 0 y " + (tamano - 1) + ")");
+        }
+    }
+
+    private Tipo tipoDeIndice(Contexto contexto, TipoArreglo arregloTipado) {
+        if (arregloTipado.getNumeroDimensiones() <= 1) {
+            return arregloTipado.getTipoBase();
+        }
+        List<Integer> restantes = arregloTipado.getDimensiones()
+                .subList(1, arregloTipado.getNumeroDimensiones());
+        return contexto.getTablaTipos().getArreglo(arregloTipado.getTipoBase(), restantes);
     }
 
 }

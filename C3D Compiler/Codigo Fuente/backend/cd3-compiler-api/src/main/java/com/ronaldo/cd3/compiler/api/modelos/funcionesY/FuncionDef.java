@@ -23,6 +23,7 @@ public class FuncionDef extends Nodo implements Verificable {
     private List<Parametro> parametros;
     private String tipoRetorno;
     private List<Instruccion> cuerpo;
+    private SimboloFuncion simbolo;
 
     public FuncionDef(String nombre, List<Parametro> parametros,
             String tipoRetorno, List<Instruccion> cuerpo, int fila, int columna) {
@@ -51,9 +52,21 @@ public class FuncionDef extends Nodo implements Verificable {
     }
 
     public void registrarFirma(Contexto contexto) {
-        if (contexto.getTablaSimbolos().existeLocal(nombre)) {
+        List<Tipo> tiposParametros = new ArrayList<>();
+        List<SimboloParametro> simbolosParametros = new ArrayList<>();
+        if (parametros != null) {
+            for (Parametro parametro : parametros) {
+                parametro.verificarSemantica(contexto);
+                tiposParametros.add(parametro.getTipo());
+                simbolosParametros.add(new SimboloParametro(
+                        parametro.getNombre(), parametro.getTipo(), 0));
+            }
+        }
+        if (contexto.getTablaSimbolos().existeOtroSimbolo(nombre)
+                || contexto.getTablaSimbolos().existeFuncion(nombre, tiposParametros)) {
             contexto.agregarError(fila, columna, nombre,
-                    "La función '" + nombre + "' ya fue declarada");
+                    "Ya existe una función '" + nombre
+                    + "' con la misma firma o un identificador con el mismo nombre");
             return;
         }
         Tipo tipoRetornoT;
@@ -62,22 +75,15 @@ public class FuncionDef extends Nodo implements Verificable {
         } else {
             tipoRetornoT = reglas.resolverTipo(contexto, tipoRetorno, fila, columna);
         }
-        List<SimboloParametro> simbolosParametros = new ArrayList<>();
-        if (parametros != null) {
-            for (Parametro parametro : parametros) {
-                parametro.verificarSemantica(contexto);
-                simbolosParametros.add(new SimboloParametro(
-                        parametro.getNombre(), parametro.getTipo(), 0));
-            }
-        }
-        SimboloFuncion simbolo = new SimboloFuncion(nombre, tipoRetornoT,
-                simbolosParametros, 0, "fun_" + nombre);
-        contexto.getTablaSimbolos().agregar(simbolo);
+        String etiqueta = contexto.getTablaSimbolos().generarEtiquetaFuncion(nombre);
+        SimboloFuncion nuevoSimbolo = new SimboloFuncion(nombre, tipoRetornoT,
+                simbolosParametros, 0, etiqueta);
+        contexto.getTablaSimbolos().agregar(nuevoSimbolo);
+        this.simbolo = nuevoSimbolo;
     }
 
     @Override
     public void verificarSemantica(Contexto contexto) {
-        SimboloFuncion simbolo = contexto.getTablaSimbolos().buscarFuncion(nombre);
         if (simbolo == null) {
             return;
         }
@@ -92,9 +98,16 @@ public class FuncionDef extends Nodo implements Verificable {
         Tipo retornoAnterior = contexto.getTipoRetornoActual();
         contexto.setTipoRetornoActual(simbolo.getTipoRetorno());
         reglas.verificarInstrucciones(contexto, cuerpo);
-        simbolo.setTamanoFrame(contexto.getAmbito().getSiguientePosicion());
+        simbolo.setTamañoFrame(contexto.getAmbito().getSiguientePosicion());
         contexto.setTipoRetornoActual(retornoAnterior);
         contexto.restaurarAmbito(anterior);
+
+        if (!reglas.esVoid(simbolo.getTipoRetorno())
+                && !reglas.siempreRetorna(cuerpo)) {
+            contexto.agregarError(fila, columna, nombre,
+                    "La función '" + nombre + "' de tipo " + simbolo.getTipoRetorno()
+                    + " no retorna en todos sus caminos de ejecución");
+        }
     }
 
 }

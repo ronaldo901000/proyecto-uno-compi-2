@@ -6,7 +6,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +36,7 @@ public class DeclaracionArreglo extends Declaracion {
     @Override
     public void verificarSemantica(Contexto contexto) {
         int numDimensiones = (dimensiones != null) ? dimensiones.size() : 0;
+        List<Integer> tamanos = new ArrayList<>();
         for (int i = 0; i < numDimensiones; i++) {
             Expresion dimension = dimensiones.get(i);
             dimension.verificarSemantica(contexto);
@@ -44,7 +45,18 @@ public class DeclaracionArreglo extends Declaracion {
                 contexto.agregarError(dimension.getFila(), dimension.getColumna(),
                         id, "La dimensión " + (i + 1) + " del arreglo '"
                         + id + "' debe ser un valor entero");
+                tamanos.add(0);
+                continue;
             }
+            Integer tamano = reglas.constanteEntera(dimension);
+            if (tamano != null && tamano <= 0) {
+                contexto.agregarError(dimension.getFila(), dimension.getColumna(),
+                        id, "La dimensión " + (i + 1) + " del arreglo '"
+                        + id + "' debe ser mayor que 0");
+                tamanos.add(0);
+                continue;
+            }
+            tamanos.add((tamano != null) ? tamano : 0);
         }
         Tipo base = reglas.resolverTipo(contexto, tipoDato, fila, columna);
         if (reglas.esError(base)) {
@@ -55,8 +67,7 @@ public class DeclaracionArreglo extends Declaracion {
                     "El arreglo '" + id + "' debe declarar al menos una dimensión");
             return;
         }
-        Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(
-                base, Collections.nCopies(numDimensiones, 0));
+        Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamanos);
         SimboloVariable variable = reglas.registrarVariable(contexto, id, tipoArreglo, fila, columna);
         if (variable != null && valoresIniciales != null) {
             for (Expresion valor : valoresIniciales) {
