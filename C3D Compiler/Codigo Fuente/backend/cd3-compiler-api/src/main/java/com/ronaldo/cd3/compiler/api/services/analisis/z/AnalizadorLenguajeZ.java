@@ -2,13 +2,17 @@ package com.ronaldo.cd3.compiler.api.services.analisis.z;
 
 import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorAnalisis;
+import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorSemantico;
 import com.ronaldo.cd3.compiler.api.dtos.respuesta.RespuestaDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Analizable;
+import com.ronaldo.cd3.compiler.api.modelos.clasesZ.ClaseZ;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
+import com.ronaldo.cd3.compiler.api.services.analisis.semantico.AnalizadorSemanticoZ;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorLexicoListener;
 import com.ronaldo.cd3.compiler.api.services.listeners.ErrorSintacticoListener;
+import com.ronaldo.cd3.compiler.api.services.visitors.ZVisitor;
 import com.ronaldo.cd3.compiler.api.zetariano.LenguajeZLexer;
 import com.ronaldo.cd3.compiler.api.zetariano.LenguajeZParser;
 import java.util.ArrayList;
@@ -27,6 +31,7 @@ public class AnalizadorLenguajeZ implements Analizable {
     public void analizar(List<ArchivoDTO> archivos, RespuestaDTO respuesta,
             TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
             ListaCuartetas cuartetas) {
+        List<ClaseZ> clases = new ArrayList<>();
         for (ArchivoDTO archivo : archivos) {
             List<ErrorAnalisis> erroresEncontrados = new ArrayList<>();
 
@@ -56,7 +61,7 @@ public class AnalizadorLenguajeZ implements Analizable {
 
             parser.addErrorListener(listenerParser);
 
-            ParseTree arbol = parser.clase();
+            ParseTree arbol = parser.programa();
 
             if (!erroresEncontrados.isEmpty() || parser.getNumberOfSyntaxErrors() > 0) {
                 respuesta.agregarListaErrores(erroresEncontrados);
@@ -65,7 +70,41 @@ public class AnalizadorLenguajeZ implements Analizable {
                 continue;
             }
 
+            ZVisitor visitor = new ZVisitor();
+            LenguajeZParser.ProgramaContext programa = (LenguajeZParser.ProgramaContext) arbol;
+            LenguajeZParser.ClaseContext claseCtx = programa.clase();
+            String nombreClase = claseCtx.ID().getText();
+
+            if (nombreClase.equals(nombreBaseArchivo(archivo.getNombre()))) {
+                ClaseZ ast = (ClaseZ) visitor.visitClase(claseCtx);
+                ast.setArchivo(archivo);
+                clases.add(ast);
+            } else {
+                ErrorSemantico error = new ErrorSemantico(
+                        claseCtx.start.getLine(),
+                        claseCtx.start.getCharPositionInLine(),
+                        nombreClase,
+                        "La clase '" + nombreClase + "' debe llamarse igual que su archivo '"
+                        + archivo.getNombre() + "'",
+                        archivo.getRuta());
+                respuesta.agregarUnError(error);
+                respuesta.setHayErrores(true);
+            }
+
         }
+
+        AnalizadorSemanticoZ analizadorSemanticoZ = new AnalizadorSemanticoZ();
+        analizadorSemanticoZ.analizar(clases, respuesta, tablaTipos, tablaSimbolos, cuartetas);
+    }
+
+    private String nombreBaseArchivo(String nombre) {
+        if (nombre == null) {
+            return "";
+        }
+        if (nombre.toLowerCase().endsWith(".z")) {
+            return nombre.substring(0, nombre.length() - 2);
+        }
+        return nombre;
     }
 
 }

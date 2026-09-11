@@ -22,5 +22,8 @@ public enum Operador {
     POSITIVO_UNARIO,        
     NOT,
     INCREMENTO,
-    DECREMENTO
+    DECREMENTO,
+    MAS_IGUAL,
+    MENOS_IGUAL,
+    MULTI_IGUAL
 }

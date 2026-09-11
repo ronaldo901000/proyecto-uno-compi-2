@@ -26,11 +26,18 @@ import org.antlr.v4.runtime.tree.ParseTree;
  */
 public class AnalizadorLenguajeY implements Analizable{
 
+    private List<ProgramaY> programas;
+
+    public List<ProgramaY> getProgramas() {
+        return programas;
+    }
+
     @Override
     public void analizar(List<ArchivoDTO> archivosY, RespuestaDTO respuesta,
             TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
             ListaCuartetas cuartetas) {
 
+        programas = new ArrayList<>();
         for (ArchivoDTO archivo : archivosY) {
             List<ErrorAnalisis> erroresArchivo = new ArrayList<>();
 
@@ -64,7 +71,8 @@ public class AnalizadorLenguajeY implements Analizable{
             
             YVisitor visitor = new YVisitor();
             ProgramaY ast = (ProgramaY) visitor.visit(arbol);
-            respuesta.agregarProgramaY(ast);
+            ast.setArchivo(archivo);
+            programas.add(ast);
 
         }
     }

@@ -3,6 +3,8 @@ package com.ronaldo.cd3.compiler.api.modelos.expresion;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 
@@ -47,6 +49,19 @@ public class Acceso extends Expresion implements Verificable {
             return;
         }
         TipoStructura estructura = (TipoStructura) tipoObjeto;
+        SimboloClase clase = contexto.getTablaSimbolos().buscarClase(
+                estructura.getNombreStruct());
+        if (clase != null) {
+            SimboloVariable atributoSimbolo = clase.getAtributo(atributo);
+            if (atributoSimbolo == null) {
+                contexto.agregarError(fila, columna, atributo,
+                        "La clase '" + clase.getId() + "' no tiene el atributo '" + atributo + "'");
+                setTipo(contexto.getTablaTipos().getError());
+                return;
+            }
+            setTipo(atributoSimbolo.getTipo());
+            return;
+        }
         Tipo tipoAtributo = estructura.getTipoAtributo(atributo);
         if (tipoAtributo == null) {
             contexto.agregarError(fila, columna, atributo,

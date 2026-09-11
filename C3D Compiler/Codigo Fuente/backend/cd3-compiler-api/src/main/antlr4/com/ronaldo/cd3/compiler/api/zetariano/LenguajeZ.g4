@@ -2,6 +2,10 @@ grammar LenguajeZ;
 
 
 /**ANALISIS SINTACTICO**/
+programa
+    : clase EOF
+    ;
+
 clase
     : PUBLIC CLASS ID LLAVE_A contenido LLAVE_C
     ;
@@ -51,7 +55,6 @@ instruccion
     | llamada_metodo
     | llamada_metodo_objeto
     | funcion_especial
-    | sout
     | BREAK
     | CONTINUE  
     | return
@@ -164,9 +167,6 @@ argumentos
     : expresion (COMA expresion)*
     ;
 
-sout
-    : SOUT PAR_A expresion PAR_C
-    ;
 
 /**FUNCIONES ESPECIALES**/
 
@@ -195,24 +195,29 @@ suma_resta_abrev
 
 
 expresion
+    : expr_base                                             # expBase
+    | expr_base INTERROGACION expresion DOS_P expresion     # expTernaria
+    ;
+
+expr_base
     : PAR_A expresion PAR_C                                 # expParentesis
     | llamada_metodo                                        # expLlamada
-    | expresion PUNTO ID                                    # expAcceso
-    | expresion PUNTO llamada_metodo                        # expLlamadaEncadenada
-    | expresion CORCH_A expresion CORCH_C                   # expIndice
+    | expr_base PUNTO ID                                    # expAcceso
+    | expr_base PUNTO llamada_metodo                        # expLlamadaEncadenada
+    | expr_base CORCH_A expresion CORCH_C                   # expIndice
     | fun_leer                                              # expFunLeer
-    | NOT expresion                                         # expNot
-    | MENOS expresion                                       # expNegativo
-    | MAS expresion                                         # expPositivo
-    | expresion (MULTI | DIV | MODULO) expresion            # expMultDivMod
-    | expresion (MAS | MENOS) expresion                     # expSumaResta
-    | expresion (MENOR_Q | MENOR_EQ_Q 
-               | MAYOR_Q | MAYOR_EQ_Q) expresion            # expRelacional
-    | expresion (EQ_EQ | NO_EQ) expresion                   # expIgualdad
-    | expresion AND expresion                               # expAnd
-    | expresion OR expresion                                # expOr
-    | expresion INTERROGACION expresion DOS_P expresion     # expTernaria
-    | NEW ID PAR_A argumentos? PAR_C                  # expNewObjeto
+    | NOT expr_base                                         # expNot
+    | MENOS expr_base                                       # expNegativo
+    | MAS expr_base                                         # expPositivo
+    | expr_base (MULTI | DIV | MODULO) expr_base            # expMultDivMod
+    | expr_base (MAS | MENOS) expr_base                     # expSumaResta
+    | expr_base (MENOR_Q | MENOR_EQ_Q 
+               | MAYOR_Q | MAYOR_EQ_Q) expr_base            # expRelacional
+    | expr_base (EQ_EQ | NO_EQ) expr_base                   # expIgualdad
+    | expr_base AND expr_base                               # expAnd
+    | expr_base OR expr_base                                # expOr
+    | NEW tipo_dato_general PAR_A argumentos? PAR_C         # expNewObjeto
+    | NEW tipo_dato_general (CORCH_A expresion CORCH_C)+    # expNewArreglo
     | ENTERO                                                # expEntero
     | DECIMAL                                               # expDecimal
     | CADENA                                                # expCadena
@@ -253,7 +258,6 @@ NEW:        'new';
 RETURN:     'return';
 IF:         'if';
 ELSE:       'else';
-SOUT:       'System.out.println';
 TRUE:       'true';
 FALSE:      'false';
 SWITCH:     'switch';

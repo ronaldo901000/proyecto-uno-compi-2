@@ -39,6 +39,10 @@ public class DeclaracionArreglo extends Declaracion {
         List<Integer> tamanos = new ArrayList<>();
         for (int i = 0; i < numDimensiones; i++) {
             Expresion dimension = dimensiones.get(i);
+            if (dimension == null) {
+                tamanos.add(0);
+                continue;
+            }
             dimension.verificarSemantica(contexto);
             if (dimension.getTipo() == null
                     || dimension.getTipo().getTipoDato() != TipoDato.ENTERO) {
@@ -66,6 +70,10 @@ public class DeclaracionArreglo extends Declaracion {
             contexto.agregarError(fila, columna, id,
                     "El arreglo '" + id + "' debe declarar al menos una dimensión");
             return;
+        }
+        if (valoresIniciales != null && !valoresIniciales.isEmpty()
+                && numDimensiones == 1 && tamanos.get(0) == 0) {
+            tamanos.set(0, valoresIniciales.size());
         }
         Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamanos);
         SimboloVariable variable = reglas.registrarVariable(contexto, id, tipoArreglo, fila, columna);

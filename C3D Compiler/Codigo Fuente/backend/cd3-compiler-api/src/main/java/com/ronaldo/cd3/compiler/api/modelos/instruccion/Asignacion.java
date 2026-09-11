@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion;
 
+import com.ronaldo.cd3.compiler.api.enums.Operador;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
@@ -14,11 +15,21 @@ public class Asignacion extends Nodo implements Instruccion {
     private final Reglas reglas = new Reglas();
     private Expresion objetivo;
     private Expresion valor;
+    private Operador operador;
 
+    /*constructor para el lenguaje Y*/
     public Asignacion(Expresion objetivo, Expresion valor, int fila, int columna) {
         super(fila, columna);
         this.objetivo = objetivo;
         this.valor = valor;
+    }
+
+    /*constructor para el lenguaje Z*/
+    public Asignacion(Expresion objetivo, Expresion valor, Operador operador, int fila, int columna) {
+        super(fila, columna);
+        this.objetivo = objetivo;
+        this.valor = valor;
+        this.operador = operador;
     }
 
     public Expresion getObjetivo() {

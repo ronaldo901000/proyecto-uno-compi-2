@@ -2,7 +2,9 @@ package com.ronaldo.cd3.compiler.api.modelos.tipos;
 
 import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -11,9 +13,11 @@ import java.util.List;
 public class TablaTipos {
 
     private final List<Tipo> tipos;
+    private final Map<String, TipoStructura> clasesZ;
 
     public TablaTipos() {
         this.tipos = new ArrayList<>();
+        this.clasesZ = new HashMap<>();
         cargarTiposPrimitivos();
     }
 
@@ -127,7 +131,32 @@ public class TablaTipos {
         return null;
     }
 
+    public TipoStructura registrarClase(String nombreClase) {
+        TipoStructura existente = buscarClaseTipo(nombreClase);
+        if (existente != null) {
+            return existente;
+        }
+        TipoStructura nueva = new TipoStructura(nombreClase, "clase_z");
+        clasesZ.put(nombreClase.toLowerCase(), nueva);
+        return nueva;
+    }
+
+    public TipoStructura buscarClaseTipo(String nombreClase) {
+        if (nombreClase == null) {
+            return null;
+        }
+        return clasesZ.get(nombreClase.toLowerCase());
+    }
+
     public Tipo resolver(String nombreTipo) {
+        return resolverConIdioma(nombreTipo, false);
+    }
+
+    public Tipo resolverZ(String nombreTipo) {
+        return resolverConIdioma(nombreTipo, true);
+    }
+
+    private Tipo resolverConIdioma(String nombreTipo, boolean clasesPrimero) {
         if (nombreTipo == null) {
             return null;
         }
@@ -158,6 +187,12 @@ public class TablaTipos {
             case "null":
                 return getNulo();
             default:
+                if (clasesPrimero) {
+                    TipoStructura clase = buscarClaseTipo(nombreTipo);
+                    if (clase != null) {
+                        return clase;
+                    }
+                }
                 return buscarEstructura(nombreTipo);
         }
     }

@@ -1,0 +1,198 @@
+public class Persona {
+
+    // ===================== ATRIBUTOS =====================
+    // Cubre: todos los tipos primitivos, arreglos, arreglo multidimensional,
+    // arreglo de String y referencia a objeto (debe poder vivir en null)
+    String nombre;
+    int edad;
+    double altura;
+    char inicial;
+    boolean esEstudiante;
+    int[] calificaciones;
+    int[][] matriz;
+    String[] nombres;
+    Persona amigo; // referencia a objeto, apunta a null hasta que se asigne
+
+    // ===================== CONSTRUCTORES =====================
+    // Constructor con parámetros
+    public Persona(String nombreParametro, int edadParametro) {
+        nombre = nombreParametro;
+        edad = edadParametro;
+        altura = 1.75;
+        inicial = 'A';
+        esEstudiante = true;
+        calificaciones = new int[5];
+        matriz = new int[3][3];
+        nombres = new String[3];
+        amigo = null;
+    }
+
+    // Sobrecarga de constructor (sin parámetros)
+    public Persona() {
+        nombre = "Sin nombre";
+        edad = 0;
+    }
+
+    // ===================== MÉTODOS =====================
+    // Método sin retorno
+    public void saludar() {
+        println("¡Hola! Me llamo " + nombre + " y tengo " + edad + " años.");
+    }
+
+    // Método con retorno de tipo primitivo
+    public int calcularAnioNacimiento(int anioActual) {
+        return anioActual - edad;
+    }
+
+    // Método recursivo (soporte de recursividad)
+    public int factorial(int n) {
+        if (n <= 1) {
+            return 1;
+        } else {
+            return n * factorial(n - 1);
+        }
+    }
+
+    // Método sobrecargado (mismo nombre, distinta firma)
+    public int factorial(int n, int acumulador) {
+        if (n <= 1) {
+            return acumulador;
+        }
+        return factorial(n - 1, n * acumulador);
+    }
+
+    // Método que ejercita expresiones, operadores y estructuras de control
+    public void probarTodo() {
+
+        // ---------- Expresiones aritméticas ----------
+        int a = 10;
+        int b = 3;
+        int suma = a + b;              // 13
+        int resta = a - b;             // 7
+        int multiplicacion = a * b;    // 30
+        int division = a / b;          // 3
+        int modulo = a % b;            // 1
+
+        // ---------- Incremento y decremento ----------
+        a++;
+        b--;
+
+        // ---------- Expresiones lógicas y relacionales ----------
+        boolean esMayor = (a > b);
+        boolean esIgual = (a == 10);
+        boolean esDiferente = (a != b);
+        boolean esMenor = (b < a);
+        boolean condicionAnd = (a > 5 && b < 10);
+        boolean condicionOr = (a > 20 || b > 0);
+        boolean condicionNot = !(a == 10);
+
+        // ---------- Asignación compuesta ----------
+        int x = 5;
+        x += 3;  // 8
+        x -= 2;  // 6
+        x *= 2;  // 12
+
+        // ---------- Ternario ----------
+        String mensaje = (edad >= 18) ? "Es mayor de edad" : "Es menor de edad";
+        int esParOImpar = (x % 2 == 0) ? 0 : 1;
+
+        // ---------- Uso de arreglos (1D, 2D, inicialización, acceso) ----------
+        int[] numeros = {10, 20, 30, 40, 50};
+        int resultado;
+        resultado = numeros[0] + numeros[1];   // 30
+        numeros[2] = numeros[0] * 3;           // 30
+        matriz[0][0] = 1;
+        matriz[1][1] = numeros[0];
+
+        // ---------- Uso de objetos ----------
+        Persona p1 = new Persona("Carlos", 25);
+        Persona p2 = new Persona("Ana", 30);
+        int sumaEdades;
+        String mensajeClasificacion;
+        sumaEdades = p1.edad + p2.edad;                     // 55
+        mensajeClasificacion = (p1.edad >= 18) ? "Adulto" : "Menor";
+        int anioNac = 2026 - p1.calcularAnioNacimiento(2026);
+
+        // Comparación de objeto contra null
+        if (amigo == null) {
+            print("Es posible comparar si un objeto es nulo");
+        }
+
+        // ---------- Estructuras condicionales ----------
+        if (edad > 18) {
+            println("Es mayor de edad.");
+        } else if (edad == 18) {
+            println("¡Justo tiene 18 años!");
+        } else {
+            println("Es menor de edad.");
+        }
+
+        // Sin llaves (una sola instrucción)
+        if (edad >= 18)
+            println("Es adulto");
+        else
+            println("Es menor");
+
+        // If anidado sin llaves ("código sucio" pero válido según especificación)
+        if (esEstudiante == true)
+            if (esMayor == false)
+                print("hola");
+
+        // Switch con fallthrough intencional y default
+        int opcion = 2;
+        switch (opcion) {
+            case 1:
+                println("Opción 1 seleccionada");
+                break;
+            case 2:
+                println("Opción 2 seleccionada");
+                // Sin break: cae intencionalmente al default
+            default:
+                println("Opción no válida");
+                break;
+        }
+
+        // ---------- Ciclos ----------
+        // For estándar con continue y break
+        for (int i = 0; i < 5; i++) {
+            println("Iteración número: " + i);
+            if (i == 2) {
+                continue;
+            }
+            if (i == 4) {
+                break;
+            }
+        }
+
+        // For infinito (todos los parámetros opcionales)
+        for ( ; ; ) {
+            println("Este bucle nunca termina a menos que use un break...");
+            break;
+        }
+
+        // While con continue
+        int contador = 0;
+        while (contador < 3) {
+            println("Contador while: " + contador);
+            contador++;
+            if (contador == 1) {
+                continue;
+            }
+        }
+
+        // Do-while con break
+        int intentos = 0;
+        do {
+            intentos++;
+            println("Intento número: " + intentos);
+            if (intentos == 2) {
+                break;
+            }
+        } while (intentos < 5);
+
+        // ---------- Funciones especiales ----------
+        println("Imprimo con un salto de linea");
+        print("Imprimo sin un salto de linea");
+        readln();
+    }
+}

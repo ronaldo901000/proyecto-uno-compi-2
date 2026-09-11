@@ -37,7 +37,7 @@ export class ArbolTrabajoService {
 
     public crearNuevoProyecto(nombreProyecto: string): void {
         const raizProyecto: NodoArchivo = {
-            ruta: '/',
+            ruta: nombreProyecto.trim(),
             nombre: nombreProyecto.trim(),
             tipo: 'carpeta',
             hijos: [],

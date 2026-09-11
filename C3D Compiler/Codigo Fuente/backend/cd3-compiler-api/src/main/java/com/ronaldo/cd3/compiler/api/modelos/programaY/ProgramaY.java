@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.programaY;
 
+import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.estructurasY.EstructuraDef;
@@ -15,6 +16,7 @@ public class ProgramaY extends Nodo implements Verificable {
 
     private List<EstructuraDef> estructuras;
     private List<FuncionDef> funciones;
+    private ArchivoDTO archivo;
 
     public ProgramaY(List<EstructuraDef> estructuras, List<FuncionDef> funciones, int fila, int columna) {
         super(fila, columna);
@@ -55,6 +57,14 @@ public class ProgramaY extends Nodo implements Verificable {
                 funcion.verificarSemantica(contexto);
             }
         }
+    }
+
+    public ArchivoDTO getArchivo() {
+        return archivo;
+    }
+
+    public void setArchivo(ArchivoDTO archivo) {
+        this.archivo = archivo;
     }
 
 }

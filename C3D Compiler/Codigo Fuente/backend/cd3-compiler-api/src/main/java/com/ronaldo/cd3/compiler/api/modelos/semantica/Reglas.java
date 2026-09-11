@@ -43,7 +43,9 @@ public class Reglas {
             ctx.agregarError(fila, columna, null, "Falta el tipo de dato");
             return ctx.getTablaTipos().getError();
         }
-        Tipo tipo = ctx.getTablaTipos().resolver(nombreTipo);
+        Tipo tipo = ctx.esLenguajeZ()
+                ? ctx.getTablaTipos().resolverZ(nombreTipo)
+                : ctx.getTablaTipos().resolver(nombreTipo);
         if (tipo == null) {
             ctx.agregarError(fila, columna, nombreTipo, "Tipo desconocido: " + nombreTipo);
             return ctx.getTablaTipos().getError();
@@ -136,6 +138,9 @@ public class Reglas {
         if (a.esNumerico() && b.esNumerico()) {
             return true;
         }
+        if (a.getTipoDato() == TipoDato.NULO || b.getTipoDato() == TipoDato.NULO) {
+            return a.esPorReferencia() && b.esPorReferencia();
+        }
         return false;
     }
 
@@ -163,6 +168,8 @@ public class Reglas {
                 return ctx.getTablaTipos().getDecimal();
             case ENTERO:
                 return ctx.getTablaTipos().getEntero();
+            case NULO:
+                return ctx.getTablaTipos().getNulo();
             default:
                 break;
         }
@@ -292,6 +299,14 @@ public class Reglas {
             List<Tipo> tiposArgumentos) {
         List<SimboloFuncion> sobrecargas = ctx.getAmbito().buscarSobrecargas(nombre);
         if (sobrecargas.isEmpty()) {
+            return null;
+        }
+        return resolverEntre(sobrecargas, tiposArgumentos);
+    }
+
+    public SimboloFuncion resolverEntre(List<SimboloFuncion> sobrecargas,
+            List<Tipo> tiposArgumentos) {
+        if (sobrecargas == null || sobrecargas.isEmpty()) {
             return null;
         }
         int numeroArgumentos = (tiposArgumentos != null) ? tiposArgumentos.size() : 0;

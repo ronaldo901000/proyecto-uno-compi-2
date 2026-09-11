@@ -1,0 +1,265 @@
+public class Persona{
+    String nombre;
+    int edad;
+
+    public Persona(String a, int b){
+        Gente g = new Gente();
+        saludar();
+    }
+    public void saludar(){
+    
+    }
+    
+    public int calcularAnioNacimiento(int a){
+        return 56;
+    }
+}
+
+public class PruebaZetariano {
+
+/*
+*/
+    // ==========================================
+    // 1. ATRIBUTOS DE LA CLASE (Declaraciones con y sin inicialización)
+    // ==========================================
+    int contadorGlobal;
+    double factorEscalar = 2.5;
+    char simboloEstado;
+    boolean activo = true;
+    String nombreProceso = "Test Master";
+
+    // Arreglos de una y dos dimensiones (Matrices)
+    int[] notas = new int[5];
+
+    String[] etiquetas = {"L1", "L2", "L3"};
+    int[][] matrizDatos = new int[3][3];
+
+
+
+    // Instancias de clases (Objetos)
+    Persona usuarioPrincipal;
+    Persona auxiliar = new Persona("Zetariano Alpha", 100);
+
+    // ==========================================
+    // 2. CONSTRUCTORES Y SOBRECARGA
+    // ==========================================
+    public PruebaZetariano() {
+        matrizDatos [1][1] = matrizDatos[0][0];
+        notas[3]=45;
+        contadorGlobal = 0;
+        simboloEstado = 'Z';
+        usuarioPrincipal = null; // Validación de nulo
+    }
+
+    public PruebaZetariano(int inicio, String nombre) {
+        contadorGlobal = inicio;
+        nombreProceso = nombre;
+        simboloEstado = 'A';
+        usuarioPrincipal = new Persona(nombre, 20);
+    }
+
+    // ==========================================
+    // 3. MÉTODOS Y RECURSIVIDAD
+    // ==========================================
+    
+    // Método recursivo para cálculo de factorial
+    public int calcularFactorial(int n) {
+        if (n <= 1) {
+            return 1;
+        }
+        return n * calcularFactorial(n - 1);
+    }
+
+    // Método que procesa expresiones aritméticas, lógicas y asignaciones abreviadas
+    public double procesarMatematica(int a, double b) {
+        // Asignaciones compuestas / abreviadas
+        a += 5;
+        a -= 2;
+        a *= 3;
+
+        // Expresiones aritméticas completas (suma, resta, multiplicación, división, módulo)
+        double resultado = (a * b) + (10 / 2) - (a % 3);
+
+        // Operadores de incremento / decremento
+        a++;
+        b--;
+
+        return resultado;
+    }
+
+    // Método para prueba de expresiones lógicas, relacionales y operador ternario
+    public boolean evaluarCondiciones(int x, int y, boolean flag) {
+        // Expresión lógica compleja con AND, OR y NOT
+        boolean condAnd = (x > 0) && (y < 100);
+        boolean condOr = (x == 10) || (y != 50);
+        boolean condNot = !(x <= y);
+
+        boolean evaluacionCompleta = (condAnd && condOr) || condNot;
+
+        // Operador Ternario anidado
+        String mensaje = (x > y) ? "X es mayor" : (x == y) ? "Son iguales" : "Y es mayor";
+        int valorTernario = (evaluacionCompleta && flag) ? 1 : 0;
+
+        println("Resultado Ternario: " + mensaje + " | Código: " + valorTernario);
+        if(x > 0){
+            return evaluacionCompleta;
+        }else{
+            return false;
+        }
+        
+    }
+
+    // ==========================================
+    // 4. ESTRUCTURA DE CONTROL: CONDICIONALES
+    // ==========================================
+    public void probarCondicionales(int opcion, Persona p) {
+        // if - else if - else
+        if (opcion > 10) {
+            println("Opción alta");
+        } else if (opcion == 10) {
+            println("Opción justa en 10");
+        } else {
+            println("Opción baja");
+        }
+
+        // Condicional sin llaves (Instrucción única)
+        if (opcion >= 0)
+            println("Número no negativo (sin llaves)");
+        else
+            println("Número negativo (sin llaves)");
+
+        // Anidamiento de condicionales "código sucio" pero válido
+        if (activo == true)
+            if (opcion != 0)
+                print("Anidado correcto");
+
+        // Condicional evaluando objeto nulo
+        if (p == null) {
+            print("Es posible comparar si un objeto es nulo");
+        } else {
+            println("El objeto existe y pertenece a: " + p.nombre);
+        }
+
+        // Switch / Case con caída (sin break) y opción default
+        switch (opcion) {
+            case 1:
+                println("Seleccionó Caso 1");
+                break;
+            case 2:
+                println("Seleccionó Caso 2 - Ejecución en cascada hacia default");
+                // Intencionalmente sin break para validar fall-through
+            default:
+                println("Opción por defecto o ejecutada desde Caso 2");
+                break;
+        }
+    }
+
+    // ==========================================
+    // 5. CICLOS / BUCLES (for, while, do-while, infierno/for infinitos)
+    // ==========================================
+    public void probarCiclos() {
+        // Bucle FOR estándar con break y continue
+        for (int i = 0; i < 5; i++) {
+            println("Iteración número: " + i);
+            if (i == 2) {
+                continue; // Salta a la siguiente iteración
+            }
+            if (i == 4) {
+                break; // Rompe el ciclo
+            }
+        }
+
+        // FOR con parámetros opcionales (Ciclo Infinito rompiéndose por condición)
+        for (;;) {
+            println("Este bucle nunca termina a menos que use un break...");
+            break;
+        }
+
+        // Bucle WHILE
+        int contador = 0;
+        while (contador < 3) {
+            println("Contador while: " + contador);
+            contador++;
+            if (contador == 1) {
+                continue;
+            }
+        }
+
+        // Bucle DO-WHILE
+        int intentos = 0;
+        do {
+            intentos++;
+            println("Intento número: " + intentos);
+            if (intentos == 2) {
+                break;
+            }
+        } while (intentos < 5);
+    }
+
+    // ==========================================
+    // 6. MANEJO DE ARREGLOS Y MATRICES
+    // ==========================================
+    public void manipularEstructurasDatos() {
+        // Asignación y lectura en arreglos
+        notas[0] = 85;
+        notas[1] = 90;
+        notas[2] = notas[0] + 10;
+
+        // Carga y recorrido de Matriz bidimensional
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                matrizDatos[i][j] = (i + 1) * (j + 1);
+            }
+        }
+
+        // Lectura de matriz
+        int valorEspecifico = matrizDatos[1][2];
+        println("Valor en la posición [1][2] de la matriz: " + valorEspecifico);
+    }
+
+    // ==========================================
+    // 7. FUNCIONES ESPECIALES DE E/S Y CONCATENACIÓN
+    // ==========================================
+    public void probarEntradaSalidaYConcatenacion() {
+        println("Imprimo con un salto de linea");
+        print("Imprimo sin un salto de linea");
+
+        // Concatenaciones complejas mezclando cadenas, números y expresiones
+        String reporte = "Estado: " + activo + " | Factor: " + (factorEscalar * 2) + " | Simbolo: " + simboloEstado;
+        println(reporte);
+
+        // Uso del lector de consola
+        println("Ingrese una entrada por consola:");
+        String lectura = readln();
+        println("Texto ingresado: " + lectura);
+    }
+
+    // ==========================================
+    // 8. ACCESO Y LLAMADAS A MIEMBROS Y MÉTODOS DE OTROS OBJETOS
+    // ==========================================
+    public void ejecutarPruebasIntegradas() {
+        // Instanciación directa de otra clase
+        Persona p1 = new Persona("Carlos", 25);
+        Persona p2 = new Persona("Ana", 30);
+
+        // Operaciones accediendo a miembros públicos del objeto
+        int sumaEdades = p1.edad + p2.edad;
+        String clasificacion = (p1.edad >= 18) ? "Adulto" : "Menor";
+
+        // Llamada a métodos del objeto instanciado y concatenación del retorno
+        p1.saludar();
+        int anioNac = p1.calcularAnioNacimiento(2026);
+        println("Año de nacimiento de " + p1.nombre + ": " + anioNac + " (Clasificación: " + clasificacion + ")");
+
+        // Arreglos de Objetos
+        Persona[] equipo = new Persona[2];
+        equipo[0] = p1;
+        equipo[1] = p2;
+
+        Persona [][] matriz = new Persona[5][10];
+
+        matriz [0][9] = new Persona("Ronaldo",24);
+        matriz [0][8] = p1;
+        println("Miembro 0 del equipo: " + equipo[0].nombre);
+    }
+}

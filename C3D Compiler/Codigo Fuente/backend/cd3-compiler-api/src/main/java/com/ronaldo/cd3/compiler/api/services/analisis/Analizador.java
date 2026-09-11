@@ -42,7 +42,7 @@ public class Analizador {
 
         //Analisis semantico de los archivos .y
         AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico();
-        analizadorSemantico.analizar(respuestaDTO.getProgramasY(), respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
+        analizadorSemantico.analizar(analizadorY.getProgramas(), respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
 
         //Analisis de archivos .z
         AnalizadorLenguajeZ analizadorZ = new AnalizadorLenguajeZ();
@@ -57,7 +57,7 @@ public class Analizador {
         }
         AnalizadorLenguajePig analizadorPig = new AnalizadorLenguajePig();
         analizadorPig.analizar(archivosPig, respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
-        
+
         return respuestaDTO;
 
     }

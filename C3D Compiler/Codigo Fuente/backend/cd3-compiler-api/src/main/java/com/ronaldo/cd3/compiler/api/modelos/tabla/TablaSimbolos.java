@@ -3,6 +3,7 @@ package com.ronaldo.cd3.compiler.api.modelos.tabla;
 import com.ronaldo.cd3.compiler.api.enums.RolSimbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.Simbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloEstructura;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
@@ -69,7 +70,17 @@ public class TablaSimbolos {
             }
             return claveFuncion(funcion.getId(), tipos);
         }
+        if (simbolo instanceof SimboloClase) {
+            return claveClase(simbolo.getId());
+        }
+        if (simbolo instanceof SimboloEstructura) {
+            return "estructura:" + simbolo.getId();
+        }
         return simbolo.getId();
+    }
+
+    public static String claveClase(String nombreClase) {
+        return "clase:" + nombreClase;
     }
 
     public static String claveFuncion(String nombre, List<Tipo> tipos) {
@@ -108,6 +119,18 @@ public class TablaSimbolos {
             }
         }
         return false;
+    }
+
+    public Simbolo buscarOtroSimbolo(String id) {
+        for (TablaSimbolos ambito = this; ambito != null; ambito = ambito.padre) {
+            for (Simbolo simbolo : ambito.simbolos.values()) {
+                if (!(simbolo instanceof SimboloFuncion)
+                        && simbolo.getId().equals(id)) {
+                    return simbolo;
+                }
+            }
+        }
+        return null;
     }
 
     public boolean existeFuncion(String nombre, List<Tipo> tiposParametros) {
@@ -230,7 +253,7 @@ public class TablaSimbolos {
 
     public SimboloClase buscarClase(String nombreClase) {
         for (TablaSimbolos ambito = this; ambito != null; ambito = ambito.padre) {
-            Simbolo simbolo = ambito.simbolos.get(nombreClase);
+            Simbolo simbolo = ambito.simbolos.get(claveClase(nombreClase));
             if (simbolo instanceof SimboloClase) {
                 return (SimboloClase) simbolo;
             }

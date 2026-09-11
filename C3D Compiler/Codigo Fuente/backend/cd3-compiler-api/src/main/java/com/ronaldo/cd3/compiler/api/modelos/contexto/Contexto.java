@@ -2,6 +2,7 @@ package com.ronaldo.cd3.compiler.api.modelos.contexto;
 
 import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorSemantico;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.ArrayList;
@@ -19,16 +20,25 @@ public class Contexto {
     private List<ErrorSemantico> errores;
     private String ruta;
     private Tipo tipoRetornoActual;
+    private SimboloClase claseActual;
     private int contadorCiclos;
     private boolean dentroSwitch;
+    private boolean esLenguajeZ;
 
     public Contexto(TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
-            TablaSimbolos ambito, String ruta) {
+            TablaSimbolos ambito) {
         this.tablaTipos = tablaTipos;
         this.tablaSimbolos = tablaSimbolos;
         this.ambito = (ambito != null) ? ambito : tablaSimbolos;
         this.errores = new ArrayList<>();
-        this.ruta = ruta;
+    }
+
+    public void setEsLenguajeZ(boolean esLenguajeZ) {
+        this.esLenguajeZ = esLenguajeZ;
+    }
+
+    public boolean esLenguajeZ() {
+        return esLenguajeZ;
     }
 
     public TablaTipos getTablaTipos() {
@@ -91,6 +101,14 @@ public class Contexto {
 
     public void setTipoRetornoActual(Tipo tipoRetornoActual) {
         this.tipoRetornoActual = tipoRetornoActual;
+    }
+
+    public SimboloClase getClaseActual() {
+        return claseActual;
+    }
+
+    public void setClaseActual(SimboloClase claseActual) {
+        this.claseActual = claseActual;
     }
 
     public void entrarCiclo() {

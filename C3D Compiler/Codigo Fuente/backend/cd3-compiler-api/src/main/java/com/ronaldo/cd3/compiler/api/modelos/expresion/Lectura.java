@@ -9,8 +9,19 @@ import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
  */
 public class Lectura extends Expresion implements Instruccion {
 
+    private Expresion argumento;
+
     public Lectura(int fila, int columna) {
         super(fila, columna);
+    }
+
+    public Lectura(Expresion argumento, int fila, int columna) {
+        super(fila, columna);
+        this.argumento = argumento;
+    }
+
+    public Expresion getArgumento() {
+        return argumento;
     }
 
     @Override

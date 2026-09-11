@@ -46,7 +46,7 @@ public class EstructuraDef extends Nodo implements Verificable {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
-        if (contexto.getTablaSimbolos().existeLocal(nombre)) {
+        if (contexto.getTablaSimbolos().buscarOtroSimbolo(nombre) != null) {
             contexto.agregarError(fila, columna, nombre,
                     "La estructura '" + nombre + "' ya fue declarada");
             return;
