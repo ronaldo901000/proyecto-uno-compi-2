@@ -29,7 +29,17 @@ public class DeclaracionVariable extends Declaracion {
         if (valorInicial != null) {
             valorInicial.verificarSemantica(contexto);
         }
-        Tipo tipo = reglas.resolverTipo(contexto, tipoDato, fila, columna);
+        Tipo tipo;
+        if (tipoDato != null) {
+            tipo = reglas.resolverTipo(contexto, tipoDato, fila, columna);
+        } else {
+            tipo = (valorInicial != null) ? valorInicial.getTipo() : null;
+            if (tipo == null) {
+                contexto.agregarError(fila, columna, id,
+                        "No se puede inferir el tipo de '" + id + "'");
+                return;
+            }
+        }
         if (reglas.esError(tipo)) {
             return;
         }

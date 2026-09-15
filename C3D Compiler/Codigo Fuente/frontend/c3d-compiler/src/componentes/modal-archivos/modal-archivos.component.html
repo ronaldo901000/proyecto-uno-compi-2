@@ -1,10 +1,14 @@
 <div class="modal-overlay" (click)="onCerrar()">
   <div class="modal-box" (click)="$event.stopPropagation()">
     
-    <!-- Header -->
+    <!-- Header Dinámico -->
     <div class="modal-header-custom d-flex justify-content-between align-items-center mb-3">
       <span class="fw-bold">
-        {{ tipo === "archivo" ? "Nuevo archivo" : "Nueva carpeta" }}
+        @if (modo === 'crear') {
+          {{ tipo === 'archivo' ? 'Nuevo archivo' : 'Nueva carpeta' }}
+        } @else {
+          {{ tipo === 'archivo' ? 'Renombrar archivo' : 'Renombrar carpeta' }}
+        }
       </span>
       <button class="btn btn-sm btn-outline-secondary" (click)="onCerrar()">
         <i class="bi bi-x"></i>
@@ -13,19 +17,21 @@
 
     <!-- Input de Nombre -->
     <div class="mb-3">
-      <label class="form-label small text-secondary">Nombre</label>
+      <label class="form-label small text-secondary">
+        {{ modo === 'crear' ? 'Nombre' : 'Nuevo Nombre' }}
+      </label>
       <input
         type="text"
         class="form-control form-control-sm bg-dark text-light border-secondary"
         [(ngModel)]="nombre"
         [placeholder]="tipo === 'archivo' ? 'miArchivo' : 'miCarpeta'"
-        (keydown.enter)="onConfirmar()"
+        (keydown.enter)="nombre.trim() ? onConfirmar() : null"
         autofocus
       />
     </div>
 
     <!-- Selección de Extensión (Solo si es tipo archivo) -->
-    @if (tipo === "archivo") {
+    @if (tipo === 'archivo' && modo !='editar') {
       <div class="mb-3">
         <label class="form-label small text-secondary">Extensión</label>
         <div class="d-flex gap-2">
@@ -44,20 +50,22 @@
       </div>
     }
 
+    <!-- Mensaje de Error -->
     @if (error) {
-      <div class="alert alert-danger py-1 px-2 small mb-5">{{ error }}</div>
+      <div class="alert alert-danger py-1 px-2 small mb-3">{{ error }}</div>
     }
 
+    <!-- Botones de Acción -->
     <div class="d-flex gap-2 justify-content-end">
       <button class="btn btn-sm btn-outline-secondary" (click)="onCerrar()">
         Cancelar
       </button>
       <button 
         class="btn btn-sm btn-primary" 
-        [disabled]="!nombre.trim()" 
+        [disabled]="!nombre || !nombre.trim()" 
         (click)="onConfirmar()"
       >
-        Crear
+        {{ modo === 'crear' ? 'Crear' : 'Guardar' }}
       </button>
     </div>
 

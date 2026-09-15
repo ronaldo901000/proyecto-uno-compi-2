@@ -5,13 +5,16 @@ import com.ronaldo.cd3.compiler.api.dtos.entrada.EntradaDTO;
 import com.ronaldo.cd3.compiler.api.dtos.respuesta.RespuestaDTO;
 import com.ronaldo.cd3.compiler.api.exceptions.EntradaException;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
+import com.ronaldo.cd3.compiler.api.modelos.programaPig.ProgramaPig;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.services.analisis.pig.AnalizadorLenguajePig;
-import com.ronaldo.cd3.compiler.api.services.analisis.semantico.AnalizadorSemantico;
+import com.ronaldo.cd3.compiler.api.services.analisis.semantico.AnalizadorSemanticoPig;
+import com.ronaldo.cd3.compiler.api.services.analisis.semantico.AnalizadorSemanticoY;
 import com.ronaldo.cd3.compiler.api.services.analisis.y.AnalizadorLenguajeY;
 import com.ronaldo.cd3.compiler.api.services.analisis.z.AnalizadorLenguajeZ;
 import com.ronaldo.cd3.compiler.api.services.separador.archivos.SeparadorArchivos;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +44,7 @@ public class Analizador {
         analizadorY.analizar(archivosY, respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
 
         //Analisis semantico de los archivos .y
-        AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico();
+        AnalizadorSemanticoY analizadorSemantico = new AnalizadorSemanticoY();
         analizadorSemantico.analizar(analizadorY.getProgramas(), respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
 
         //Analisis de archivos .z
@@ -57,6 +60,18 @@ public class Analizador {
         }
         AnalizadorLenguajePig analizadorPig = new AnalizadorLenguajePig();
         analizadorPig.analizar(archivosPig, respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
+
+        //Analisis semantico del archivo .pig
+        List<ArchivoDTO> archivosImportables = new ArrayList<>();
+        archivosImportables.addAll(archivosY);
+        archivosImportables.addAll(archivosZ);
+
+        AnalizadorSemanticoPig analizadorSemanticoPig = new AnalizadorSemanticoPig();
+        for (ProgramaPig programa : analizadorPig.getProgramas()) {
+            analizadorSemanticoPig.analizar(programa, respuestaDTO,
+                    tablaTipos, tablaSimbolos, cuartetas,
+                    archivosImportables, analizadorY.getProgramas());
+        }
 
         return respuestaDTO;
 

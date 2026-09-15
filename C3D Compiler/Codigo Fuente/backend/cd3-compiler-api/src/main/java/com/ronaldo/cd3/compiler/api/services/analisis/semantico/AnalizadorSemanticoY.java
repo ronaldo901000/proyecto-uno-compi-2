@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author ronaldo
  */
-public class AnalizadorSemantico {
+public class AnalizadorSemanticoY {
 
     public void analizar(List<ProgramaY> programas, RespuestaDTO respuesta,
             TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,

@@ -44,7 +44,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.subSeleccion = this.arbolService.nodoSeleccionado$.subscribe(nodo => {
       if (nodo && nodo.tipo === 'archivo') {
         this.archivoActivo = nodo;
-        this.contenido = nodo.contenido || '';
+        this.contenido = this.arbolService.getContenidoArchivo(nodo.ruta) ?? '';
         this.actualizarLineas();
 
         const cacheado = this.cacheColoreado.get(nodo);
@@ -116,7 +116,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.actualizarLineas();
 
     if (this.archivoActivo) {
-      this.archivoActivo.contenido = this.contenido;
+      this.arbolService.actualizarContenidoArchivo(this.archivoActivo.ruta, this.contenido);
     }
 
     this.mostrarTextoPlano();
@@ -148,11 +148,10 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.contenido = this.indentacionService.normalizar(contenidoConTab);
       this.actualizarLineas();
       if (this.archivoActivo) {
-        this.archivoActivo.contenido = this.contenido;
+        this.arbolService.actualizarContenidoArchivo(this.archivoActivo.ruta, this.contenido);
       }
 
       this.mostrarTextoPlano();
-
       const nuevoCursor = start + 4;
 
       setTimeout(() => {

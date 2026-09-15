@@ -26,7 +26,7 @@ declaracion
 
 // Declaraciones de variables, estructuras u objetos
 dec_var
-    : ESTO ID DOS_P? (tipo_dato | ID)? expresion?
+    : ESTO ID (DOS_P (tipo_dato | ID)? expresion)?
     | SERIES ID CORCH_A expresion CORCH_C DOS_P? (tipo_dato | ID)? expresion?
     ;
 
@@ -73,14 +73,10 @@ instruccion
     | fun_lectura
     | fun_lectura_guardado
     | fun_impresion
-    | retorno
     | PERGE P_COMA?
     | INTERRUMPE P_COMA?
     ;
 
-retorno
-    : REDDERE expresion? P_COMA?
-    ;
 
 /** CONDICIONALES **/
 
@@ -186,7 +182,6 @@ LITTERA:    'littera';
 BOOL:       'bool';
 VERUM:      'verum';
 FALSUS:     'falsus';
-STRUCTURA:  'structura';
 SI:         'si';
 FINIS:      'finis';
 FINIS_MAY:  'FINIS';
@@ -196,9 +191,6 @@ FACERE:     'facere';
 PER:        'per';
 PERGE:      'perge';
 INTERRUMPE: 'interrumpe';
-ACTIO:      'actio';
-RATIO:      'ratio';
-REDDERE:    'reddere';
 NON:        'non';
 
 /** Simbolos **/

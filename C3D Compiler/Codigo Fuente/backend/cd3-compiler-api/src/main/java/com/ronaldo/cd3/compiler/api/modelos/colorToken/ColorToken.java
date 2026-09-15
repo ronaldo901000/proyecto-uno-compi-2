@@ -242,63 +242,63 @@ public class ColorToken {
         switch (this.id) {
 
             // PALABRAS RESERVADAS Y ESTRUCTURA DE CONTROL
-            case 1:
-            case 2:
-            case 3:
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 18:
-            case 19:
-            case 20:
-            case 21:
-            case 22:
-            case 23:
-            case 24:
-            case 25:
-            case 26:
+            case 1:  // VARIABILES
+            case 2:  // MAIOR
+            case 3:  // IMPORT
+            case 14: // SI
+            case 15: // FINIS
+            case 16: // FINIS_MAY
+            case 17: // ALITER
+            case 18: // DUM
+            case 19: // FACERE
+            case 20: // PER
+            case 21: // PERGE
+            case 22: // INTERRUMPE
+            case 23: // NON
                 this.color = "#C678DD";
                 break;
 
             // DECLARACION Y TIPOS DE DATOS
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
+            case 4:  // ESTO
+            case 5:  // SERIES
+            case 6:  // NOVUS
+            case 7:  // NUMERUS
+            case 8:  // DECIMALIS
+            case 9:  // TEXTUM
+            case 10: // LITTERA
+            case 11: // BOOL
                 this.color = "#56B6C2";
                 break;
 
-            // LITERALES NUMERICOS Y BOOLEANOS
-            case 12:
-            case 13:
-            case 54:
-            case 55:
+            // LITERALES NUMÉRICOS Y BOOLEANOS
+            case 12: // VERUM
+            case 13: // FALSUS
+            case 50: // ENTERO
+            case 51: // DECIMAL
                 this.color = "#D19A66";
                 break;
 
             // CADENAS Y CARACTERES
-            case 56:
-            case 57:
+            case 52: // CADENA
+            case 53: // CHAR
                 this.color = "#98C379";
                 break;
 
             // IDENTIFICADORES
-            case 53:
+            case 49: 
                 this.color = "#61AFEF";
                 break;
 
             // COMENTARIOS
-            case 58:
-            case 59:
+            case 54: 
+            case 55: 
                 this.color = "#5C6370";
                 break;
 
-            // SIMBOLOS Y OPERADORES
+            // SÍMBOLOS Y OPERADORES 
+            case 24:
+            case 25:
+            case 26:
             case 27:
             case 28:
             case 29:
@@ -321,14 +321,10 @@ public class ColorToken {
             case 46:
             case 47:
             case 48:
-            case 49:
-            case 50:
-            case 51:
-            case 52:
                 this.color = "#E5C07B";
                 break;
 
-            // ERROR O TOKEN DESCONOCIDO
+            // ESPACIOS EN BLANCO (WS), ERRORES O TOKEN DESCONOCIDO
             default:
                 this.color = "#E06C75";
                 break;

@@ -6,25 +6,37 @@
 
     <div class="d-flex gap-1">
       @if (arbolService.hayProyecto$ | async) {
-        <!-- Botones visibles únicamente cuando SÍ hay proyecto -->
+        <!-- Nuevo archivo -->
         <button
           class="btn btn-sm btn-outline-secondary"
           title="Nuevo archivo"
           [disabled]="!(arbolService.puedeCrearEnSeleccion$ | async)"
-          (click)="abrirModal('archivo')"
+          (click)="abrirModalCrear('archivo')"
         >
           <i class="bi bi-file-earmark-plus"></i>
         </button>
 
+        <!-- Nueva carpeta -->
         <button
           class="btn btn-sm btn-outline-secondary"
           title="Nueva carpeta"
           [disabled]="!(arbolService.puedeCrearEnSeleccion$ | async)"
-          (click)="abrirModal('carpeta')"
+          (click)="abrirModalCrear('carpeta')"
         >
           <i class="bi bi-folder-plus"></i>
         </button>
 
+        <!-- Editar Nombre (Se deshabilita si no hay un elemento seleccionado) -->
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          title="Editar Nombre"
+          [disabled]="!(arbolService.puedeEliminarSeleccion$ | async)"
+          (click)="abrirModalEdicion()"
+        >
+          <i class="bi bi-pencil"></i>
+        </button>
+
+        <!-- Eliminar -->
         <button
           class="btn btn-sm btn-outline-danger"
           title="Eliminar"
@@ -34,10 +46,37 @@
           <i class="bi bi-trash"></i>
         </button>
       } @else {
-        <!-- Boton visible unicamente cuando NO hay proyecto -->
+        <!-- Input oculto para seleccionar carpeta desde el explorador del sistema -->
+        <input
+          #inputProyecto
+          type="file"
+          webkitdirectory
+          directory
+          multiple
+          style="display: none"
+          (change)="onCarpetaSeleccionada($event)"
+        />
+
+        <!-- Abrir Proyecto -->
+        <button
+          class="btn btn-sm btn-warning"
+          title="Abrir Proyecto"
+          [disabled]="importando"
+          (click)="inputProyecto.click()"
+        >
+          @if (importando) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Importando...
+          } @else {
+            <i class="bi bi-folder2-open me-1"></i> Abrir Proyecto
+          }
+        </button>
+
+        <!-- Crear Proyecto -->
         <button
           class="btn btn-sm btn-primary"
           title="Crear Proyecto"
+          [disabled]="importando"
           (click)="abrirModalProyecto()"
         >
           <i class="bi bi-folder-plus me-1"></i> Nuevo Proyecto
@@ -63,9 +102,12 @@
 <!-- Modal para Archivos / Carpetas -->
 @if (modalVisible) {
   <app-modal-archivos
+    [modo]="modoAccion"
     [tipo]="tipoCreacion"
     [error]="modalError"
+    [nombreInicial]="nombreInicial"
+    [extensionInicial]="extensionInicial"
     (cerrar)="cerrarModal()"
-    (confirmar)="procesarCreacion($event)"
+    (confirmar)="procesarAccionModal($event)"
   />
 }

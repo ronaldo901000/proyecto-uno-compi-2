@@ -2,12 +2,15 @@ import { Injectable } from "@angular/core";
 import { Archivo } from "../../modelos/archivo/Archivo";
 import { Entrada } from "../../modelos/entrada/Entrada";
 import { NodoArchivo } from "../../modelos/nodo-archivo/NodoArchivo";
+import { ArbolTrabajoService } from "../arbol-trabajo/ArbolTrabajo.service";
 
 @Injectable({
     providedIn: 'root'
 })
 
 export class CreacionEntradaService {
+
+    constructor(private arbolTrabajoService: ArbolTrabajoService) { }
 
     public crearArchivos(raiz: NodoArchivo): Entrada {
         const listaArchivos: Archivo[] = [];
@@ -28,7 +31,7 @@ export class CreacionEntradaService {
             acumulador.push({
                 ruta: nodo.ruta,
                 nombre: nodo.nombre,
-                contenido: nodo.contenido ?? '',
+                contenido: this.arbolTrabajoService.getContenidoArchivo(nodo.ruta) ?? '',
                 extension: nodo.extension ?? ''
             });
         }

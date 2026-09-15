@@ -24,6 +24,14 @@ public abstract class Ciclo extends Nodo implements Instruccion {
         return instruccionesInternas;
     }
 
+    public Expresion getCondicion() {
+        return condicion;
+    }
+
+    public void setCondicion(Expresion condicion) {
+        this.condicion = condicion;
+    }
+
     public void setInstruccionesInternas(List<Instruccion> instruccionesInternas) {
         this.instruccionesInternas = instruccionesInternas;
     }
