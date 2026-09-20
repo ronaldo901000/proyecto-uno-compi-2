@@ -1,8 +1,10 @@
 package com.ronaldo.cd3.compiler.api.modelos.expresion;
 
+import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.ArrayList;
@@ -70,6 +72,18 @@ public class NewArreglo extends Expresion implements Verificable {
             return;
         }
         setTipo(contexto.getTablaTipos().getArreglo(base, tamanos));
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        String temporalPtr = cuartetas.nuevoTemporal();
+        String dirDimension = null;
+        if (dimensiones != null && !dimensiones.isEmpty()) {
+            dirDimension = dimensiones.get(0).generarCuartetas(contexto, cuartetas);
+        }
+        cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, tipoBase,
+                dirDimension, temporalPtr, fila, columna);
+        return temporalPtr;
     }
 
 }

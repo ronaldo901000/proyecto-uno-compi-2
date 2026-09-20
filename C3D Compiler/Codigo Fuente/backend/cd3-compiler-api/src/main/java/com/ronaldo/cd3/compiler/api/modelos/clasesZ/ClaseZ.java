@@ -2,7 +2,9 @@ package com.ronaldo.cd3.compiler.api.modelos.clasesZ;
 
 import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
+import com.ronaldo.cd3.compiler.api.interfaces.Generable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
 import com.ronaldo.cd3.compiler.api.modelos.funcionesY.Parametro;
@@ -30,7 +32,7 @@ import java.util.Map;
  *
  * @author ronaldo
  */
-public class ClaseZ extends Nodo implements Verificable {
+public class ClaseZ extends Nodo implements Verificable, Generable {
 
     private final Reglas reglas = new Reglas();
     private String nombre;
@@ -114,6 +116,7 @@ public class ClaseZ extends Nodo implements Verificable {
         }
 
         SimboloClase simboloClase = new SimboloClase(nombre, tamanoHeap);
+        simboloClase.setTipo(tipoClase);
         for (SimboloVariable atributo : atributosSimbolo.values()) {
             simboloClase.agregarAtributo(atributo);
         }
@@ -126,6 +129,7 @@ public class ClaseZ extends Nodo implements Verificable {
                 SimboloFuncion simboloMetodo = simboloDeMetodo(contexto, metodo,
                         "met_" + nombre + "_" + metodo.getNombre() + "_" + contador);
                 if (simboloMetodo != null) {
+                    metodo.setSimbolo(simboloMetodo);
                     String clave = claveDeFirma(metodo.getNombre(), simboloMetodo);
                     if (firmasMetodos.containsKey(clave)) {
                         contexto.agregarError(metodo.getFila(), metodo.getColumna(),
@@ -154,6 +158,7 @@ public class ClaseZ extends Nodo implements Verificable {
                 SimboloFuncion simboloConstructor = simboloDeMetodo(
                         contexto, constructor, "ctor_" + nombre + "_" + contador);
                 if (simboloConstructor != null) {
+                    constructor.setSimbolo(simboloConstructor);
                     String clave = claveDeFirma(nombre, simboloConstructor);
                     if (firmasConstructores.containsKey(clave)) {
                         contexto.agregarError(constructor.getFila(), constructor.getColumna(),
@@ -328,6 +333,38 @@ public class ClaseZ extends Nodo implements Verificable {
             return contexto.getTablaTipos().getArreglo(base, tamanos);
         }
         return contexto.getTablaTipos().getError();
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        if (simboloClase == null) {
+            return null;
+        }
+        SimboloClase claseAnterior = contexto.getClaseActual();
+        contexto.setClaseActual(simboloClase);
+        if (simboloClase.getAtributos() != null) {
+            for (SimboloVariable atributo : simboloClase.getAtributos().values()) {
+                cuartetas.registrarTipoVariable(atributo.getId(), atributo.getTipo());
+                if (atributo.getTipo() instanceof com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) {
+                    cuartetas.registrarTipoArreglo(atributo.getId(),
+                            ((com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) atributo.getTipo()).getTipoBase());
+                }
+            }
+        }
+        if (metodos != null) {
+            for (FuncionDef metodo : metodos) {
+                metodo.generarCuartetas(contexto, cuartetas);
+            }
+        }
+        if (constructores != null) {
+            for (ConstructorZ constructor : constructores) {
+                if (constructor.getNombre().equals(nombre)) {
+                    constructor.generarCuartetas(contexto, cuartetas);
+                }
+            }
+        }
+        contexto.setClaseActual(claseAnterior);
+        return null;
     }
 
     public ArchivoDTO getArchivo() {

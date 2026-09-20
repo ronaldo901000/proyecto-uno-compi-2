@@ -6,7 +6,7 @@ import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
  *
  * @author ronaldo
  */
-public class Cuarteta {
+ public class Cuarteta {
 
     private OperadorCuarteta operador;
     private String arg1;
@@ -24,7 +24,7 @@ public class Cuarteta {
         this.fila = fila;
         this.columna = columna;
     }
-
+    
     public OperadorCuarteta getOperador() {
         return operador;
     }

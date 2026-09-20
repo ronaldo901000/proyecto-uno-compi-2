@@ -1,6 +1,8 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion;
 
+import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
@@ -50,6 +52,16 @@ public class Retorno extends Nodo implements Instruccion {
             contexto.agregarError(fila, columna, "retornar",
                     "El valor retornado es incompatible con el tipo de retorno " + tipoRetorno);
         }
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        String dirExpresion = (expresion != null)
+                ? expresion.generarCuartetas(contexto, cuartetas)
+                : null;
+        cuartetas.agregar(OperadorCuarteta.RETORNO, dirExpresion,
+                null, null, fila, columna);
+        return null;
     }
 
 }

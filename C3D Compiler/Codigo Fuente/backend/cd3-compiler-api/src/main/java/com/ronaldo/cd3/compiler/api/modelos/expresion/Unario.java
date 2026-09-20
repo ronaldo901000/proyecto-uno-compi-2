@@ -1,8 +1,10 @@
 package com.ronaldo.cd3.compiler.api.modelos.expresion;
 
 import com.ronaldo.cd3.compiler.api.enums.Operador;
+import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
@@ -62,6 +64,23 @@ public class Unario extends Expresion implements Verificable {
         contexto.agregarError(fila, columna, String.valueOf(operador),
                 "Operando de tipo incompatible con el operador unario '" + operador + "'");
         setTipo(tablaTipos.getError());
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        String dirExp = (exp != null)
+                ? exp.generarCuartetas(contexto, cuartetas)
+                : "nulo";
+        if (operador == Operador.POSITIVO_UNARIO) {
+            return dirExp;
+        }
+        OperadorCuarteta operadorC = (operador == Operador.NOT)
+                ? OperadorCuarteta.NOT
+                : OperadorCuarteta.NEGATIVO_UNARIO;
+        String temporal = cuartetas.nuevoTemporal();
+        cuartetas.agregar(operadorC, dirExp, null, temporal, fila, columna);
+        cuartetas.registrarTipoTemporal(temporal, getTipo());
+        return temporal;
     }
 
 }

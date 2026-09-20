@@ -1,7 +1,9 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.declar;
 
+import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
@@ -86,6 +88,21 @@ public class DeclaracionArreglo extends Declaracion {
                 }
             }
         }
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        Tipo base = reglas.resolverTipo(contexto, tipoDato, fila, columna);
+        cuartetas.registrarTipoArreglo(id, base);
+        if (valoresIniciales != null) {
+            for (int i = 0; i < valoresIniciales.size(); i++) {
+                Expresion valor = valoresIniciales.get(i);
+                String dirValor = valor.generarCuartetas(contexto, cuartetas);
+                cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirValor,
+                        null, id + "[" + i + "]", fila, columna);
+            }
+        }
+        return null;
     }
 
 }

@@ -1,7 +1,10 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion;
 
 import com.ronaldo.cd3.compiler.api.enums.Operador;
+import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Direccion;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
@@ -13,6 +16,7 @@ import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 public class Asignacion extends Nodo implements Instruccion {
 
     private final Reglas reglas = new Reglas();
+    private final Direccion direccion = new Direccion();
     private Expresion objetivo;
     private Expresion valor;
     private Operador operador;
@@ -59,6 +63,39 @@ public class Asignacion extends Nodo implements Instruccion {
             contexto.agregarError(fila, columna, null,
                     "Tipos incompatibles en la asignación");
         }
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        if (objetivo == null || valor == null) {
+            return null;
+        }
+        String dirValor = valor.generarCuartetas(contexto, cuartetas);
+        String dirObjetivo = direccion.lvalue(objetivo, contexto, cuartetas);
+        if (operador == Operador.MAS_IGUAL) {
+            temporalAsignacionCompuesta(contexto, cuartetas,
+                    dirObjetivo, dirValor, OperadorCuarteta.SUMA);
+        } else if (operador == Operador.MENOS_IGUAL) {
+            temporalAsignacionCompuesta(contexto, cuartetas,
+                    dirObjetivo, dirValor, OperadorCuarteta.RESTA);
+        } else if (operador == Operador.MULTI_IGUAL) {
+            temporalAsignacionCompuesta(contexto, cuartetas,
+                    dirObjetivo, dirValor, OperadorCuarteta.MULTIPLICACION);
+        } else {
+            cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirValor,
+                    null, dirObjetivo, fila, columna);
+        }
+        return null;
+    }
+
+    private void temporalAsignacionCompuesta(Contexto contexto,
+            ListaCuartetas cuartetas, String dirObjetivo, String dirValor,
+            OperadorCuarteta operadorC) {
+        String temporal = cuartetas.nuevoTemporal();
+        cuartetas.agregar(operadorC, dirObjetivo, dirValor,
+                temporal, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.ASIGNACION, temporal,
+                null, dirObjetivo, fila, columna);
     }
 
 }

@@ -2,6 +2,7 @@ package com.ronaldo.cd3.compiler.api.modelos.expresion;
 
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.Simbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
@@ -41,6 +42,11 @@ public class AccesoVariable extends Expresion implements Verificable {
         contexto.agregarError(fila, columna, id,
                 "La variable '" + id + "' no ha sido declarada");
         setTipo(contexto.getTablaTipos().getError());
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        return id;
     }
 
 }

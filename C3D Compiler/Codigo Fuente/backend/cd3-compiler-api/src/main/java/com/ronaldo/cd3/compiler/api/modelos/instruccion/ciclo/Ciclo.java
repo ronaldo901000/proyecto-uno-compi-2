@@ -1,5 +1,7 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.ciclo;
 
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
@@ -34,6 +36,15 @@ public abstract class Ciclo extends Nodo implements Instruccion {
 
     public void setInstruccionesInternas(List<Instruccion> instruccionesInternas) {
         this.instruccionesInternas = instruccionesInternas;
+    }
+
+    protected void generarInstruccionesInternas(Contexto contexto,
+            ListaCuartetas cuartetas) {
+        if (instruccionesInternas != null) {
+            for (Instruccion instruccion : instruccionesInternas) {
+                instruccion.generarCuartetas(contexto, cuartetas);
+            }
+        }
     }
 
 }

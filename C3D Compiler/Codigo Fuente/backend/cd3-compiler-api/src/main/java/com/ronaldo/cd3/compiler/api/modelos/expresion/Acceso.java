@@ -2,6 +2,7 @@ package com.ronaldo.cd3.compiler.api.modelos.expresion;
 
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
@@ -50,7 +51,7 @@ public class Acceso extends Expresion implements Verificable {
             contexto.agregarError(fila, columna, atributo,
                     "No se puede acceder al atributo '" + atributo
                     + "' porque el valor es de tipo primitivo '" + tipoObjeto
-                    + "', el cual no tiene atributos");
+                    + "', que no tiene atributos");
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
@@ -60,6 +61,7 @@ public class Acceso extends Expresion implements Verificable {
                 estructura.getNombreStruct());
         if (clase != null) {
             SimboloVariable atributoSimbolo = clase.getAtributo(atributo);
+            
             if (atributoSimbolo == null) {
                 contexto.agregarError(fila, columna, atributo,
                         "El atributo '" + atributo + "' no existe en la clase '"
@@ -67,9 +69,11 @@ public class Acceso extends Expresion implements Verificable {
                 setTipo(contexto.getTablaTipos().getError());
                 return;
             }
+            
             setTipo(atributoSimbolo.getTipo());
             return;
         }
+        
         Tipo tipoAtributo = estructura.getTipoAtributo(atributo);
         if (tipoAtributo == null) {
             contexto.agregarError(fila, columna, atributo,
@@ -79,6 +83,17 @@ public class Acceso extends Expresion implements Verificable {
             return;
         }
         setTipo(tipoAtributo);
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        String base = (objeto != null)
+                ? objeto.generarCuartetas(contexto, cuartetas)
+                : null;
+        String nombreAplanado = (base != null) ? base + "." + atributo : atributo;
+        cuartetas.registrarTipoVariable(nombreAplanado, getTipo());
+        cuartetas.registrarTipoVariable(nombreAplanado.replace('.', '_'), getTipo());
+        return nombreAplanado;
     }
 
 }

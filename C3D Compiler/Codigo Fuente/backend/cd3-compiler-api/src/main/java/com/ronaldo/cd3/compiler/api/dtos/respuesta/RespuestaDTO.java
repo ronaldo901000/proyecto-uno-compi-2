@@ -1,6 +1,7 @@
 package com.ronaldo.cd3.compiler.api.dtos.respuesta;
 
 import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorAnalisis;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Cuarteta;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +13,12 @@ public class RespuestaDTO {
 
     private boolean hayErrores;
     private List<ErrorAnalisis> errores;
+    private List<Cuarteta> cuartetas;
+    private String codigoC;
 
     public RespuestaDTO() {
         this.errores = new ArrayList<>();
+        this.cuartetas = new ArrayList<>();
     }
 
     public void agregarListaErrores(List<ErrorAnalisis> lista) {
@@ -41,6 +45,22 @@ public class RespuestaDTO {
 
     public void setErrores(List<ErrorAnalisis> errores) {
         this.errores = errores;
+    }
+
+    public List<Cuarteta> getCuartetas() {
+        return cuartetas;
+    }
+
+    public void setCuartetas(List<Cuarteta> cuartetas) {
+        this.cuartetas = cuartetas;
+    }
+
+    public String getCodigoC() {
+        return codigoC;
+    }
+
+    public void setCodigoC(String codigoC) {
+        this.codigoC = codigoC;
     }
 
 }

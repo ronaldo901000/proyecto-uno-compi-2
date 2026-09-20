@@ -2,6 +2,8 @@ package com.ronaldo.cd3.compiler.api.modelos.expresion;
 
 import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
+import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 
@@ -17,6 +19,8 @@ public abstract class Expresion extends Nodo implements Verificable {
     public Expresion(int fila, int columna) {
         super(fila, columna);
     }
+
+    public abstract String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas);
 
     public Tipo getTipo() {
         return this.tipo;

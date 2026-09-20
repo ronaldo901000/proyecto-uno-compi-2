@@ -45,6 +45,17 @@ public class AnalizadorSemanticoZ {
             respuesta.setHayErrores(true);
         }
 
+        //Generacion de cuartetas
+        if (!contexto.hayErrores() && !respuesta.isHayErrores()) {
+            Contexto contextoGeneracion = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
+            contextoGeneracion.setEsLenguajeZ(true);
+            for (ClaseZ clase : clases) {
+                contextoGeneracion.setRuta(clase.getArchivo().getRuta());
+                clase.generarCuartetas(contextoGeneracion, cuartetas);
+            }
+            respuesta.setCuartetas(cuartetas.getCuartetas());
+        }
+
     }
 
 }

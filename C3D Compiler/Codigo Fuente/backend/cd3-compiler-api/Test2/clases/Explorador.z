@@ -1,0 +1,63 @@
+public class Explorador {
+    // Atributos publicos
+    String nombre;
+    int energia;
+    boolean activo;
+    double velocidad;
+    int[] registros;
+
+    // CONSTRUCTOR: inicializa el objeto con nombre y energia
+    public Explorador(String nombreParametro, int energiaParametro) {
+        nombre = nombreParametro;
+        energia = energiaParametro;
+        activo = true;
+        velocidad = 0.0;
+        registros = new int[5];
+    }
+
+    // Sobrecarga de constructor: valores por defecto
+    public Explorador() {
+        nombre = "Sin nombre";
+        energia = 100;
+        activo = false;
+        velocidad = 0.0;
+        registros = new int[5];
+    }
+
+    public void activar() {
+        activo = true;
+        println("Explorador " + nombre + " activado.");
+    }
+
+    public int calcularEnergiaRestante(int gastoTotal) {
+        int restante;
+        restante = energia - gastoTotal;
+        if (restante < 0) {
+            restante = 0;
+        }
+        return restante;
+    }
+
+    public void establecerRegistro(int indice, int valor) {
+        registros[indice] = valor;
+    }
+
+    public int obtenerRegistro(int indice) {
+        return registros[indice];
+    }
+
+    public int sumarRegistros() {
+        int suma = 0;
+        int i;
+        for (i = 0; i < 5; i++) {
+            suma = suma + registros[i];
+        }
+        return suma;
+    }
+
+    public boolean esCompatibleCon(Explorador otro) {
+        boolean compatible;
+        compatible = (energia > 50 && otro.energia > 50);
+        return compatible;
+    }
+}

@@ -1,8 +1,10 @@
 package com.ronaldo.cd3.compiler.api.modelos.programaPig;
 
 import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
+import com.ronaldo.cd3.compiler.api.interfaces.Generable;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
@@ -12,7 +14,7 @@ import java.util.List;
  *
  * @author ronaldo
  */
-public class ProgramaPig extends Nodo implements Verificable {
+public class ProgramaPig extends Nodo implements Verificable, Generable {
 
     private List<ImportacionPig> imports;
     private List<Instruccion> declaraciones;
@@ -62,6 +64,21 @@ public class ProgramaPig extends Nodo implements Verificable {
         Reglas reglas = new Reglas();
         reglas.verificarInstrucciones(contexto, declaraciones);
         reglas.verificarInstrucciones(contexto, bloqueMaior);
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        if (declaraciones != null) {
+            for (Instruccion inst : declaraciones) {
+                inst.generarCuartetas(contexto, cuartetas);
+            }
+        }
+        if (bloqueMaior != null) {
+            for (Instruccion inst : bloqueMaior) {
+                inst.generarCuartetas(contexto, cuartetas);
+            }
+        }
+        return null;
     }
 
     public ArchivoDTO getArchivo() {

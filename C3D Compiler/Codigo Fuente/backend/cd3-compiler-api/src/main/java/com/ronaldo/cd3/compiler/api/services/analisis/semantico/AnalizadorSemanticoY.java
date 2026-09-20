@@ -45,6 +45,14 @@ public class AnalizadorSemanticoY {
         }
 
         //INICIO DE LA GENERACION DE LA CUARTETA
+        if (!contexto.hayErrores() && !respuesta.isHayErrores()) {
+            Contexto contextoGeneracion = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
+            for (ProgramaY programa : programas) {
+                contextoGeneracion.setRuta(programa.getArchivo().getRuta());
+                programa.generarCuartetas(contextoGeneracion, cuartetas);
+            }
+            respuesta.setCuartetas(cuartetas.getCuartetas());
+        }
     }
 
 }

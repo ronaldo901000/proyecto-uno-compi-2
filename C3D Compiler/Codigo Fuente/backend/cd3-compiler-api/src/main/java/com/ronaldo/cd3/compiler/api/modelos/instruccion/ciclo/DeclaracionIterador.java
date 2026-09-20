@@ -1,6 +1,8 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.ciclo;
 
+import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
@@ -79,6 +81,17 @@ public class DeclaracionIterador extends Nodo implements Instruccion {
         }
         this.tipo = tipoIterador;
         reglas.registrarVariable(contexto, id, tipoIterador, fila, columna);
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        cuartetas.registrarTipoVariable(id, tipo);
+        if (valorInicial != null) {
+            String dirValor = valorInicial.generarCuartetas(contexto, cuartetas);
+            cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirValor,
+                    null, id, fila, columna);
+        }
+        return null;
     }
 
 }

@@ -14,6 +14,7 @@ import com.ronaldo.cd3.compiler.api.services.analisis.semantico.AnalizadorSemant
 import com.ronaldo.cd3.compiler.api.services.analisis.y.AnalizadorLenguajeY;
 import com.ronaldo.cd3.compiler.api.services.analisis.z.AnalizadorLenguajeZ;
 import com.ronaldo.cd3.compiler.api.services.separador.archivos.SeparadorArchivos;
+import com.ronaldo.cd3.compiler.api.services.traduccion.TraductorC;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,6 +72,17 @@ public class Analizador {
             analizadorSemanticoPig.analizar(programa, respuestaDTO,
                     tablaTipos, tablaSimbolos, cuartetas,
                     archivosImportables, analizadorY.getProgramas());
+        }
+
+        //Traduccion de las cuartetas a codigo C
+        if (!respuestaDTO.isHayErrores()
+                && cuartetas != null
+                && !cuartetas.getCuartetas().isEmpty()) {
+            TraductorC traductorC = new TraductorC();
+            String codigoC = traductorC.traducir(cuartetas);
+            respuestaDTO.setCodigoC(codigoC);
+            System.out.println("=== CODIGO C GENERADO ===");
+            System.out.println(codigoC);
         }
 
         return respuestaDTO;

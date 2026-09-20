@@ -1,8 +1,10 @@
 package com.ronaldo.cd3.compiler.api.modelos.programaY;
 
 import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
+import com.ronaldo.cd3.compiler.api.interfaces.Generable;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.estructurasY.EstructuraDef;
 import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
@@ -12,7 +14,7 @@ import java.util.List;
  *
  * @author ronaldo
  */
-public class ProgramaY extends Nodo implements Verificable {
+public class ProgramaY extends Nodo implements Verificable, Generable {
 
     private List<EstructuraDef> estructuras;
     private List<FuncionDef> funciones;
@@ -57,6 +59,16 @@ public class ProgramaY extends Nodo implements Verificable {
                 funcion.verificarSemantica(contexto);
             }
         }
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        if (funciones != null) {
+            for (FuncionDef funcion : funciones) {
+                funcion.generarCuartetas(contexto, cuartetas);
+            }
+        }
+        return null;
     }
 
     public ArchivoDTO getArchivo() {

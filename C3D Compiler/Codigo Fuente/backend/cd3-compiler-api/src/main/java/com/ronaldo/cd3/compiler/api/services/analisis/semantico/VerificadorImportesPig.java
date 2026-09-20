@@ -135,7 +135,9 @@ public class VerificadorImportesPig {
             return;
         }
         if (inst instanceof Imprimir) {
-            verificarExpresion(contexto, ((Imprimir) inst).getValor(), importados);
+            for (Expresion e : ((Imprimir) inst).getValores()) {
+                verificarExpresion(contexto, e, importados);
+            }
             return;
         }
         if (inst instanceof Lectura) {
@@ -308,7 +310,21 @@ public class VerificadorImportesPig {
         String nombreExt = (extension.isEmpty()) ? nombreBase : nombreBase + "." + extension;
         String ultimo = (importeNorm.contains("/"))
                 ? importeNorm.substring(importeNorm.lastIndexOf('/') + 1) : importeNorm;
-        return ultimo.equals(nombreExt) || ultimo.equals(nombreBase);
+        if (ultimo.equals(nombreExt) || ultimo.equals(nombreBase)) {
+            return true;
+        }
+        return dosUltimos(importeNorm).equals(nombreExt);
+    }
+
+    private String dosUltimos(String importeNorm) {
+        if (importeNorm == null || importeNorm.isEmpty()) {
+            return "";
+        }
+        String[] partes = importeNorm.split("/");
+        if (partes.length < 2) {
+            return "";
+        }
+        return partes[partes.length - 2] + "." + partes[partes.length - 1];
     }
 
     private String normalizar(String ruta) {

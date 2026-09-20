@@ -490,7 +490,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
 
-        Expresion objetivo = (Expresion) visit(ctx.lvalue());
+        Expresion objetivo = visitarLvalue(ctx.lvalue());
         Operador operador = (ctx.MAS_MAS() != null) ? Operador.INCREMENTO : Operador.DECREMENTO;
 
         return new IncrementoDecremento(objetivo, operador, fila, columna);

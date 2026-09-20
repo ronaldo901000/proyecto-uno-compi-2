@@ -1,6 +1,8 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion;
 
+import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 
 /**
@@ -20,6 +22,17 @@ public class Romper extends Nodo implements Instruccion {
                     "La instrucción 'romper/break' solo se puede usar dentro de un ciclo o un switch");
         }
 
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        String etiqueta = contexto.getEtiquetaRomperActual();
+        if (etiqueta == null) {
+            etiqueta = "L_fin";
+        }
+        cuartetas.agregar(OperadorCuarteta.GOTO, etiqueta,
+                null, null, fila, columna);
+        return null;
     }
 
 }

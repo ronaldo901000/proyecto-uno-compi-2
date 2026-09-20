@@ -1,10 +1,13 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.elegir;
 
+import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,6 +55,56 @@ public class InstElegir extends Nodo implements Instruccion {
             }
         }
         contexto.setdentroDeSwitch(false);
+    }
+
+    @Override
+    public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        String etiquetaFin = cuartetas.nuevaEtiqueta();
+        contexto.entrarNivelGeneracionCiclo(etiquetaFin, etiquetaFin);
+
+        String dirValor = (valorEvaluado != null)
+                ? valorEvaluado.generarCuartetas(contexto, cuartetas)
+                : null;
+
+        String etiquetaDefecto = null;
+        List<String> etiquetasCuerpo = new ArrayList<>();
+        if (casos != null) {
+            for (CasoSwitch caso : casos) {
+                if (caso.getValor() != null) {
+                    String dirCaso = caso.getValor()
+                            .generarCuartetas(contexto, cuartetas);
+                    String temporalIgual = cuartetas.nuevoTemporal();
+                    cuartetas.agregar(OperadorCuarteta.IGUAL, dirValor,
+                            dirCaso, temporalIgual, fila, columna);
+                    String etiquetaCuerpo = cuartetas.nuevaEtiqueta();
+                    cuartetas.agregar(OperadorCuarteta.IF_VERDADERO,
+                            temporalIgual, etiquetaCuerpo, null, fila, columna);
+                    etiquetasCuerpo.add(etiquetaCuerpo);
+                } else {
+                    etiquetaDefecto = cuartetas.nuevaEtiqueta();
+                    etiquetasCuerpo.add(etiquetaDefecto);
+                }
+            }
+        }
+        cuartetas.agregar(OperadorCuarteta.GOTO,
+                (etiquetaDefecto != null) ? etiquetaDefecto : etiquetaFin,
+                null, null, fila, columna);
+
+        if (casos != null) {
+            for (int i = 0; i < casos.size(); i++) {
+                CasoSwitch caso = casos.get(i);
+                cuartetas.agregarEtiqueta(etiquetasCuerpo.get(i), fila, columna);
+                if (caso.getIntruccionesInternas() != null) {
+                    for (Instruccion instruccion : caso.getIntruccionesInternas()) {
+                        instruccion.generarCuartetas(contexto, cuartetas);
+                    }
+                }
+            }
+        }
+        cuartetas.agregarEtiqueta(etiquetaFin, fila, columna);
+
+        contexto.salirNivelGeneracionCiclo();
+        return null;
     }
 
 }

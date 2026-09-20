@@ -5,6 +5,7 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class Contexto {
     private int contadorCiclos;
     private boolean dentroSwitch;
     private boolean esLenguajeZ;
+    private final ArrayDeque<String> pilaEtiquetasContinuar = new ArrayDeque<>();
+    private final ArrayDeque<String> pilaEtiquetasRomper = new ArrayDeque<>();
 
     public Contexto(TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
             TablaSimbolos ambito) {
@@ -132,9 +135,27 @@ public class Contexto {
     public void setdentroDeSwitch(boolean estaDentroElegir) {
         this.dentroSwitch = estaDentroElegir;
     }
-    
-    
-    
-    
-    
+
+    public void entrarNivelGeneracionCiclo(String etiquetaContinuar, String etiquetaRomper) {
+        this.pilaEtiquetasContinuar.push(etiquetaContinuar);
+        this.pilaEtiquetasRomper.push(etiquetaRomper);
+    }
+
+    public void salirNivelGeneracionCiclo() {
+        if (!this.pilaEtiquetasContinuar.isEmpty()) {
+            this.pilaEtiquetasContinuar.pop();
+        }
+        if (!this.pilaEtiquetasRomper.isEmpty()) {
+            this.pilaEtiquetasRomper.pop();
+        }
+    }
+
+    public String getEtiquetaContinuarActual() {
+        return this.pilaEtiquetasContinuar.peek();
+    }
+
+    public String getEtiquetaRomperActual() {
+        return this.pilaEtiquetasRomper.peek();
+    }
+
 }

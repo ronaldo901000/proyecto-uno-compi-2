@@ -69,9 +69,9 @@ instruccion
     | operacion_abrev P_COMA?
     | declaracion
     | asignacion P_COMA?
-    | expresion P_COMA? 
     | fun_lectura
     | fun_lectura_guardado
+    | expresion P_COMA? 
     | fun_impresion
     | PERGE P_COMA?
     | INTERRUMPE P_COMA?

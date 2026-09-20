@@ -242,33 +242,13 @@ public class PigVisitor extends LenguajePigBaseVisitor<Visitable> {
 
         Expresion condicion = (Expresion) visit(ctx.expresion());
 
-        List<LenguajePigParser.InstruccionContext> todas = ctx.instruccion();
-        int tamanioRamas = 0;
-        for (LenguajePigParser.Rama_aliterContext rama : ctx.rama_aliter()) {
-            tamanioRamas += rama.instruccion().size();
-        }
-        int tamanioCuerpoSi = todas.size() - tamanioRamas;
-
-        List<Instruccion> cuerpoSi = new ArrayList<>();
-        for (int i = 0; i < tamanioCuerpoSi; i++) {
-            Instruccion inst = (Instruccion) visitInstruccion(todas.get(i));
-            if (inst != null) {
-                cuerpoSi.add(inst);
-            }
-        }
+        List<Instruccion> cuerpoSi = visitarInstrucciones(ctx.instruccion());
 
         List<RamaSino> ramasSino = new ArrayList<>();
         List<Instruccion> instruccionesContrario = null;
 
-        int indice = tamanioCuerpoSi;
         for (LenguajePigParser.Rama_aliterContext rama : ctx.rama_aliter()) {
-            List<Instruccion> cuerpo = new ArrayList<>();
-            for (int j = 0; j < rama.instruccion().size(); j++) {
-                Instruccion inst = (Instruccion) visitInstruccion(todas.get(indice++));
-                if (inst != null) {
-                    cuerpo.add(inst);
-                }
-            }
+            List<Instruccion> cuerpo = visitarInstrucciones(rama.instruccion());
             if (rama.expresion() != null) {
                 int filaRama = rama.start.getLine();
                 int columnaRama = rama.start.getCharPositionInLine();
@@ -384,8 +364,11 @@ public class PigVisitor extends LenguajePigBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
 
-        Expresion valor = (Expresion) visit(ctx.expresion(0));
-        return new Imprimir(valor, true, fila, columna);
+        List<Expresion> valores = new ArrayList<>();
+        for (LenguajePigParser.ExpresionContext e : ctx.expresion()) {
+            valores.add((Expresion) visit(e));
+        }
+        return new Imprimir(valores, true, fila, columna);
     }
 
 
