@@ -102,18 +102,18 @@ public class Ternaria extends Expresion implements Verificable {
      *      goto salida 
      * 
      * salida : 
+     * @param contexto
+     * @param cuartetas
+     * @return 
      */
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
 
-        // temporal resultado
         String temporal = cuartetas.nuevoTemporal();
         cuartetas.registrarTipoTemporal(temporal, this.tipo);
-        
 
         String salida = cuartetas.nuevaEtiqueta();
 
-        //temporal de la condicion
         String t1 = (condicion != null)
                 ? condicion.generarCuartetas(contexto, cuartetas)
                 : null;
@@ -121,74 +121,26 @@ public class Ternaria extends Expresion implements Verificable {
         String et1 = cuartetas.nuevaEtiqueta();
         String et2 = cuartetas.nuevaEtiqueta();
 
-        //cuarteta para  etiqueta verdadero
-        cuartetas.agregar(OperadorCuarteta.IF_VERDADERO,
-                t1,
-                null,
-                et1,
-                fila,
-                columna
-        );
+        cuartetas.agregar(OperadorCuarteta.IF_VERDADERO, t1, null, et1, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.GOTO, null, null, et2, fila, columna);
 
-        //cuarteta goto para verdadero
-        cuartetas.agregar(OperadorCuarteta.GOTO,
-                null,
-                null,
-                et1,
-                fila, columna
-        );
-
-        //cuarteta goto para falso
-        cuartetas.agregar(OperadorCuarteta.GOTO,
-                null,
-                null,
-                et2,
-                fila, columna
-        );
-
-        // cuarteta etiqueta verdadero
-        //id etiqueta exp verdadera
+        // rama verdadera
+        cuartetas.agregarEtiqueta(et1);
         String idVerdadero = (verdadero != null)
                 ? verdadero.generarCuartetas(contexto, cuartetas)
                 : null;
+        cuartetas.agregar(OperadorCuarteta.ASIGNACION, idVerdadero, null, temporal, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.GOTO, null, null, salida, fila, columna);
 
-        cuartetas.agregarEtiqueta(et1);
-
-        //asignacion en et vedadero
-        cuartetas.agregar(OperadorCuarteta.ASIGNACION,
-                idVerdadero,
-                null,
-                temporal,
-                fila,
-                columna
-        );
-
-        cuartetas.agregarEtiqueta(salida);
-
-        // cuarteta etiqueta falsa
-        //id etiqueta exp verdadera
-        String idFalso = (verdadero != null)
+        // rama falsa
+        cuartetas.agregarEtiqueta(et2);
+        String idFalso = (falso != null)
                 ? falso.generarCuartetas(contexto, cuartetas)
                 : null;
+        cuartetas.agregar(OperadorCuarteta.ASIGNACION, idFalso, null, temporal, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.GOTO, null, null, salida, fila, columna);
 
-        // goto falso
-        cuartetas.agregar(OperadorCuarteta.GOTO,
-                null,
-                null,
-                et2,
-                fila, columna);
-
-        //Etiqueta falso
-        cuartetas.agregarEtiqueta(et1);
-
-        //asignacion en etiqueta falso
-        cuartetas.agregar(OperadorCuarteta.ASIGNACION,
-                idFalso,
-                null,
-                temporal,
-                fila, columna
-        );
-
+        //salida
         cuartetas.agregarEtiqueta(salida);
 
         return temporal;
