@@ -17,19 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Traductor de cuartetas (codigo de tres direcciones) a codigo C.
- *
- * Modelo de memoria simplificado:
- * - Los tipos se toman en cuenta (int, double, char, char*, int para bool).
- * - El tipo de cada temporal y variable se registra durante la generacion de
- *   cuartetas (ListaCuartetas), por lo que aca se respeta la precedencia de
- *   tipos (por ejemplo double + int -> double).
- * - Los temporales tN son variables (globales o locales segun su unidad).
- * - Los arreglos se declaran como T nombre[tamaño].
- * - Los objetos (PUNTERO_INICIO) se asignan como bloques de memoria.
- * - Los atributos objeto.atributo se aplanan a una variable global objeto_atributo.
- * - Las funciones se generan sin parametros (los valores se comparten via globales).
- *
  * @author ronaldo
  */
 public class TraductorC {
@@ -42,6 +29,7 @@ public class TraductorC {
     private final Map<String, Tipo> punterosArreglo = new LinkedHashMap<>();
     private final Map<String, TipoStructura> estructuras = new LinkedHashMap<>();
     private final Map<String, String> arreglosNuevos = new LinkedHashMap<>();
+    private final Map<String, TipoStructura> punterosEstructura = new LinkedHashMap<>();
     private boolean usaConcatenacion = false;
     private boolean usaComparacionCadenas = false;
 
@@ -84,15 +72,23 @@ public class TraductorC {
             }
             sb.append(tipoCDeVariable(nombre)).append(' ').append(nombre).append(";\n");
         }
+
         for (Map.Entry<String, Integer> arreglo : arreglos.entrySet()) {
             sb.append(tipoCDeElementoArreglo(arreglo.getKey()))
                     .append(' ').append(arreglo.getKey())
                     .append('[').append(arreglo.getValue()).append("];\n");
         }
+
         for (Map.Entry<String, Tipo> puntero : punterosArreglo.entrySet()) {
             sb.append(tipoCDe(puntero.getValue())).append("* ")
                     .append(puntero.getKey()).append(";\n");
         }
+
+        for (Map.Entry<String, TipoStructura> puntero : punterosEstructura.entrySet()) {
+            sb.append(puntero.getValue().tipoC()).append("* ")
+                    .append(puntero.getKey()).append(";\n");
+        }
+
         for (String puntero : temporalesPuntero) {
             sb.append("double* ").append(puntero).append(";\n");
         }
@@ -212,7 +208,15 @@ public class TraductorC {
                 registrarPunteroArreglo(operando);
                 return;
             }
-            if (!(tipoDeVariableDe(operando) instanceof TipoArreglo)
+
+            Tipo tipoVariable = tipoDeVariableDe(operando);
+            if (esObjetoPorReferencia(tipoVariable)) {
+                punterosEstructura.put(operando, (TipoStructura) tipoVariable);
+                escalares.remove(operando);
+                return;
+            }
+
+            if (!(tipoVariable instanceof TipoArreglo)
                     && !arreglos.containsKey(operando)) {
                 escalares.add(operando);
             }
@@ -248,6 +252,9 @@ public class TraductorC {
             String tipoElemento = tipoCValido(arreglo.getTipoBase())
                     ? arreglo.getTipoBase().tipoC() : "int";
             return tipoElemento + " " + nombre + "[" + primerTamaño(arreglo) + "]";
+        }
+        if (esObjetoPorReferencia(tipo)) {
+            return tipo.tipoC() + "* " + nombre;
         }
         if (!tipoCValido(tipo)) {
             return null;
@@ -778,6 +785,9 @@ public class TraductorC {
         if (tipo instanceof TipoArreglo) {
             return tipo.tipoC();
         }
+        if (esObjetoPorReferencia(tipo)) {
+            return tipo.tipoC() + "*";
+        }
         if (tipo instanceof TipoStructura) {
             return tipo.tipoC();
         }
@@ -872,5 +882,10 @@ public class TraductorC {
 
     private void linea(StringBuilder sb, String texto) {
         sb.append("\t").append(texto).append('\n');
+    }
+
+    private boolean esObjetoPorReferencia(Tipo tipo) {
+        return tipo instanceof TipoStructura
+                && "clase_z".equals(((TipoStructura) tipo).getAmbito());
     }
 }
