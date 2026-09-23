@@ -29,7 +29,7 @@ public class AnalizadorSemanticoZ {
         //Primera pasada: registrar las clases (atributos, metodos y constructores)
         for (ClaseZ clase : clases) {
             contexto.setRuta(clase.getArchivo().getRuta());
-            clase.registrarEstructuraYFirmas(contexto);
+            clase.registrarEstructuraYDeclaraciones(contexto);
         }
 
         //Segunda pasada: verificar los cuerpos de los metodos y constructores

@@ -12,12 +12,12 @@ import java.util.Map;
 public class SimboloEstructura extends Simbolo {
 
     private final Map<String, SimboloVariable> atributos;
-    private int tamanoHeap;
+    private int tamañoHeap;
 
-    public SimboloEstructura(String id, Map<String, SimboloVariable> atributos, int tamanoHeap) {
+    public SimboloEstructura(String id, Map<String, SimboloVariable> atributos, int tamañoHeap) {
         super(id, new TipoStructura(id), RolSimbolo.TIPO_ESTRUCTURA);
         this.atributos = new LinkedHashMap<>(atributos);
-        this.tamanoHeap = tamanoHeap;
+        this.tamañoHeap = tamañoHeap;
     }
 
     public Map<String, SimboloVariable> getAtributos() {
@@ -28,11 +28,11 @@ public class SimboloEstructura extends Simbolo {
         return atributos.get(nombreAtributo);
     }
 
-    public int getTamanoHeap() {
-        return tamanoHeap;
+    public int getTamañoHeap() {
+        return tamañoHeap;
     }
 
-    public void setTamanoHeap(int tamanoHeap) {
-        this.tamanoHeap = tamanoHeap;
+    public void setTamañoHeap(int tamañoHeap) {
+        this.tamañoHeap = tamañoHeap;
     }
 }

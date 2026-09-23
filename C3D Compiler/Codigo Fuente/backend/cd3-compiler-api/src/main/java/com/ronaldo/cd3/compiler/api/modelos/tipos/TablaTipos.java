@@ -159,7 +159,7 @@ public class TablaTipos {
 
     private Tipo resolverConIdioma(String nombreTipo, boolean clasesPrimero) {
         if (nombreTipo == null) {
-            return null;
+            return getNulo();
         }
         switch (nombreTipo.toLowerCase()) {
             case "entero":
@@ -201,4 +201,5 @@ public class TablaTipos {
     public List<Tipo> getTipos() {
         return tipos;
     }
+    
 }

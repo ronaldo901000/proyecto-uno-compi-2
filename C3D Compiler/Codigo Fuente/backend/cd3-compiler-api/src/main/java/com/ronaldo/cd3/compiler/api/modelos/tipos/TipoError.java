@@ -28,7 +28,7 @@ public class TipoError extends Tipo {
     }
 
     @Override
-    public int tamanoBytes() {
+    public int tamañoBytes() {
         return 0;
     }
 

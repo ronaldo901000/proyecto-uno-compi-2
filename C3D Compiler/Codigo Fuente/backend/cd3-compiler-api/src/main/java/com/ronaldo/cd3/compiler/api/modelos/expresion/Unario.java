@@ -68,18 +68,25 @@ public class Unario extends Expresion implements Verificable {
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        
         String dirExp = (exp != null)
                 ? exp.generarCuartetas(contexto, cuartetas)
-                : "nulo";
+                : null;
+        
         if (operador == Operador.POSITIVO_UNARIO) {
             return dirExp;
         }
+        
         OperadorCuarteta operadorC = (operador == Operador.NOT)
                 ? OperadorCuarteta.NOT
                 : OperadorCuarteta.NEGATIVO_UNARIO;
+        
         String temporal = cuartetas.nuevoTemporal();
+        
         cuartetas.agregar(operadorC, dirExp, null, temporal, fila, columna);
-        cuartetas.registrarTipoTemporal(temporal, getTipo());
+        
+        cuartetas.registrarTipoTemporal(temporal, this.tipo);
+        
         return temporal;
     }
 

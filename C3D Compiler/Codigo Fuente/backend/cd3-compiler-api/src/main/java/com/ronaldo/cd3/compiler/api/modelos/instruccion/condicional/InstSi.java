@@ -67,58 +67,127 @@ public class InstSi extends Nodo implements Instruccion {
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
-        String etiquetaFin = cuartetas.nuevaEtiqueta();
-        boolean hayElseIf = ramasSino != null && !ramasSino.isEmpty();
-        boolean haySino = instruccionesInternasContrario != null
-                && !instruccionesInternasContrario.isEmpty();
-        boolean haySiguienteAlSi = hayElseIf || haySino;
 
+        String etiquetaSalida = cuartetas.nuevaEtiqueta();
+
+        boolean hayElseIf = ramasSino != null && !ramasSino.isEmpty();
+
+        boolean hayElse = instruccionesInternasContrario != null
+                && !instruccionesInternasContrario.isEmpty();
+        
+
+        boolean haySiguienteAl_if = hayElseIf || hayElse;
+
+        //pedir generar cuarteta de la condicion
         String dirCondicion = condicion.generarCuartetas(contexto, cuartetas);
-        if (haySiguienteAlSi) {
+
+        if (haySiguienteAl_if) {
+
             String etiquetaSiguiente = cuartetas.nuevaEtiqueta();
-            cuartetas.agregar(OperadorCuarteta.IF_FALSO, dirCondicion,
-                    etiquetaSiguiente, null, fila, columna);
-            generarInstrucciones(contexto, cuartetas, instruccionesInternasSi);
-            cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaFin,
-                    null, null, fila, columna);
-            cuartetas.agregarEtiqueta(etiquetaSiguiente, fila, columna);
+            String etiquetaVerdadero = cuartetas.nuevaEtiqueta();
+
+            cuartetas.agregar(
+                    OperadorCuarteta.IF_VERDADERO,
+                    dirCondicion,
+                    etiquetaVerdadero,
+                    null,
+                    fila, columna
+            );
+
+            cuartetas.agregar(OperadorCuarteta.GOTO,
+                    etiquetaSiguiente,
+                    null,
+                    null,
+                    fila, columna
+            );
+
+            cuartetas.agregarEtiqueta(
+                    etiquetaVerdadero,
+                    fila, columna);
+
+            generarInstrucciones(
+                    contexto,
+                    cuartetas,
+                    instruccionesInternasSi
+            );
+
+            cuartetas.agregar(OperadorCuarteta.GOTO,
+                    etiquetaSalida,
+                    null,
+                    null,
+                    fila, columna
+            );
+
+            cuartetas.agregarEtiqueta(
+                    etiquetaSiguiente,
+                    fila, columna);
+
         } else {
-            cuartetas.agregar(OperadorCuarteta.IF_FALSO, dirCondicion,
-                    etiquetaFin, null, fila, columna);
+
+            String etiquetaVerdadero = cuartetas.nuevaEtiqueta();
+
+            cuartetas.agregar(
+                    OperadorCuarteta.IF_VERDADERO,
+                    dirCondicion,
+                    etiquetaVerdadero,
+                    null,
+                    fila, columna
+            );
+
+            cuartetas.agregar(OperadorCuarteta.GOTO,
+                    etiquetaSalida,
+                    null,
+                    null,
+                    fila, columna
+            );
+
+            cuartetas.agregarEtiqueta(
+                    etiquetaVerdadero,
+                    fila, columna);
+
             generarInstrucciones(contexto, cuartetas, instruccionesInternasSi);
+
         }
 
         if (ramasSino != null) {
+
             for (int i = 0; i < ramasSino.size(); i++) {
+
                 RamaSino rama = ramasSino.get(i);
-                boolean ultimaRama = (i == ramasSino.size() - 1);
-                boolean hayAlgoDespues = (!ultimaRama) || haySino;
+
+
                 String dirCondicionRama = rama.getCondicion()
                         .generarCuartetas(contexto, cuartetas);
-                if (hayAlgoDespues) {
-                    String etiquetaSiguiente = cuartetas.nuevaEtiqueta();
-                    cuartetas.agregar(OperadorCuarteta.IF_FALSO, dirCondicionRama,
-                            etiquetaSiguiente, null, fila, columna);
-                    generarInstrucciones(contexto, cuartetas,
-                            rama.getInstruccionesInternas());
-                    cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaFin,
-                            null, null, fila, columna);
-                    cuartetas.agregarEtiqueta(etiquetaSiguiente, fila, columna);
-                } else {
-                    cuartetas.agregar(OperadorCuarteta.IF_FALSO, dirCondicionRama,
-                            etiquetaFin, null, fila, columna);
-                    generarInstrucciones(contexto, cuartetas,
-                            rama.getInstruccionesInternas());
-                    cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaFin,
-                            null, null, fila, columna);
-                }
+
+                String etiquetaSiguiente = cuartetas.nuevaEtiqueta();
+                String etiquetaVerdadero = cuartetas.nuevaEtiqueta();
+
+                cuartetas.agregar(OperadorCuarteta.IF_VERDADERO, dirCondicionRama,
+                        etiquetaVerdadero, null, fila, columna);
+
+                cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaSiguiente,
+                        null, null, fila, columna);
+
+                cuartetas.agregarEtiqueta(etiquetaVerdadero, fila, columna);
+
+                generarInstrucciones(contexto, cuartetas,
+                        rama.getInstruccionesInternas());
+
+                cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaSalida,
+                        null, null, fila, columna);
+
+                cuartetas.agregarEtiqueta(etiquetaSiguiente, fila, columna);
+
             }
         }
 
         if (instruccionesInternasContrario != null) {
+
             generarInstrucciones(contexto, cuartetas, instruccionesInternasContrario);
+
         }
-        cuartetas.agregarEtiqueta(etiquetaFin, fila, columna);
+
+        cuartetas.agregarEtiqueta(etiquetaSalida, fila, columna);
         return null;
     }
 

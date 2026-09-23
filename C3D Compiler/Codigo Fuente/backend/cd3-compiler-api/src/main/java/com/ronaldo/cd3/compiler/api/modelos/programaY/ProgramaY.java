@@ -36,11 +36,11 @@ public class ProgramaY extends Nodo implements Verificable, Generable {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
-        registrarEstructurasYFirmas(contexto);
+        registrarEstructurasYFunciones(contexto);
         verificarCuerpos(contexto);
     }
 
-    public void registrarEstructurasYFirmas(Contexto contexto) {
+    public void registrarEstructurasYFunciones(Contexto contexto) {
         if (estructuras != null) {
             for (EstructuraDef estructura : estructuras) {
                 estructura.verificarSemantica(contexto);
@@ -48,7 +48,7 @@ public class ProgramaY extends Nodo implements Verificable, Generable {
         }
         if (funciones != null) {
             for (FuncionDef funcion : funciones) {
-                funcion.registrarFirma(contexto);
+                funcion.declararFuncion(contexto);
             }
         }
     }

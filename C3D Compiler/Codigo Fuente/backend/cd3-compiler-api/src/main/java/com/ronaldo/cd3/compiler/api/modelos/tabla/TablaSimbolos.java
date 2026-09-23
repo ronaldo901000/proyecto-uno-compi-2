@@ -264,7 +264,7 @@ public class TablaSimbolos {
     public int asignarPosicion(SimboloVariable variable) {
         int posicion = siguientePosicion;
         variable.setPosicion(posicion);
-        siguientePosicion += variable.getTipo().tamanoBytes();
+        siguientePosicion += variable.getTipo().tamañoBytes();
         return posicion;
     }
 
@@ -286,8 +286,8 @@ public class TablaSimbolos {
         return tamañoAmbito;
     }
 
-    public void setTamañoAmbito(int tamanoAmbito) {
-        this.tamañoAmbito = tamanoAmbito;
+    public void setTamañoAmbito(int tamañoAmbito) {
+        this.tamañoAmbito = tamañoAmbito;
     }
 
     public void cerrarAmbito() {

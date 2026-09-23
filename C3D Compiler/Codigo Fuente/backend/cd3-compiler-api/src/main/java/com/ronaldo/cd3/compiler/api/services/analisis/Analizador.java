@@ -59,6 +59,7 @@ public class Analizador {
                     + "para continuar con el analisis"
             );
         }
+        
         AnalizadorLenguajePig analizadorPig = new AnalizadorLenguajePig();
         analizadorPig.analizar(archivosPig, respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
 
@@ -78,11 +79,12 @@ public class Analizador {
         if (!respuestaDTO.isHayErrores()
                 && cuartetas != null
                 && !cuartetas.getCuartetas().isEmpty()) {
+            
             TraductorC traductorC = new TraductorC();
             String codigoC = traductorC.traducir(cuartetas);
             respuestaDTO.setCodigoC(codigoC);
-            System.out.println("=== CODIGO C GENERADO ===");
             System.out.println(codigoC);
+            
         }
 
         return respuestaDTO;

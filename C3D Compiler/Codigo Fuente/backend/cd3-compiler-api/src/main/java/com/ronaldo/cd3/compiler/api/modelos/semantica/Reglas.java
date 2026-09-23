@@ -306,16 +306,21 @@ public class Reglas {
 
     public SimboloFuncion resolverEntre(List<SimboloFuncion> sobrecargas,
             List<Tipo> tiposArgumentos) {
+        
         if (sobrecargas == null || sobrecargas.isEmpty()) {
             return null;
         }
+        
         int numeroArgumentos = (tiposArgumentos != null) ? tiposArgumentos.size() : 0;
+        
         List<SimboloFuncion> mismaArity = new ArrayList<>();
+        
         for (SimboloFuncion sobrecarga : sobrecargas) {
             if (sobrecarga.getParametros().size() == numeroArgumentos) {
                 mismaArity.add(sobrecarga);
             }
         }
+        
         if (mismaArity.isEmpty()) {
             return null;
         }

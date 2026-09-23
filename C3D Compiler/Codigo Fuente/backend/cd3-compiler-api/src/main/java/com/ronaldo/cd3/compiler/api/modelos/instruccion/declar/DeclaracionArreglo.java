@@ -38,11 +38,11 @@ public class DeclaracionArreglo extends Declaracion {
     @Override
     public void verificarSemantica(Contexto contexto) {
         int numDimensiones = (dimensiones != null) ? dimensiones.size() : 0;
-        List<Integer> tamanos = new ArrayList<>();
+        List<Integer> tamaños = new ArrayList<>();
         for (int i = 0; i < numDimensiones; i++) {
             Expresion dimension = dimensiones.get(i);
             if (dimension == null) {
-                tamanos.add(0);
+                tamaños.add(0);
                 continue;
             }
             dimension.verificarSemantica(contexto);
@@ -51,18 +51,18 @@ public class DeclaracionArreglo extends Declaracion {
                 contexto.agregarError(dimension.getFila(), dimension.getColumna(),
                         id, "La dimensión " + (i + 1) + " del arreglo '"
                         + id + "' debe ser un valor entero");
-                tamanos.add(0);
+                tamaños.add(0);
                 continue;
             }
-            Integer tamano = reglas.constanteEntera(dimension);
-            if (tamano != null && tamano <= 0) {
+            Integer tamaño = reglas.constanteEntera(dimension);
+            if (tamaño != null && tamaño <= 0) {
                 contexto.agregarError(dimension.getFila(), dimension.getColumna(),
                         id, "La dimensión " + (i + 1) + " del arreglo '"
                         + id + "' debe ser mayor que 0");
-                tamanos.add(0);
+                tamaños.add(0);
                 continue;
             }
-            tamanos.add((tamano != null) ? tamano : 0);
+            tamaños.add((tamaño != null) ? tamaño : 0);
         }
         Tipo base = reglas.resolverTipo(contexto, tipoDato, fila, columna);
         if (reglas.esError(base)) {
@@ -74,10 +74,10 @@ public class DeclaracionArreglo extends Declaracion {
             return;
         }
         if (valoresIniciales != null && !valoresIniciales.isEmpty()
-                && numDimensiones == 1 && tamanos.get(0) == 0) {
-            tamanos.set(0, valoresIniciales.size());
+                && numDimensiones == 1 && tamaños.get(0) == 0) {
+            tamaños.set(0, valoresIniciales.size());
         }
-        Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamanos);
+        Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamaños);
         SimboloVariable variable = reglas.registrarVariable(contexto, id, tipoArreglo, fila, columna);
         if (variable != null && valoresIniciales != null) {
             for (Expresion valor : valoresIniciales) {

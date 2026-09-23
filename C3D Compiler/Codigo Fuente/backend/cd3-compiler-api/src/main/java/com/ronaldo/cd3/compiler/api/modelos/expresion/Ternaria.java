@@ -39,6 +39,7 @@ public class Ternaria extends Expresion implements Verificable {
         return falso;
     }
 
+    
     @Override
     public void verificarSemantica(Contexto contexto) {
 

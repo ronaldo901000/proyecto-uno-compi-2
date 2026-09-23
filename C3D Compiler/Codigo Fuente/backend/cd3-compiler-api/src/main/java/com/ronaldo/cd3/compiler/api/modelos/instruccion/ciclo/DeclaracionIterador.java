@@ -75,7 +75,10 @@ public class DeclaracionIterador extends Nodo implements Instruccion {
             tipoIterador = (valorInicial != null) ? valorInicial.getTipo() : null;
             if (tipoIterador == null) {
                 contexto.agregarError(fila, columna, id,
-                        "No se puede inferir el tipo del iterador '" + id + "'");
+                        "No se pudo determinar el tipo de '" + 
+                                id + 
+                                "': especifica su tipo o asígnale un valor inicial"
+                );
                 return;
             }
         }

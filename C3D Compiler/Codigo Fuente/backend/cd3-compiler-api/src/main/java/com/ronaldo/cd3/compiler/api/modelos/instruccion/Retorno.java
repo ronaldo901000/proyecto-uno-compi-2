@@ -56,9 +56,11 @@ public class Retorno extends Nodo implements Instruccion {
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+
         String dirExpresion = (expresion != null)
                 ? expresion.generarCuartetas(contexto, cuartetas)
                 : null;
+
         cuartetas.agregar(OperadorCuarteta.RETORNO, dirExpresion,
                 null, null, fila, columna);
         return null;

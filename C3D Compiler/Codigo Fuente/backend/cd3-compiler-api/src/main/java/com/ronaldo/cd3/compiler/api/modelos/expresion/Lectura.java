@@ -35,13 +35,18 @@ public class Lectura extends Expresion implements Instruccion {
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+
         if (argumento != null) {
+
             String dir = direccion.lvalue(argumento, contexto, cuartetas);
             cuartetas.agregar(OperadorCuarteta.LEER, null, null,
                     dir, fila, columna);
+
         } else {
+
             cuartetas.agregar(OperadorCuarteta.LEER, null, null,
                     null, fila, columna);
+
         }
         return null;
     }

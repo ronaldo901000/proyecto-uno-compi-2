@@ -28,7 +28,7 @@ public class Asignacion extends Nodo implements Instruccion {
         this.valor = valor;
     }
 
-    /*constructor para el lenguaje Z*/
+    /*constructor para el lenguaje Z: == *= -=  */
     public Asignacion(Expresion objetivo, Expresion valor, Operador operador, int fila, int columna) {
         super(fila, columna);
         this.objetivo = objetivo;
@@ -57,11 +57,18 @@ public class Asignacion extends Nodo implements Instruccion {
         }
         if (!reglas.esLvalue(objetivo)) {
             contexto.agregarError(fila, columna, null,
-                    "El objetivo de la asignación no es un valor modificable");
+                    "No se puede asignar un valor aqui: "
+                    + "el lado izquierdo debe ser una variable, "
+                    + "un campo o una posición de arreglo"
+            );
         }
         if (!reglas.esAsignable(objetivo.getTipo(), valor.getTipo())) {
             contexto.agregarError(fila, columna, null,
-                    "Tipos incompatibles en la asignación");
+                    "No se puede asignar un valor de tipo "
+                    + "'" + valor.getTipo()
+                    + "' a una variable de tipo '"
+                    + objetivo.getTipo() + "'"
+            );
         }
     }
 
@@ -72,30 +79,37 @@ public class Asignacion extends Nodo implements Instruccion {
         }
         String dirValor = valor.generarCuartetas(contexto, cuartetas);
         String dirObjetivo = direccion.lvalue(objetivo, contexto, cuartetas);
+
         if (operador == Operador.MAS_IGUAL) {
-            temporalAsignacionCompuesta(contexto, cuartetas,
+            temporalAsignacionCompuesta(cuartetas,
                     dirObjetivo, dirValor, OperadorCuarteta.SUMA);
+
         } else if (operador == Operador.MENOS_IGUAL) {
-            temporalAsignacionCompuesta(contexto, cuartetas,
+            temporalAsignacionCompuesta(cuartetas,
                     dirObjetivo, dirValor, OperadorCuarteta.RESTA);
+
         } else if (operador == Operador.MULTI_IGUAL) {
-            temporalAsignacionCompuesta(contexto, cuartetas,
+            temporalAsignacionCompuesta(cuartetas,
                     dirObjetivo, dirValor, OperadorCuarteta.MULTIPLICACION);
+
         } else {
             cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirValor,
                     null, dirObjetivo, fila, columna);
+
         }
         return null;
     }
 
-    private void temporalAsignacionCompuesta(Contexto contexto,
-            ListaCuartetas cuartetas, String dirObjetivo, String dirValor,
-            OperadorCuarteta operadorC) {
+    private void temporalAsignacionCompuesta(ListaCuartetas cuartetas,
+            String dirObjetivo, String dirValor, OperadorCuarteta operadorC) {
+
         String temporal = cuartetas.nuevoTemporal();
+
         cuartetas.agregar(operadorC, dirObjetivo, dirValor,
                 temporal, fila, columna);
+
         cuartetas.agregar(OperadorCuarteta.ASIGNACION, temporal,
                 null, dirObjetivo, fila, columna);
-    }
 
+    }
 }

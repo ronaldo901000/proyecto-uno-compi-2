@@ -40,49 +40,65 @@ public class NewArreglo extends Expresion implements Verificable {
         int numDimensiones = (dimensiones != null) ? dimensiones.size() : 0;
         if (numDimensiones == 0) {
             contexto.agregarError(fila, columna, tipoBase,
-                    "La creación de arreglos debe indicar al menos una dimensión");
+                    "La creacion de arreglos debe indicar al menos una dimension");
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
-        List<Integer> tamanos = new ArrayList<>();
+        List<Integer> tamaños = new ArrayList<>();
+        
         for (int i = 0; i < numDimensiones; i++) {
+            
             Expresion dimension = dimensiones.get(i);
+            
             dimension.verificarSemantica(contexto);
+            
             if (dimension.getTipo() == null
                     || dimension.getTipo().getTipoDato() != TipoDato.ENTERO) {
+                
                 contexto.agregarError(dimension.getFila(), dimension.getColumna(),
                         tipoBase, "La dimensión " + (i + 1) + " del arreglo "
                         + "creado con 'new' debe ser un valor entero");
-                tamanos.add(0);
+                tamaños.add(0);
                 continue;
+                
             }
-            Integer tamano = reglas.constanteEntera(dimension);
-            if (tamano != null && tamano <= 0) {
+            
+            Integer tamaño = reglas.constanteEntera(dimension);
+            
+            if (tamaño != null && tamaño <= 0) {
                 contexto.agregarError(dimension.getFila(), dimension.getColumna(),
                         tipoBase, "La dimensión " + (i + 1) + " del arreglo "
                         + "creado con 'new' debe ser mayor que 0");
-                tamanos.add(0);
+                tamaños.add(0);
                 continue;
             }
-            tamanos.add((tamano != null) ? tamano : 0);
+            
+            tamaños.add((tamaño != null) ? tamaño : 0);
+            
         }
+        
         Tipo base = reglas.resolverTipo(contexto, tipoBase, fila, columna);
+        
         if (reglas.esError(base)) {
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
-        setTipo(contexto.getTablaTipos().getArreglo(base, tamanos));
+        
+        setTipo(contexto.getTablaTipos().getArreglo(base, tamaños));
     }
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         String temporalPtr = cuartetas.nuevoTemporal();
         String dirDimension = null;
+        
         if (dimensiones != null && !dimensiones.isEmpty()) {
             dirDimension = dimensiones.get(0).generarCuartetas(contexto, cuartetas);
         }
+        
         cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, tipoBase,
                 dirDimension, temporalPtr, fila, columna);
+        
         return temporalPtr;
     }
 

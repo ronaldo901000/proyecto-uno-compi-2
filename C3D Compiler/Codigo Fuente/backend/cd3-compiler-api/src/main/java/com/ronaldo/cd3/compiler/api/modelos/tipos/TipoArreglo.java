@@ -73,8 +73,8 @@ public class TipoArreglo extends Tipo {
     }
 
     @Override
-    public int tamanoBytes() {
-        return this.tipoBase.tamanoBytes() * this.getTotalElementos();
+    public int tamañoBytes() {
+        return this.tipoBase.tamañoBytes() * this.getTotalElementos();
     }
 
     @Override

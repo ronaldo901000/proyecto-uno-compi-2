@@ -42,11 +42,14 @@ public class IncrementoDecremento extends Nodo implements Instruccion {
         objetivo.verificarSemantica(contexto);
         if (!reglas.esLvalue(objetivo)) {
             contexto.agregarError(fila, columna, null,
-                    "El objetivo del incremento/decremento no es un valor modificable");
+                    "No se puede incrementar/decrementar, debe ser una variable, "
+                    + "un campo o una posicion de arreglo");
         }
         if (!reglas.esNumerico(objetivo.getTipo())) {
+            
             contexto.agregarError(fila, columna, String.valueOf(operador),
-                    "No se puede aplicar '" + operador + "' a un valor no numérico");
+                    "El operador '" + operador + "' solo se puede usar con valores numericos, "
+                    + "pero '" + objetivo.getTipo() + "' no es numerico.");
         }
     }
 

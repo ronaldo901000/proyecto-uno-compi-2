@@ -18,10 +18,10 @@ public class SimboloFuncion extends Simbolo {
 
     public SimboloFuncion(String id, Tipo tipoRetorno,
             List<SimboloParametro> parametros,
-            int tamanoFrame, String etiquetaInicio) {
+            int tamañoFrame, String etiquetaInicio) {
         super(id, tipoRetorno, RolSimbolo.FUNCION);
         this.parametros = parametros;
-        this.tamañoFrame = tamanoFrame;
+        this.tamañoFrame = tamañoFrame;
         this.etiquetaInicio = etiquetaInicio;
         this.nombreClase = null;
         this.esMetodo = false;
@@ -43,8 +43,8 @@ public class SimboloFuncion extends Simbolo {
         return tamañoFrame;
     }
 
-    public void setTamañoFrame(int tamanoFrame) {
-        this.tamañoFrame = tamanoFrame;
+    public void setTamañoFrame(int tamañoFrame) {
+        this.tamañoFrame = tamañoFrame;
     }
 
     public String getEtiquetaInicio() {

@@ -25,7 +25,7 @@ import java.util.Set;
  *   cuartetas (ListaCuartetas), por lo que aca se respeta la precedencia de
  *   tipos (por ejemplo double + int -> double).
  * - Los temporales tN son variables (globales o locales segun su unidad).
- * - Los arreglos se declaran como T nombre[tamano].
+ * - Los arreglos se declaran como T nombre[tamaño].
  * - Los objetos (PUNTERO_INICIO) se asignan como bloques de memoria.
  * - Los atributos objeto.atributo se aplanan a una variable global objeto_atributo.
  * - Las funciones se generan sin parametros (los valores se comparten via globales).
@@ -68,7 +68,7 @@ public class TraductorC {
             }
             if (unidad.nombre != null) {
                 sb.append(tipoCDeFuncion(unidad.nombre)).append(' ')
-                        .append(unidad.nombre).append("(void);\n");
+                        .append(unidad.nombre).append("();\n");
             }
         }
         if (!hayMain) {
@@ -201,9 +201,8 @@ public class TraductorC {
             } else if (esNombreDeVariable(base)
                     && !funciones.contains(base)) {
                 Integer maximo = maximoIndiceNumerico(operando);
-                int tamano = (maximo != null) ? (maximo + 1) : 100;
-                arreglos.put(base, Math.max(
-                        arreglos.getOrDefault(base, 0), tamano));
+                int tamaño = (maximo != null) ? (maximo + 1) : 100;
+                arreglos.put(base, Math.max(arreglos.getOrDefault(base, 0), tamaño));
                 escalares.remove(base);
             }
             return;
@@ -248,7 +247,7 @@ public class TraductorC {
             TipoArreglo arreglo = (TipoArreglo) tipo;
             String tipoElemento = tipoCValido(arreglo.getTipoBase())
                     ? arreglo.getTipoBase().tipoC() : "int";
-            return tipoElemento + " " + nombre + "[" + primerTamano(arreglo) + "]";
+            return tipoElemento + " " + nombre + "[" + primerTamaño(arreglo) + "]";
         }
         if (!tipoCValido(tipo)) {
             return null;
@@ -256,7 +255,7 @@ public class TraductorC {
         return tipo.tipoC() + " " + nombre;
     }
 
-    private int primerTamano(TipoArreglo arreglo) {
+    private int primerTamaño(TipoArreglo arreglo) {
         List<Integer> dimensiones = arreglo.getDimensiones();
         if (dimensiones != null && !dimensiones.isEmpty()) {
             Integer ext = dimensiones.get(0);
@@ -476,10 +475,10 @@ public class TraductorC {
         boolean esMain = nombreMain(unidad.nombre);
         boolean esVoid = !esMain && esTipoVoid(cuartetas.tipoDeFuncion(unidad.nombre));
         if (esMain) {
-            sb.append("int main(void) {\n");
+            sb.append("int main() {\n");
         } else {
             sb.append(tipoCDeFuncion(unidad.nombre)).append(' ')
-                    .append(unidad.nombre).append("(void) {\n");
+                    .append(unidad.nombre).append("() {\n");
         }
 
         boolean terminoConRetorno = false;

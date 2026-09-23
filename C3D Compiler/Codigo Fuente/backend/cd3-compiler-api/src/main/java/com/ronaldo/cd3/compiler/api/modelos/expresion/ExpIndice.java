@@ -36,13 +36,17 @@ public class ExpIndice extends Expresion implements Verificable {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
+        
         if (arreglo != null) {
             arreglo.verificarSemantica(contexto);
         }
+        
         if (indice != null) {
             indice.verificarSemantica(contexto);
         }
+        
         Tipo tipoArreglo = (arreglo != null) ? arreglo.getTipo() : null;
+        
         if (reglas.esError(tipoArreglo)) {
             setTipo(contexto.getTablaTipos().getError());
             return;
@@ -53,14 +57,14 @@ public class ExpIndice extends Expresion implements Verificable {
             
             contexto.agregarError(indice.getFila(), indice.getColumna(),
                     indice.getResultado() != null ? indice.getResultado().toString() : null,
-                    "El índice de un arreglo debe ser un valor entero");
+                    "El indice de un arreglo debe ser un valor entero");
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
         
         if (!(tipoArreglo instanceof TipoArreglo)) {
             contexto.agregarError(fila, columna, null,
-                    "Se está indexando un valor que no es un arreglo");
+                    "Se esta indexando un valor que no es un arreglo");
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
@@ -85,17 +89,20 @@ public class ExpIndice extends Expresion implements Verificable {
         if (constante < 0 || constante >= tamaño) {
             contexto.agregarError(indice.getFila(), indice.getColumna(),
                     String.valueOf(constante),
-                    "Índice " + constante + " fuera de los límites del arreglo "
+                    "Indice " + constante + " fuera de los limites del arreglo "
                     + "(se esperaba un valor entre 0 y " + (tamaño - 1) + ")");
         }
     }
 
     private Tipo tipoDeIndice(Contexto contexto, TipoArreglo arregloTipado) {
+        
         if (arregloTipado.getNumeroDimensiones() <= 1) {
             return arregloTipado.getTipoBase();
         }
+        
         List<Integer> restantes = arregloTipado.getDimensiones()
                 .subList(1, arregloTipado.getNumeroDimensiones());
+        
         return contexto.getTablaTipos().getArreglo(arregloTipado.getTipoBase(), restantes);
     }
 
@@ -103,14 +110,19 @@ public class ExpIndice extends Expresion implements Verificable {
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         String dirArreglo = (arreglo != null)
                 ? arreglo.generarCuartetas(contexto, cuartetas)
-                : "nulo";
+                : null;
+        
         String dirIndice = (indice != null)
                 ? indice.generarCuartetas(contexto, cuartetas)
-                : "0";
+                : null;
+        
         String temporal = cuartetas.nuevoTemporal();
+        
         cuartetas.agregar(OperadorCuarteta.ACCESO_INDICE, dirArreglo,
                 dirIndice, temporal, fila, columna);
+        
         cuartetas.registrarTipoTemporal(temporal, getTipo());
+        
         return temporal;
     }
 

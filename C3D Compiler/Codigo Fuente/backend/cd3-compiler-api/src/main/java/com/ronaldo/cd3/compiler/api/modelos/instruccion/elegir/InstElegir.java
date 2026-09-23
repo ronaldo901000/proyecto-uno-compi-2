@@ -57,37 +57,58 @@ public class InstElegir extends Nodo implements Instruccion {
         contexto.setdentroDeSwitch(false);
     }
 
+    /**
+     * 
+     * @param contexto
+     * @param cuartetas
+     * @return 
+     */
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
-        String etiquetaFin = cuartetas.nuevaEtiqueta();
-        contexto.entrarNivelGeneracionCiclo(etiquetaFin, etiquetaFin);
+        
+        String etiquetaSalida = cuartetas.nuevaEtiqueta();
+        
+        contexto.entrarNivelGeneracionCiclo(etiquetaSalida, etiquetaSalida);
 
         String dirValor = (valorEvaluado != null)
                 ? valorEvaluado.generarCuartetas(contexto, cuartetas)
                 : null;
 
         String etiquetaDefecto = null;
+        
         List<String> etiquetasCuerpo = new ArrayList<>();
+        
         if (casos != null) {
+            
             for (CasoSwitch caso : casos) {
                 if (caso.getValor() != null) {
+                    
                     String dirCaso = caso.getValor()
                             .generarCuartetas(contexto, cuartetas);
+                    
                     String temporalIgual = cuartetas.nuevoTemporal();
+                    
                     cuartetas.agregar(OperadorCuarteta.IGUAL, dirValor,
                             dirCaso, temporalIgual, fila, columna);
+                    
                     String etiquetaCuerpo = cuartetas.nuevaEtiqueta();
+                    
                     cuartetas.agregar(OperadorCuarteta.IF_VERDADERO,
                             temporalIgual, etiquetaCuerpo, null, fila, columna);
+                    
                     etiquetasCuerpo.add(etiquetaCuerpo);
+                    
                 } else {
+                    
                     etiquetaDefecto = cuartetas.nuevaEtiqueta();
                     etiquetasCuerpo.add(etiquetaDefecto);
+                    
                 }
             }
+            
         }
         cuartetas.agregar(OperadorCuarteta.GOTO,
-                (etiquetaDefecto != null) ? etiquetaDefecto : etiquetaFin,
+                (etiquetaDefecto != null) ? etiquetaDefecto : etiquetaSalida,
                 null, null, fila, columna);
 
         if (casos != null) {
@@ -101,10 +122,11 @@ public class InstElegir extends Nodo implements Instruccion {
                 }
             }
         }
-        cuartetas.agregarEtiqueta(etiquetaFin, fila, columna);
+        cuartetas.agregarEtiqueta(etiquetaSalida, fila, columna);
 
         contexto.salirNivelGeneracionCiclo();
         return null;
     }
+    
 
 }

@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class TipoStructura extends Tipo {
 
-    private static final int TAMANO_REFERENCIA = 8;
+    private static final int TAMAÑO_REFERENCIA = 8;
 
     private String nombreStruct;
     private String ambito;
@@ -51,16 +51,16 @@ public class TipoStructura extends Tipo {
         return atributos;
     }
 
-    public int getTamanoHeap() {
-        int tamano = 0;
+    public int getTamañoHeap() {
+        int tamaño = 0;
         for (Tipo tipoAtributo : atributos.values()) {
             if (tipoAtributo instanceof TipoStructura) {
-                tamano += TAMANO_REFERENCIA;
+                tamaño += TAMAÑO_REFERENCIA;
             } else {
-                tamano += tipoAtributo.tamanoBytes();
+                tamaño += tipoAtributo.tamañoBytes();
             }
         }
-        return tamano;
+        return tamaño;
     }
 
     @Override
@@ -83,8 +83,8 @@ public class TipoStructura extends Tipo {
     }
 
     @Override
-    public int tamanoBytes() {
-        return getTamanoHeap();
+    public int tamañoBytes() {
+        return getTamañoHeap();
     }
 
     @Override

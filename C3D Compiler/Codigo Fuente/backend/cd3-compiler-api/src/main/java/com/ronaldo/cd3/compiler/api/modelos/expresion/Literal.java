@@ -52,7 +52,7 @@ public class Literal extends Expresion implements Verificable {
         } else if (contenido != null) {
             texto = String.valueOf(contenido);
         } else {
-            texto = "nulo";
+            texto = "";
         }
         cuartetas.registrarCategoria(texto, categoriaDe(resultado, texto));
         return texto;

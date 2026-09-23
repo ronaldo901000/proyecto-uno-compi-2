@@ -71,7 +71,7 @@ public class EstructuraDef extends Nodo implements Verificable {
                 SimboloVariable simboloAtributo = new SimboloVariable(
                         atributo.getNombre(), tipoAtributo, posicion, true);
                 atributosSimbolo.put(atributo.getNombre(), simboloAtributo);
-                posicion += tipoAtributo.tamanoBytes();
+                posicion += tipoAtributo.tamañoBytes();
             }
         }
         contexto.getTablaSimbolos().agregar(

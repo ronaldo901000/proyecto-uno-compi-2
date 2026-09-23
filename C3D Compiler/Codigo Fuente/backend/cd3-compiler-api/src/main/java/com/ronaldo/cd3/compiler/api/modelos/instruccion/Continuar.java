@@ -18,7 +18,7 @@ public class Continuar extends Nodo implements Instruccion {
     @Override
     public void verificarSemantica(Contexto contexto) {
         if (!contexto.dentroCiclo()) {
-            contexto.agregarError(fila, columna, "continuar",
+            contexto.agregarError(fila, columna, "continuar/continue/perge",
                     "La instrucción 'continuar' solo se puede usar dentro de un ciclo");
         }
     }
@@ -26,9 +26,7 @@ public class Continuar extends Nodo implements Instruccion {
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         String etiqueta = contexto.getEtiquetaContinuarActual();
-        if (etiqueta == null) {
-            etiqueta = "L_con";
-        }
+        
         cuartetas.agregar(OperadorCuarteta.GOTO, etiqueta,
                 null, null, fila, columna);
         return null;

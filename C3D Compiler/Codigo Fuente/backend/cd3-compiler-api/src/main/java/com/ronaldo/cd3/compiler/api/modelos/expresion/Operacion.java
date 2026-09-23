@@ -168,6 +168,7 @@ public class Operacion extends Expresion implements Verificable {
         return idTemporal;
     }
 
+    
     private OperadorCuarteta operadorDeCuarteta(Operador operador) {
         switch (operador) {
             case SUMA:

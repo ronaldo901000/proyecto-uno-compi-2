@@ -39,14 +39,20 @@ public class CasoSwitch extends Nodo implements Verificable {
         verificarSemantica(contexto, null);
     }
 
+    
     public void verificarSemantica(Contexto contexto, Tipo tipoEvaluado) {
+        
         if (valor != null) {
+            
             valor.verificarSemantica(contexto);
+            
             if (tipoEvaluado != null && !reglas.comparables(tipoEvaluado, valor.getTipo())) {
                 contexto.agregarError(fila, columna, null,
                         "El valor del caso es incompatible con el valor evaluado");
             }
+            
         }
+        
         TablaSimbolos anterior = contexto.nuevoAmbito("caso");
         reglas.verificarInstrucciones(contexto, intruccionesInternas);
         contexto.restaurarAmbito(anterior);

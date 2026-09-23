@@ -1,5 +1,10 @@
 <div class="page-container d-flex flex-column flex-grow-1">
   <div class="row g-2 flex-grow-1 min-h-0">
+    @if (avisoService.hayError()) {
+      <div class="alert alert-danger text-center " role="alert">
+        {{ avisoService.mensajeError() }}
+      </div>
+    }
     <div class="col-3 d-flex flex-column min-h-0">
       <app-explorador class="flex-grow-1"></app-explorador>
     </div>
@@ -7,5 +12,6 @@
       <app-editor class="flex-grow-1"></app-editor>
     </div>
   </div>
+
   <app-tabla-errores></app-tabla-errores>
 </div>

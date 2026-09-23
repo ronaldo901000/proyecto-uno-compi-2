@@ -44,6 +44,7 @@ public class AccesoVariable extends Expresion implements Verificable {
         setTipo(contexto.getTablaTipos().getError());
     }
 
+    
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         return id;

@@ -37,10 +37,6 @@ public class Imprimir extends Nodo implements Instruccion {
         this.conSaltoLinea = conSaltoLinea;
     }
 
-    public Expresion getValor() {
-        return valores.isEmpty() ? null : valores.get(0);
-    }
-
     public List<Expresion> getValores() {
         return Collections.unmodifiableList(valores);
     }
@@ -65,12 +61,16 @@ public class Imprimir extends Nodo implements Instruccion {
                     null, String.valueOf(conSaltoLinea), fila, columna);
             return null;
         }
-        for (Expresion valor : valores) {
+        for (int i = 0; i < valores.size(); i++) {
+
+            Expresion valor = valores.get(i);
             String dirValor = (valor != null)
                     ? valor.generarCuartetas(contexto, cuartetas)
                     : "\"\"";
+            boolean esUltimo = (i == valores.size() - 1);
+
             cuartetas.agregar(OperadorCuarteta.IMPRIMIR, dirValor,
-                    null, String.valueOf(conSaltoLinea), fila, columna);
+                    null, String.valueOf(esUltimo && conSaltoLinea), fila, columna);
         }
         return null;
     }

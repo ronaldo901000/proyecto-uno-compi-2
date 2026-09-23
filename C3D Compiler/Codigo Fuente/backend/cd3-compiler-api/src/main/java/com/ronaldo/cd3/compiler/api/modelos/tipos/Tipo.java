@@ -20,7 +20,7 @@ public abstract class Tipo {
 
     public abstract boolean esNumerico();
 
-    public abstract int tamanoBytes();
+    public abstract int tamañoBytes();
 
     public abstract String tipoC();
 }

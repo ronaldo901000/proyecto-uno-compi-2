@@ -29,7 +29,7 @@ public class TipoPrimitivo extends Tipo {
     }
 
     @Override
-    public int tamanoBytes() {
+    public int tamañoBytes() {
         switch (this.getTipoDato()) {
             case ENTERO:
                 return 4;

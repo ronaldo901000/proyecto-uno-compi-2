@@ -34,16 +34,27 @@ public class CicloMientras extends Ciclo {
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         String etiquetaInicio = cuartetas.nuevaEtiqueta();
+        String etiquetaCuerpo = cuartetas.nuevaEtiqueta();
         String etiquetaFin = cuartetas.nuevaEtiqueta();
         contexto.entrarNivelGeneracionCiclo(etiquetaInicio, etiquetaFin);
 
         cuartetas.agregarEtiqueta(etiquetaInicio, fila, columna);
+
         String dirCondicion = condicion.generarCuartetas(contexto, cuartetas);
-        cuartetas.agregar(OperadorCuarteta.IF_FALSO, dirCondicion,
-                etiquetaFin, null, fila, columna);
+
+        cuartetas.agregar(OperadorCuarteta.IF_VERDADERO, dirCondicion,
+                etiquetaCuerpo, null, fila, columna);
+
+        cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaFin,
+                null, null, fila, columna);
+
+        cuartetas.agregarEtiqueta(etiquetaCuerpo, fila, columna);
+
         generarInstruccionesInternas(contexto, cuartetas);
+
         cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaInicio,
                 null, null, fila, columna);
+
         cuartetas.agregarEtiqueta(etiquetaFin, fila, columna);
 
         contexto.salirNivelGeneracionCiclo();

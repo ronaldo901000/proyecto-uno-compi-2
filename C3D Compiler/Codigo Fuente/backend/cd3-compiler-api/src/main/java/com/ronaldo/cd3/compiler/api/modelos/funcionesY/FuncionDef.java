@@ -62,11 +62,13 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
         this.simbolo = simbolo;
     }
 
-    public void registrarFirma(Contexto contexto) {
+    public void declararFuncion(Contexto contexto) {
         List<Tipo> tiposParametros = new ArrayList<>();
         List<SimboloParametro> simbolosParametros = new ArrayList<>();
         if (parametros != null) {
+
             for (Parametro parametro : parametros) {
+
                 parametro.verificarSemantica(contexto);
                 tiposParametros.add(parametro.getTipo());
                 simbolosParametros.add(new SimboloParametro(
@@ -75,9 +77,11 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
         }
         if (contexto.getTablaSimbolos().existeOtroSimbolo(nombre)
                 || contexto.getTablaSimbolos().existeFuncion(nombre, tiposParametros)) {
+
             contexto.agregarError(fila, columna, nombre,
                     "Ya existe una función '" + nombre
-                    + "' con la misma firma o un identificador con el mismo nombre");
+                    + "' con el mismo nombre o un identificador con el mismo nombre");
+
             return;
         }
         Tipo tipoRetornoT;
@@ -98,16 +102,22 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
         if (simbolo == null) {
             return;
         }
+
         TablaSimbolos anterior = contexto.nuevoAmbito(nombre);
         int posicion = 0;
+
         for (SimboloParametro parametro : simbolo.getParametros()) {
             parametro.setPosicion(posicion);
-            posicion += parametro.getTipo().tamanoBytes();
+            posicion += parametro.getTipo().tamañoBytes();
             contexto.getAmbito().agregar(parametro);
         }
+
         contexto.getAmbito().setSiguientePosicion(posicion);
+
         Tipo retornoAnterior = contexto.getTipoRetornoActual();
+
         contexto.setTipoRetornoActual(simbolo.getTipoRetorno());
+
         reglas.verificarInstrucciones(contexto, cuerpo);
         simbolo.setTamañoFrame(contexto.getAmbito().getSiguientePosicion());
         contexto.setTipoRetornoActual(retornoAnterior);
@@ -116,7 +126,7 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
         if (!reglas.esVoid(simbolo.getTipoRetorno())
                 && !reglas.siempreRetorna(cuerpo)) {
             contexto.agregarError(fila, columna, nombre,
-                    "La función '" + nombre + "' de tipo " + simbolo.getTipoRetorno()
+                    "La funcion '" + nombre + "' de tipo " + simbolo.getTipoRetorno()
                     + " no retorna en todos sus caminos de ejecución");
         }
     }
@@ -126,17 +136,22 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
         if (simbolo == null) {
             return null;
         }
+        
         cuartetas.registrarTipoFuncion(simbolo.getEtiquetaInicio(),
                 simbolo.getTipoRetorno());
+        
         cuartetas.agregarEtiqueta(simbolo.getEtiquetaInicio(), fila, columna);
+        
         for (SimboloParametro parametro : simbolo.getParametros()) {
             cuartetas.registrarTipoVariable(parametro.getId(), parametro.getTipo());
         }
+        
         if (cuerpo != null) {
             for (Instruccion instruccion : cuerpo) {
                 instruccion.generarCuartetas(contexto, cuartetas);
             }
         }
+        
         cuartetas.agregar(OperadorCuarteta.RETORNO, null,
                 null, null, fila, columna);
         return null;

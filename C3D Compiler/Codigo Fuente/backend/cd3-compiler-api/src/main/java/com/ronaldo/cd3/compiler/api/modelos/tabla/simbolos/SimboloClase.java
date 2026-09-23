@@ -19,14 +19,14 @@ public class SimboloClase extends Simbolo {
     private final Map<String, SimboloFuncion> metodos;
     private final List<SimboloFuncion> constructores;
     private SimboloFuncion constructor;
-    private int tamanoHeap;
+    private int tamañoHeap;
 
-    public SimboloClase(String id, int tamanoHeap) {
+    public SimboloClase(String id, int tamañoHeap) {
         super(id, new TipoStructura(id), RolSimbolo.CLASE);
         this.atributos = new LinkedHashMap<>();
         this.metodos = new LinkedHashMap<>();
         this.constructores = new ArrayList<>();
-        this.tamanoHeap = tamanoHeap;
+        this.tamañoHeap = tamañoHeap;
     }
 
     public Map<String, SimboloVariable> getAtributos() {
@@ -103,11 +103,11 @@ public class SimboloClase extends Simbolo {
         return tipos;
     }
 
-    public int getTamanoHeap() {
-        return tamanoHeap;
+    public int getTamañoHeap() {
+        return tamañoHeap;
     }
 
-    public void setTamanoHeap(int tamanoHeap) {
-        this.tamanoHeap = tamanoHeap;
+    public void setTamañoHeap(int tamañoHeap) {
+        this.tamañoHeap = tamañoHeap;
     }
 }

@@ -34,16 +34,22 @@ public class LiteralStructura extends Expresion implements Verificable {
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
+        
         String temporalPtr = cuartetas.nuevoTemporal();
+        
         cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, null,
                 null, temporalPtr, fila, columna);
+        
         if (valores != null) {
+            
             for (Expresion valor : valores) {
-                String dirValor = valor.generarCuartetas(contexto, cuartetas);
-                cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirValor,
+                String idValor = valor.generarCuartetas(contexto, cuartetas);
+                cuartetas.agregar(OperadorCuarteta.ASIGNACION, idValor,
                         null, temporalPtr, fila, columna);
             }
+            
         }
+        
         return temporalPtr;
     }
 }

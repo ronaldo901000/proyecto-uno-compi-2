@@ -28,7 +28,7 @@ public class AnalizadorSemanticoY {
         //Primera pasada: registrar estructuras y firmas de todas las funciones
         for (ProgramaY programa : programas) {
             contexto.setRuta(programa.getArchivo().getRuta());
-            programa.registrarEstructurasYFirmas(contexto);
+            programa.registrarEstructurasYFunciones(contexto);
         }
 
         //Segunda pasada: verificar los cuerpos de las funciones

@@ -90,9 +90,12 @@ public class Acceso extends Expresion implements Verificable {
         String base = (objeto != null)
                 ? objeto.generarCuartetas(contexto, cuartetas)
                 : null;
+        
         String nombreAplanado = (base != null) ? base + "." + atributo : atributo;
+        
         cuartetas.registrarTipoVariable(nombreAplanado, getTipo());
         cuartetas.registrarTipoVariable(nombreAplanado.replace('.', '_'), getTipo());
+        
         return nombreAplanado;
     }
 

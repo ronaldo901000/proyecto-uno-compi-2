@@ -74,11 +74,11 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
-        registrarEstructuraYFirmas(contexto);
+        registrarEstructuraYDeclaraciones(contexto);
         verificarCuerpos(contexto);
     }
 
-    public void registrarEstructuraYFirmas(Contexto contexto) {
+    public void registrarEstructuraYDeclaraciones(Contexto contexto) {
         Simbolo existente = contexto.getTablaSimbolos().buscarOtroSimbolo(nombre);
         if (existente != null && !(existente instanceof SimboloEstructura)) {
             String mensajeIdentificador;
@@ -94,7 +94,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         TipoStructura tipoClase = contexto.getTablaTipos().registrarClase(nombre);
 
         Map<String, SimboloVariable> atributosSimbolo = new LinkedHashMap<>();
-        int tamanoHeap = 0;
+        int tamañoHeap = 0;
         if (atributos != null) {
             for (Declaracion atributo : atributos) {
                 Tipo tipoAtributo = tipoDeAtributo(contexto, atributo);
@@ -109,13 +109,13 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
                 }
                 tipoClase.agregarAtributo(atributo.getId(), tipoAtributo);
                 SimboloVariable simboloAtributo = new SimboloVariable(
-                        atributo.getId(), tipoAtributo, tamanoHeap, true);
+                        atributo.getId(), tipoAtributo, tamañoHeap, true);
                 atributosSimbolo.put(atributo.getId(), simboloAtributo);
-                tamanoHeap += tipoAtributo.tamanoBytes();
+                tamañoHeap += tipoAtributo.tamañoBytes();
             }
         }
 
-        SimboloClase simboloClase = new SimboloClase(nombre, tamanoHeap);
+        SimboloClase simboloClase = new SimboloClase(nombre, tamañoHeap);
         simboloClase.setTipo(tipoClase);
         for (SimboloVariable atributo : atributosSimbolo.values()) {
             simboloClase.agregarAtributo(atributo);
@@ -127,7 +127,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
             for (FuncionDef metodo : metodos) {
                 contador++;
                 SimboloFuncion simboloMetodo = simboloDeMetodo(contexto, metodo,
-                        "met_" + nombre + "_" + metodo.getNombre() + "_" + contador);
+                        "metodo_" + nombre + "_" + metodo.getNombre() + "_" + contador);
                 if (simboloMetodo != null) {
                     metodo.setSimbolo(simboloMetodo);
                     String clave = claveDeFirma(metodo.getNombre(), simboloMetodo);
@@ -156,7 +156,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
                     continue;
                 }
                 SimboloFuncion simboloConstructor = simboloDeMetodo(
-                        contexto, constructor, "ctor_" + nombre + "_" + contador);
+                        contexto, constructor, "constructor_" + nombre + "_" + contador);
                 if (simboloConstructor != null) {
                     constructor.setSimbolo(simboloConstructor);
                     String clave = claveDeFirma(nombre, simboloConstructor);
@@ -237,7 +237,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
                 SimboloParametro simboloParametro = new SimboloParametro(
                         parametro.getNombre(), parametro.getTipo(), posicion);
                 contexto.getAmbito().agregar(simboloParametro);
-                posicion += parametro.getTipo().tamanoBytes();
+                posicion += parametro.getTipo().tamañoBytes();
             }
         }
         contexto.getAmbito().setSiguientePosicion(posicion);
@@ -314,15 +314,15 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         }
         if (atributo instanceof DeclaracionArreglo) {
             DeclaracionArreglo arreglo = (DeclaracionArreglo) atributo;
-            List<Integer> tamanos = new ArrayList<>();
+            List<Integer> tamaños = new ArrayList<>();
             if (arreglo.getDimensiones() != null) {
                 for (Expresion dimension : arreglo.getDimensiones()) {
                     if (dimension == null) {
-                        tamanos.add(0);
+                        tamaños.add(0);
                         continue;
                     }
-                    Integer tamano = reglas.constanteEntera(dimension);
-                    tamanos.add((tamano != null && tamano > 0) ? tamano : 0);
+                    Integer tamaño = reglas.constanteEntera(dimension);
+                    tamaños.add((tamaño != null && tamaño > 0) ? tamaño : 0);
                 }
             }
             Tipo base = reglas.resolverTipo(contexto, arreglo.getTipoDato(),
@@ -330,7 +330,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
             if (reglas.esError(base)) {
                 return base;
             }
-            return contexto.getTablaTipos().getArreglo(base, tamanos);
+            return contexto.getTablaTipos().getArreglo(base, tamaños);
         }
         return contexto.getTablaTipos().getError();
     }

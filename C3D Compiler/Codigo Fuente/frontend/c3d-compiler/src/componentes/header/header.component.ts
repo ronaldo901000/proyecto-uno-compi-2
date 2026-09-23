@@ -4,6 +4,7 @@ import { ArbolTrabajoService } from '../../servicios/arbol-trabajo/ArbolTrabajo.
 import { AnalisisService } from '../../servicios/analisis/Analisis.service';
 import { Respuesta } from '../../modelos/respuesta/Respuesta';
 import { RespuestaCompilacionService } from '../../servicios/respuesta-compilacion/RespuestaCompilacion.service';
+import { AvisoService } from '../../servicios/avisos/aviso.service';
 
 @Component({
     selector: 'app-header',
@@ -17,10 +18,12 @@ export class HeaderComponent {
     private creacionEntradaService: CreacionEntradaService,
     private arbolService: ArbolTrabajoService,
     private analisisService: AnalisisService,
-    private respuestaCompilacionService: RespuestaCompilacionService
+    private respuestaCompilacionService: RespuestaCompilacionService,
+    private avisoService : AvisoService,
   ) { }
 
   public compilar(): void {
+    this.avisoService.limpiarError();
     const raiz = this.arbolService.getArbol();
     if (raiz) {
       const entrada = this.creacionEntradaService.crearArchivos(raiz);
@@ -32,8 +35,7 @@ export class HeaderComponent {
 
         },
         error:(error) =>{
-          alert(error.error);
-          console.log(error.error);
+          this.avisoService.mostrarError(error.error);
         }
       });
     }

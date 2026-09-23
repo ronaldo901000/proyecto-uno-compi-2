@@ -19,7 +19,8 @@ public class Romper extends Nodo implements Instruccion {
     public void verificarSemantica(Contexto contexto) {
         if (!contexto.dentroCiclo() && !contexto.dentroDeSwitch()) {
             contexto.agregarError(fila, columna, "romper",
-                    "La instrucción 'romper/break' solo se puede usar dentro de un ciclo o un switch");
+                    "La instrucción 'romper/break/interrumpe' "
+                    + "solo se puede usar dentro de un ciclo o un switch");
         }
 
     }
@@ -27,9 +28,7 @@ public class Romper extends Nodo implements Instruccion {
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         String etiqueta = contexto.getEtiquetaRomperActual();
-        if (etiqueta == null) {
-            etiqueta = "L_fin";
-        }
+
         cuartetas.agregar(OperadorCuarteta.GOTO, etiqueta,
                 null, null, fila, columna);
         return null;
