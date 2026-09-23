@@ -67,7 +67,8 @@ public class TraductorC {
         sb.append('\n');
 
         for (String nombre : escalares) {
-            if (punterosArreglo.containsKey(nombre)) {
+            if (punterosArreglo.containsKey(nombre)
+                    || punterosEstructura.containsKey(nombre)) {
                 continue;
             }
             sb.append(tipoCDeVariable(nombre)).append(' ').append(nombre).append(";\n");
@@ -291,8 +292,20 @@ public class TraductorC {
             registrarPunteroArreglo(nombre);
             return;
         }
-        if (esNombreDeVariable(nombre)
-                && !(tipoDeVariableDe(nombre) instanceof TipoArreglo)) {
+        if (!esNombreDeVariable(nombre)) {
+            return;
+        }
+        Tipo tipoVariable = tipoDeVariableDe(nombre);
+        if (esObjetoPorReferencia(tipoVariable)) {
+            // Es un objeto heap (ej. instancia Zetariano) accedido con punto
+            // en su forma aplanada (nombre.campo): debe vivir en
+            // punterosEstructura, nunca en escalares, para no declararse dos
+            // veces con tipos/lugares distintos.
+            punterosEstructura.put(nombre, (TipoStructura) tipoVariable);
+            escalares.remove(nombre);
+            return;
+        }
+        if (!(tipoVariable instanceof TipoArreglo)) {
             escalares.add(nombre);
         }
     }
@@ -632,7 +645,10 @@ public class TraductorC {
                         && arreglosNuevos.containsKey(cuarteta.getResultado())) {
                     return null;
                 }
-                return "memset(&" + resultado + ", 0, sizeof(" + resultado + "));";
+                Tipo tipoObjeto = tipoDeOperando(cuarteta.getResultado());
+                String tipoBaseC = (tipoObjeto != null && tipoCValido(tipoObjeto))
+                        ? tipoObjeto.tipoC() : "void";
+                return resultado + " = (" + tipoBaseC + "*)malloc(sizeof(" + tipoBaseC + "));";
             case PUNTERO_FINAL:
                 return null;
             case COPIAR:
@@ -838,7 +854,85 @@ public class TraductorC {
             }
             return operando;
         }
-        return operando;
+        return formatearAccesoCampos(operando);
+    }
+
+    /**
+     * Convierte un operando aplanado tipo "base.campo" (o encadenado
+     * "base.sub.campo") al operador correcto en C: usa "->" cuando la parte
+     * izquierda es un objeto por referencia (heap, ej. instancias de clase
+     * Zetariano) y "." cuando es una estructura por valor (stack).
+     */
+    private String formatearAccesoCampos(String operando) {
+        if (operando == null || operando.indexOf('.') < 0) {
+            return operando;
+        }
+        List<String> segmentos = separarSegmentosPunto(operando);
+
+        StringBuilder resultado = new StringBuilder(segmentos.get(0));
+        Tipo tipoActual = tipoTrasIndices(tipoBase(segmentos.get(0)), segmentos.get(0));
+
+        for (int i = 1; i < segmentos.size(); i++) {
+            String segmento = segmentos.get(i);
+            boolean esPuntero = esObjetoPorReferencia(tipoActual);
+            resultado.append(esPuntero ? "->" : ".").append(segmento);
+
+            Tipo tipoCampo = (tipoActual instanceof TipoStructura)
+                    ? ((TipoStructura) tipoActual).getTipoAtributo(nombreSinIndices(segmento))
+                    : null;
+            tipoActual = tipoTrasIndices(tipoCampo, segmento);
+        }
+        return resultado.toString();
+    }
+
+    private List<String> separarSegmentosPunto(String operando) {
+        List<String> segmentos = new ArrayList<>();
+        int profundidad = 0;
+        int inicio = 0;
+        for (int i = 0; i < operando.length(); i++) {
+            char c = operando.charAt(i);
+            if (c == '[') {
+                profundidad++;
+            } else if (c == ']') {
+                profundidad--;
+            } else if (c == '.' && profundidad == 0) {
+                segmentos.add(operando.substring(inicio, i));
+                inicio = i + 1;
+            }
+        }
+        segmentos.add(operando.substring(inicio));
+        return segmentos;
+    }
+
+    private String nombreSinIndices(String segmento) {
+        int corchete = segmento.indexOf('[');
+        return (corchete >= 0) ? segmento.substring(0, corchete) : segmento;
+    }
+
+    /**
+     * Tipo del primer segmento de la cadena (ej. "t1" en "t1.dato"). A
+     * diferencia de un campo intermedio, el segmento base puede ser un temporal
+     * (t1, t18, ...) cuyo tipo vive en el mapa de temporales, no en el de
+     * variables, por lo que hay que revisar la categoria primero.
+     */
+    private Tipo tipoBase(String segmento) {
+        String nombre = nombreSinIndices(segmento);
+        if (esCategoria(nombre, TipoOperando.TEMPORAL)) {
+            return cuartetas.tipoDeTemporal(nombre);
+        }
+        return tipoDeVariableDe(nombre);
+    }
+
+    private Tipo tipoTrasIndices(Tipo tipo, String segmento) {
+        Tipo actual = tipo;
+        int i = 0;
+        while (i < segmento.length() && actual != null) {
+            if (segmento.charAt(i) == '[' && actual instanceof TipoArreglo) {
+                actual = ((TipoArreglo) actual).getTipoBase();
+            }
+            i++;
+        }
+        return actual;
     }
 
     private TipoOperando categoriaDe(String operando) {
