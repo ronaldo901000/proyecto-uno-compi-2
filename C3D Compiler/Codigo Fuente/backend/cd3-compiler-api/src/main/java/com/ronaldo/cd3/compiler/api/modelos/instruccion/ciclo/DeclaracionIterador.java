@@ -88,7 +88,7 @@ public class DeclaracionIterador extends Nodo implements Instruccion {
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
-        cuartetas.registrarTipoVariable(id, tipo);
+        cuartetas.registrarTipoVariableDeclarada(id, tipo);
         if (valorInicial != null) {
             String dirValor = valorInicial.generarCuartetas(contexto, cuartetas);
             cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirValor,

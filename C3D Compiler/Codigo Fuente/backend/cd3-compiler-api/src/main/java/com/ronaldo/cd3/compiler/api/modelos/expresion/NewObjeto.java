@@ -10,14 +10,8 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoPrimitivo;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
-import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -45,74 +39,74 @@ public class NewObjeto extends Expresion implements Verificable {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
-        
+
         TablaTipos tablaTipos = contexto.getTablaTipos();
-        
+
         List<Tipo> tiposArgumentos = new ArrayList<>();
-        
+
         if (argumentos != null) {
-            
+
             for (Expresion argumento : argumentos) {
                 argumento.verificarSemantica(contexto);
                 tiposArgumentos.add(argumento.getTipo());
             }
-            
+
         }
-        
+
         SimboloClase clase = contexto.getTablaSimbolos().buscarClase(nombreClase);
-        
+
         if (clase == null) {
-            
+
             contexto.agregarError(fila, columna, nombreClase,
                     "La clase '" + nombreClase + "' no está definida.");
             setTipo(tablaTipos.getError());
             return;
-            
+
         }
-        
+
         if (clase.getConstructores().isEmpty()) {
-            
+
             if (tiposArgumentos.isEmpty()) {
                 setTipo(clase.getTipo());
                 return;
             }
-            
+
             contexto.agregarError(fila, columna, nombreClase,
                     "La clase '" + nombreClase + "' no tiene un constructor compatible "
                     + "con los argumentos proporcionados");
-            
+
             setTipo(tablaTipos.getError());
             return;
         }
-        
+
         SimboloFuncion constructor = reglas.resolverEntre(
                 clase.getConstructores(), tiposArgumentos);
-        
+
         if (constructor == null) {
-            
+
             contexto.agregarError(fila, columna, nombreClase,
                     "No existe un constructor de la clase '" + nombreClase
                     + "' compatible con los argumentos proporcionados");
             setTipo(tablaTipos.getError());
             return;
-            
+
         }
-        
+
         List<SimboloParametro> parametros = constructor.getParametros();
-        
+
         if (argumentos != null) {
             for (int i = 0; i < argumentos.size(); i++) {
-                
+
                 Expresion argumento = argumentos.get(i);
                 SimboloParametro parametro = parametros.get(i);
-                
+
                 if (!reglas.esAsignable(parametro.getTipo(), argumento.getTipo())) {
-                    
+
                     contexto.agregarError(argumento.getFila(), argumento.getColumna(),
                             nombreClase, "El argumento " + (i + 1)
                             + " del constructor de la clase '" + nombreClase
                             + "' es incompatible con su parametro.");
-                    
+
                 }
             }
         }
@@ -121,19 +115,19 @@ public class NewObjeto extends Expresion implements Verificable {
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
-        
+
         String temporalPtr = cuartetas.nuevoTemporal();
         SimboloClase clase = contexto.getTablaSimbolos().buscarClase(nombreClase);
-        
+
         if (clase != null && clase.getTipo() != null) {
             cuartetas.registrarTipoTemporal(temporalPtr, clase.getTipo());
         }
-        
+
         cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, null,
                 null, temporalPtr, fila, columna);
 
         List<String> dirsArgumentos = new ArrayList<>();
-        
+
         if (argumentos != null) {
             for (Expresion arg : argumentos) {
                 dirsArgumentos.add(arg.generarCuartetas(contexto, cuartetas));
@@ -141,107 +135,26 @@ public class NewObjeto extends Expresion implements Verificable {
         }
 
         SimboloFuncion constructor = resolverConstructor(contexto);
-        
+
         String etiquetaConstructor = (constructor != null)
                 ? constructor.getEtiquetaInicio()
                 : "constructor_" + nombreClase;
-        
-        List<SimboloParametro> parametros = (constructor != null)
-                ? constructor.getParametros() : null;
 
-        List<Integer> indicesPasables = new ArrayList<>();
-        
-        if (parametros != null) {
-            for (int i = 0; i < parametros.size(); i++) {
-                
-                if (esPasoPorValor(parametros.get(i).getTipo())) {
-                    indicesPasables.add(i);
-                }
-                
-            }
-        }
-        
-        if (parametros != null && parametros.size() == dirsArgumentos.size()) {
-            
-            Map<Integer, String> guardados = new HashMap<>();
-            
-            for (int i : indicesPasables) {
-                SimboloParametro parametro = parametros.get(i);
-                cuartetas.registrarTipoVariable(parametro.getId(), parametro.getTipo());
-                String guardado = cuartetas.nuevoTemporal();
-                guardados.put(i, guardado);
-                cuartetas.registrarTipoTemporal(guardado, parametro.getTipo());
-                cuartetas.agregar(OperadorCuarteta.ASIGNACION, parametro.getId(),
-                        null, guardado, fila, columna);
-            }
-            
-            for (int i : indicesPasables) {
-                cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirsArgumentos.get(i),
-                        null, parametros.get(i).getId(), fila, columna);
-            }
-            
-            cuartetas.agregar(OperadorCuarteta.LLAMADA, etiquetaConstructor,
-                    null, temporalPtr, fila, columna);
-            
-            for (int i : indicesPasables) {
-                cuartetas.agregar(OperadorCuarteta.ASIGNACION, guardados.get(i),
-                        null, parametros.get(i).getId(), fila, columna);
-            }
-            
-        } else if (constructor != null) {
-            
+        if (constructor != null) {
+            cuartetas.agregar(OperadorCuarteta.PARAMETRO, temporalPtr,
+                    null, null, fila, columna);
             if (argumentos != null) {
                 for (String dir : dirsArgumentos) {
                     cuartetas.agregar(OperadorCuarteta.PARAMETRO, dir,
                             null, null, fila, columna);
                 }
             }
-            
+
             cuartetas.agregar(OperadorCuarteta.LLAMADA, etiquetaConstructor,
                     null, temporalPtr, fila, columna);
         }
-        
-        materializarCampos(contexto, cuartetas, temporalPtr);
+
         return temporalPtr;
-    }
-
-    private void materializarCampos(Contexto contexto, ListaCuartetas cuartetas,
-            String temporalPtr) {
-        
-        SimboloClase clase = contexto.getTablaSimbolos().buscarClase(nombreClase);
-        if (clase == null || !(clase.getTipo() instanceof TipoStructura)) {
-            return;
-        }
-        
-        TipoStructura tipoClase = (TipoStructura) clase.getTipo();
-        
-        for (Map.Entry<String, Tipo> campo : tipoClase.getAtributos().entrySet()) {
-            
-            String destino = temporalPtr + "." + campo.getKey();
-            cuartetas.registrarTipoVariable(destino, campo.getValue());
-            
-            if (campo.getValue() instanceof TipoArreglo) {
-                
-                cuartetas.registrarTipoArreglo(destino,
-                        ((TipoArreglo) campo.getValue()).getTipoBase());
-                
-                cuartetas.agregar(OperadorCuarteta.COPIAR, campo.getKey(),
-                        null, destino, fila, columna);
-            } else {
-                cuartetas.agregar(OperadorCuarteta.ASIGNACION, campo.getKey(),
-                        null, destino, fila, columna);
-            }
-        }
-    }
-
-    private boolean esPasoPorValor(Tipo tipo) {
-        if (tipo == null) {
-            return true;
-        }
-        if (tipo instanceof TipoPrimitivo) {
-            return tipo.getTipoDato() != TipoDato.NULO;
-        }
-        return true;
     }
 
     private SimboloFuncion resolverConstructor(Contexto contexto) {

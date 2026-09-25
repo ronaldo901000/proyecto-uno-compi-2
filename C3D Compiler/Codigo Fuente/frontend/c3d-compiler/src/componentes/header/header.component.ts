@@ -7,10 +7,10 @@ import { RespuestaCompilacionService } from '../../servicios/respuesta-compilaci
 import { AvisoService } from '../../servicios/avisos/aviso.service';
 
 @Component({
-    selector: 'app-header',
-    imports: [],
-    templateUrl: './header.component.html',
-    styleUrl: './header.component.css'
+  selector: 'app-header',
+  imports: [],
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.css'
 })
 export class HeaderComponent {
 
@@ -19,7 +19,7 @@ export class HeaderComponent {
     private arbolService: ArbolTrabajoService,
     private analisisService: AnalisisService,
     private respuestaCompilacionService: RespuestaCompilacionService,
-    private avisoService : AvisoService,
+    private avisoService: AvisoService,
   ) { }
 
   public compilar(): void {
@@ -29,16 +29,30 @@ export class HeaderComponent {
       const entrada = this.creacionEntradaService.crearArchivos(raiz);
 
       this.analisisService.analizar(entrada).subscribe({
-        next:(resultado: Respuesta) =>{
-
+        next: (resultado: Respuesta) => {
           this.respuestaCompilacionService.setRespuesta(resultado);
 
+          if (resultado.codigoC) {
+            this.descargarArchivoC(resultado.codigoC);
+          }
         },
-        error:(error) =>{
+        error: (error) => {
           this.avisoService.mostrarError(error.error);
         }
       });
     }
+  }
+
+  private descargarArchivoC(codigoC: string, nombreArchivo: string = 'salida.c'): void {
+    const blob = new Blob([codigoC], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = nombreArchivo;
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
+    window.URL.revokeObjectURL(url);
   }
 
 }

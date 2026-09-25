@@ -1,383 +1,140 @@
 package com.ronaldo.cd3.compiler.api.services.traduccion;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
-import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.enums.TipoOperando;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Cuarteta;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ContextoTraduccion;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Unidad;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoPrimitivo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * @author ronaldo
+ * Orquestador fino que genera codigo C a partir de cuartetas.
+ * Delega la traduccion de cada cuarteta a su subclase concreta
+ * (patron PigLatin), incluyendo PARAMETRO, LLAMADA y RETORNO.
  */
 public class TraductorC {
-
-    private final Set<String> funciones = new LinkedHashSet<>();
-    private final Set<String> temporales = new LinkedHashSet<>();
-    private final Set<String> temporalesPuntero = new LinkedHashSet<>();
-    private final Set<String> escalares = new LinkedHashSet<>();
-    private final Map<String, Integer> arreglos = new LinkedHashMap<>();
-    private final Map<String, Tipo> punterosArreglo = new LinkedHashMap<>();
-    private final Map<String, TipoStructura> estructuras = new LinkedHashMap<>();
-    private final Map<String, String> arreglosNuevos = new LinkedHashMap<>();
-    private final Map<String, TipoStructura> punterosEstructura = new LinkedHashMap<>();
-    private boolean usaConcatenacion = false;
-    private boolean usaComparacionCadenas = false;
-
-    private ListaCuartetas cuartetas;
 
     public String traducir(ListaCuartetas cuartetas) {
         if (cuartetas == null || cuartetas.getCuartetas() == null
                 || cuartetas.getCuartetas().isEmpty()) {
             return "";
         }
-        this.cuartetas = cuartetas;
+
+        ContextoTraduccion ctx = new ContextoTraduccion(cuartetas);
         List<Cuarteta> lista = cuartetas.getCuartetas();
-        analizar(lista);
-        List<Unidad> unidades = separarUnidades(lista);
+        List<Unidad> unidades = separarUnidades(lista, cuartetas);
+        ctx.analizar(unidades);
+        ctx.clasificarAmbitosVariables(unidades);
+        corregirDimensionesArreglos(unidades, ctx);
 
         StringBuilder sb = new StringBuilder();
         encabezado(sb);
+        emitirEstructuras(sb, ctx);
+        sb.append('\n');
 
         boolean hayMain = false;
         for (Unidad unidad : unidades) {
-            if (nombreMain(unidad.nombre)) {
+            if (ctx.nombreMain(unidad.getNombre())) {
                 hayMain = true;
                 continue;
             }
-            if (unidad.nombre != null) {
-                sb.append(tipoCDeFuncion(unidad.nombre)).append(' ')
-                        .append(unidad.nombre).append("();\n");
+            if (unidad.getNombre() != null) {
+                sb.append(ctx.tipoCDeFuncion(unidad.getNombre())).append(' ')
+                        .append(unidad.getNombre())
+                        .append(ctx.firmaParametros(unidad.getNombre()))
+                        .append(";\n");
             }
         }
         if (!hayMain) {
-            sb.append("int main(void);\n");
+            sb.append("int main();\n");
         }
-
-        emitirEstructuras(sb, listaEstructuras());
         sb.append('\n');
 
-        for (String nombre : escalares) {
-            if (punterosArreglo.containsKey(nombre)
-                    || punterosEstructura.containsKey(nombre)) {
-                continue;
-            }
-            sb.append(tipoCDeVariable(nombre)).append(' ').append(nombre).append(";\n");
-        }
-
-        for (Map.Entry<String, Integer> arreglo : arreglos.entrySet()) {
-            sb.append(tipoCDeElementoArreglo(arreglo.getKey()))
-                    .append(' ').append(arreglo.getKey())
-                    .append('[').append(arreglo.getValue()).append("];\n");
-        }
-
-        for (Map.Entry<String, Tipo> puntero : punterosArreglo.entrySet()) {
-            sb.append(tipoCDe(puntero.getValue())).append("* ")
-                    .append(puntero.getKey()).append(";\n");
-        }
-
-        for (Map.Entry<String, TipoStructura> puntero : punterosEstructura.entrySet()) {
-            sb.append(puntero.getValue().tipoC()).append("* ")
-                    .append(puntero.getKey()).append(";\n");
-        }
-
-        for (String puntero : temporalesPuntero) {
-            sb.append("double* ").append(puntero).append(";\n");
-        }
-        if (usaConcatenacion || usaComparacionCadenas) {
+        emitirVariablesGlobales(sb, ctx);
+        if (ctx.usaAyudasCadenas()) {
             emitirAyudasCadenas(sb);
         }
-
         sb.append('\n');
+
         for (Unidad unidad : unidades) {
-            emitirUnidad(sb, unidad);
+            emitirUnidad(sb, unidad, ctx);
         }
         return sb.toString();
     }
 
-    private void analizar(List<Cuarteta> lista) {
-        for (Cuarteta cuarteta : lista) {
-            if (cuarteta.getOperador() == OperadorCuarteta.LLAMADA) {
-                funciones.add(cuarteta.getArg1());
-            }
-            if (cuarteta.getOperador() == OperadorCuarteta.ETIQUETA
-                    && esEntradaDeFuncion(cuarteta.getArg1())) {
-                funciones.add(cuarteta.getArg1());
-            }
-            if (cuarteta.getOperador() == OperadorCuarteta.SUMA
-                    && cuarteta.getResultado() != null
-                    && esDeTipo(tipoDeOperando(cuarteta.getResultado()), TipoDato.CADENA)) {
-                usaConcatenacion = true;
-            }
-            if (cuarteta.getOperador() == OperadorCuarteta.IGUAL
-                    || cuarteta.getOperador() == OperadorCuarteta.DISTINTO) {
-                Tipo izquierdo = tipoDeOperando(cuarteta.getArg1());
-                Tipo derecho = tipoDeOperando(cuarteta.getArg2());
-                if (esDeTipo(izquierdo, TipoDato.CADENA)
-                        || esDeTipo(derecho, TipoDato.CADENA)) {
-                    usaComparacionCadenas = true;
-                }
-            }
-            if (cuarteta.getOperador() == OperadorCuarteta.PUNTERO_INICIO
-                    && cuarteta.getArg1() != null
-                    && cuarteta.getResultado() != null) {
-                arreglosNuevos.put(cuarteta.getResultado(), cuarteta.getArg2());
-                analizarOperando(cuarteta.getArg2());
+    private void emitirVariablesGlobales(StringBuilder sb,
+            ContextoTraduccion ctx) {
+        Set<String> escalares = ctx.getEscalares();
+        for (String nombre : escalares) {
+            if (ctx.esPunteroArreglo(nombre)
+                    || ctx.esPunteroEstructura(nombre)) {
                 continue;
             }
-            analizarOperando(cuarteta.getArg1());
-            analizarOperando(cuarteta.getArg2());
-            analizarOperando(cuarteta.getResultado());
-        }
-        for (Tipo tipo : cuartetas.tiposRegistrados()) {
-            recolectarEstructuras(tipo);
-        }
-        for (Tipo puntero : punterosArreglo.values()) {
-            recolectarEstructuras(puntero);
-        }
-    }
-
-    private Set<String> temporalesDeUnidad(List<Cuarteta> cuartetasUnidad) {
-        Set<String> locales = new LinkedHashSet<>();
-        for (Cuarteta cuarteta : cuartetasUnidad) {
-            agregarTemporalSiAplica(locales, cuarteta.getArg1());
-            agregarTemporalSiAplica(locales, cuarteta.getArg2());
-            agregarTemporalSiAplica(locales, cuarteta.getResultado());
-        }
-        return locales;
-    }
-
-    private void agregarTemporalSiAplica(Set<String> locales, String operando) {
-        if (operando != null && esCategoria(operando, TipoOperando.TEMPORAL)) {
-            locales.add(operando);
-        }
-    }
-
-    private void analizarOperando(String operando) {
-        if (operando == null) {
-            return;
-        }
-        if (esCategoria(operando, TipoOperando.TEMPORAL)) {
-            temporales.add(operando);
-            return;
-        }
-        if (esCategoria(operando, TipoOperando.ETIQUETA_INTERNA)
-                || esConstante(operando)) {
-            return;
-        }
-        if (funciones.contains(operando)) {
-            return;
-        }
-        String baseRaiz = raizIdentificador(operando);
-        if (baseRaiz != null && operando.indexOf('.') >= 0) {
-            registrarEscalarRaiz(baseRaiz);
-            return;
-        }
-        if (operando.indexOf('[') >= 0) {
-            String base = operando.substring(0, operando.indexOf('['));
-            String baseRaizIndice = raizIdentificador(base);
-            if (baseRaizIndice != null && baseRaizIndice.indexOf('.') >= 0) {
-                registrarEscalarRaiz(baseRaizIndice);
-                return;
+            if (!ctx.esVariableGlobal(nombre)) {
+                continue;
             }
-            if (esArregloPasadoPorReferencia(base)) {
-                registrarPunteroArreglo(base);
-                return;
+            sb.append(ctx.tipoCDeVariable(nombre)).append(' ')
+                    .append(nombre).append(";\n");
+        }
+        for (Map.Entry<String, Integer> arreglo : ctx.getArreglos().entrySet()) {
+            if (!ctx.esVariableGlobal(arreglo.getKey())) {
+                continue;
             }
-            if (esCategoria(base, TipoOperando.TEMPORAL)) {
-                temporalesPuntero.add(base);
-            } else if (esNombreDeVariable(base)
-                    && !funciones.contains(base)) {
-                Integer maximo = maximoIndiceNumerico(operando);
-                int tamaño = (maximo != null) ? (maximo + 1) : 100;
-                arreglos.put(base, Math.max(arreglos.getOrDefault(base, 0), tamaño));
-                escalares.remove(base);
+            sb.append(ctx.tipoCDeElementoArreglo(arreglo.getKey()))
+                    .append(' ').append(arreglo.getKey())
+                    .append('[').append(arreglo.getValue()).append("];\n");
+        }
+        for (Map.Entry<String, Tipo> puntero
+                : ctx.getPunterosArreglo().entrySet()) {
+            if (!ctx.esVariableGlobal(puntero.getKey())) {
+                continue;
             }
-            return;
+            sb.append(ctx.tipoCDe(puntero.getValue())).append("* ")
+                    .append(puntero.getKey()).append(";\n");
         }
-        if (esNombreDeVariable(operando)) {
-            if (esArregloPasadoPorReferencia(operando)) {
-                registrarPunteroArreglo(operando);
-                return;
+        for (Map.Entry<String, TipoStructura> puntero
+                : ctx.getPunterosEstructura().entrySet()) {
+            if (!ctx.esVariableGlobal(puntero.getKey())) {
+                continue;
             }
-
-            Tipo tipoVariable = tipoDeVariableDe(operando);
-            if (esObjetoPorReferencia(tipoVariable)) {
-                punterosEstructura.put(operando, (TipoStructura) tipoVariable);
-                escalares.remove(operando);
-                return;
-            }
-
-            if (!(tipoVariable instanceof TipoArreglo)
-                    && !arreglos.containsKey(operando)) {
-                escalares.add(operando);
-            }
+            sb.append(puntero.getValue().tipoC()).append("* ")
+                    .append(puntero.getKey()).append(";\n");
+        }
+        for (String puntero : ctx.getTemporalesPuntero()) {
+            sb.append("double* ").append(puntero).append(";\n");
         }
     }
 
-    private boolean esArregloPasadoPorReferencia(String nombre) {
-        if (nombre == null) {
-            return false;
-        }
-        return cuartetas.tipoDeVariable(nombre) instanceof TipoArreglo
-                && cuartetas.tipoDeArreglo(nombre) == null;
-    }
-
-    private boolean esNuevoArregloHaciaVariable(String origen, String destino) {
-        if (origen == null || destino == null) {
-            return false;
-        }
-        Tipo tipo = cuartetas.tipoDeVariable(destino);
-        return arreglosNuevos.containsKey(origen)
-                && tipo instanceof TipoArreglo
-                && cuartetas.tipoDeArreglo(destino) != null;
-    }
-
-    private String tipoElementoDeArreglo(String nombre) {
-        Tipo elemento = cuartetas.tipoDeArreglo(nombre);
-        return tipoCValido(elemento) ? elemento.tipoC() : "int";
-    }
-
-    private String tipoCampoEstructura(Tipo tipo, String nombre) {
-        if (tipo instanceof TipoArreglo) {
-            TipoArreglo arreglo = (TipoArreglo) tipo;
-            String tipoElemento = tipoCValido(arreglo.getTipoBase())
-                    ? arreglo.getTipoBase().tipoC() : "int";
-            return tipoElemento + " " + nombre + "[" + primerTamaño(arreglo) + "]";
-        }
-        if (esObjetoPorReferencia(tipo)) {
-            return tipo.tipoC() + "* " + nombre;
-        }
-        if (!tipoCValido(tipo)) {
-            return null;
-        }
-        return tipo.tipoC() + " " + nombre;
-    }
-
-    private int primerTamaño(TipoArreglo arreglo) {
-        List<Integer> dimensiones = arreglo.getDimensiones();
-        if (dimensiones != null && !dimensiones.isEmpty()) {
-            Integer ext = dimensiones.get(0);
-            if (ext != null && ext > 0) {
-                return ext;
-            }
-        }
-        return 100;
-    }
-
-    private void registrarPunteroArreglo(String nombre) {
-        Tipo tipo = cuartetas.tipoDeVariable(nombre);
-        if (tipo instanceof TipoArreglo) {
-            punterosArreglo.put(nombre, ((TipoArreglo) tipo).getTipoBase());
-        }
-        escalares.remove(nombre);
-        arreglos.remove(nombre);
-    }
-
-    private void registrarEscalarRaiz(String nombre) {
-        if (esCategoria(nombre, TipoOperando.TEMPORAL)
-                || funciones.contains(nombre)) {
-            return;
-        }
-        if (esArregloPasadoPorReferencia(nombre)) {
-            registrarPunteroArreglo(nombre);
-            return;
-        }
-        if (!esNombreDeVariable(nombre)) {
-            return;
-        }
-        Tipo tipoVariable = tipoDeVariableDe(nombre);
-        if (esObjetoPorReferencia(tipoVariable)) {
-            // Es un objeto heap (ej. instancia Zetariano) accedido con punto
-            // en su forma aplanada (nombre.campo): debe vivir en
-            // punterosEstructura, nunca en escalares, para no declararse dos
-            // veces con tipos/lugares distintos.
-            punterosEstructura.put(nombre, (TipoStructura) tipoVariable);
-            escalares.remove(nombre);
-            return;
-        }
-        if (!(tipoVariable instanceof TipoArreglo)) {
-            escalares.add(nombre);
-        }
-    }
-
-    private String raizIdentificador(String operando) {
-        if (operando == null || operando.isEmpty()) {
-            return null;
-        }
-        String base = operando;
-        int corchete = operando.indexOf('[');
-        if (corchete >= 0) {
-            base = operando.substring(0, corchete);
-        }
-        int punto = base.indexOf('.');
-        if (punto >= 0) {
-            base = base.substring(0, punto);
-        }
-        return base;
-    }
-
-    private Integer maximoIndiceNumerico(String operando) {
-        Integer maximo = null;
-        if (operando == null) {
-            return null;
-        }
-        int i = 0;
-        while (i < operando.length()) {
-            if (operando.charAt(i) == '[') {
-                int j = i + 1;
-                int inicio = j;
-                while (j < operando.length()
-                        && Character.isDigit(operando.charAt(j))) {
-                    j++;
-                }
-                if (j > inicio && j < operando.length()
-                        && operando.charAt(j) == ']') {
-                    int indice = Integer.parseInt(
-                            operando.substring(inicio, j));
-                    maximo = (maximo == null)
-                            ? indice : Math.max(maximo, indice);
-                }
-                i = j;
-            } else {
-                i++;
-            }
-        }
-        return maximo;
-    }
-
-    private List<Unidad> separarUnidades(List<Cuarteta> lista) {
+    private List<Unidad> separarUnidades(List<Cuarteta> lista,
+            ListaCuartetas cuartetas) {
         List<Unidad> unidades = new ArrayList<>();
         Unidad actual = new Unidad(null);
         for (Cuarteta cuarteta : lista) {
             if (cuarteta.getOperador() == OperadorCuarteta.ETIQUETA
-                    && esEntradaDeFuncion(cuarteta.getArg1())) {
+                    && esEntradaDeFuncion(cuarteta.getArg1(), cuartetas)) {
                 unidades.add(actual);
                 actual = new Unidad(cuarteta.getArg1());
             } else {
-                actual.cuartetas.add(cuarteta);
+                actual.getCuartetas().add(cuarteta);
             }
         }
         unidades.add(actual);
         return unidades;
     }
 
-    private boolean esEntradaDeFuncion(String etiqueta) {
+    private boolean esEntradaDeFuncion(String etiqueta,
+            ListaCuartetas cuartetas) {
         return etiqueta != null
-                && !esCategoria(etiqueta, TipoOperando.ETIQUETA_INTERNA);
-    }
-
-    private boolean nombreMain(String nombre) {
-        return nombre != null && nombre.equals("main");
+                && !TipoOperando.ETIQUETA_INTERNA.equals(
+                        cuartetas.categoriaDe(etiqueta));
     }
 
     private void encabezado(StringBuilder sb) {
@@ -385,72 +142,18 @@ public class TraductorC {
         sb.append("#include <stdio.h>\n");
         sb.append("#include <stdlib.h>\n");
         sb.append("#include <string.h>\n");
+        sb.append("#include <stdbool.h>\n");
         sb.append("#include <math.h>\n\n");
     }
 
-    private void recolectarEstructuras(Tipo tipo) {
-        if (tipo == null) {
-            return;
-        }
-        if (tipo instanceof TipoStructura) {
-            TipoStructura estructura = (TipoStructura) tipo;
-            if (!estructuras.containsKey(estructura.getNombreStruct())) {
-                estructuras.put(estructura.getNombreStruct(), estructura);
-                for (Tipo atributo : estructura.getAtributos().values()) {
-                    recolectarEstructuras(atributo);
-                }
-            }
-            return;
-        }
-        if (tipo instanceof TipoArreglo) {
-            recolectarEstructuras(((TipoArreglo) tipo).getTipoBase());
-        }
-    }
-
-    private List<TipoStructura> listaEstructuras() {
-        List<TipoStructura> pendientes = new ArrayList<>(estructuras.values());
-        List<TipoStructura> ordenadas = new ArrayList<>();
-        Set<String> emitidas = new LinkedHashSet<>();
-        while (!pendientes.isEmpty()) {
-            boolean progreso = false;
-            for (int i = pendientes.size() - 1; i >= 0; i--) {
-                TipoStructura estructura = pendientes.get(i);
-                if (dependenciasListas(estructura, emitidas)) {
-                    ordenadas.add(estructura);
-                    emitidas.add(estructura.getNombreStruct());
-                    pendientes.remove(i);
-                    progreso = true;
-                }
-            }
-            if (!progreso) {
-                for (TipoStructura estructura : pendientes) {
-                    ordenadas.add(estructura);
-                    emitidas.add(estructura.getNombreStruct());
-                }
-                pendientes.clear();
-            }
-        }
-        return ordenadas;
-    }
-
-    private boolean dependenciasListas(TipoStructura estructura, Set<String> emitidas) {
-        for (Tipo atributo : estructura.getAtributos().values()) {
-            if (atributo instanceof TipoStructura) {
-                String nombre = ((TipoStructura) atributo).getNombreStruct();
-                if (!nombre.equals(estructura.getNombreStruct())
-                        && !emitidas.contains(nombre)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void emitirEstructuras(StringBuilder sb, List<TipoStructura> estructuras) {
-        for (TipoStructura estructura : estructuras) {
-            sb.append("struct ").append(estructura.getNombreStruct()).append(" {\n");
-            for (Map.Entry<String, Tipo> atributo : estructura.getAtributos().entrySet()) {
-                String campo = tipoCampoEstructura(atributo.getValue(), atributo.getKey());
+    private void emitirEstructuras(StringBuilder sb, ContextoTraduccion ctx) {
+        for (TipoStructura estructura : ctx.listaEstructuras()) {
+            sb.append("struct ").append(estructura.getNombreStruct())
+                    .append(" {\n");
+            for (Map.Entry<String, Tipo> atributo
+                    : estructura.getAtributos().entrySet()) {
+                String campo = ctx.getFormateo().tipoCampoEstructura(
+                        atributo.getValue(), atributo.getKey());
                 if (campo == null) {
                     continue;
                 }
@@ -464,7 +167,8 @@ public class TraductorC {
         sb.append("char* cad_concat(char* izquierdo, char* derecho) {\n");
         sb.append("\tif (izquierdo == NULL) izquierdo = \"\";\n");
         sb.append("\tif (derecho == NULL) derecho = \"\";\n");
-        sb.append("\tchar* resultado = (char*)malloc(strlen(izquierdo) + strlen(derecho) + 1);\n");
+        sb.append("\tchar* resultado = (char*)malloc("
+                + "strlen(izquierdo) + strlen(derecho) + 1);\n");
         sb.append("\tif (resultado == NULL) return NULL;\n");
         sb.append("\tstrcpy(resultado, izquierdo);\n");
         sb.append("\tstrcat(resultado, derecho);\n");
@@ -479,507 +183,184 @@ public class TraductorC {
         sb.append("\treturn resultado;\n");
         sb.append("}\n");
         sb.append("int cad_igual(char* izquierdo, char* derecho) {\n");
-        sb.append("\tif (izquierdo == NULL || derecho == NULL) return izquierdo == derecho;\n");
+        sb.append("\tif (izquierdo == NULL || derecho == NULL) "
+                + "return izquierdo == derecho;\n");
         sb.append("\treturn strcmp(izquierdo, derecho) == 0;\n");
         sb.append("}\n");
         sb.append("int cad_distinto(char* izquierdo, char* derecho) {\n");
-        sb.append("\tif (izquierdo == NULL || derecho == NULL) return izquierdo != derecho;\n");
+        sb.append("\tif (izquierdo == NULL || derecho == NULL) "
+                + "return izquierdo != derecho;\n");
         sb.append("\treturn strcmp(izquierdo, derecho) != 0;\n");
         sb.append("}\n\n");
     }
 
-    private void emitirUnidad(StringBuilder sb, Unidad unidad) {
-        if (unidad.nombre == null) {
+    private void emitirUnidad(StringBuilder sb, Unidad unidad,
+            ContextoTraduccion ctx) {
+        if (unidad.getNombre() == null) {
             return;
         }
-        boolean esMain = nombreMain(unidad.nombre);
-        boolean esVoid = !esMain && esTipoVoid(cuartetas.tipoDeFuncion(unidad.nombre));
+        ctx.setUnidadActual(unidad.getNombre());
+        boolean esMain = ctx.nombreMain(unidad.getNombre());
+        boolean esVoid = !esMain
+                && ctx.esTipoVoid(ctx.tipoDeFuncionDe(unidad.getNombre()));
+
         if (esMain) {
             sb.append("int main() {\n");
         } else {
-            sb.append(tipoCDeFuncion(unidad.nombre)).append(' ')
-                    .append(unidad.nombre).append("() {\n");
+            sb.append(ctx.tipoCDeFuncion(unidad.getNombre())).append(' ')
+                    .append(unidad.getNombre())
+                    .append(ctx.firmaParametros(unidad.getNombre()))
+                    .append(" {\n");
         }
 
-        boolean terminoConRetorno = false;
-        for (String temporal : temporalesDeUnidad(unidad.cuartetas)) {
-            if (temporalesPuntero.contains(temporal)) {
+        Set<String> temporalesUnidad = temporalesDeUnidad(
+                unidad.getCuartetas(), ctx.getCuartetas());
+        for (String temporal : temporalesUnidad) {
+            if (ctx.esTemporalPuntero(temporal)) {
                 continue;
             }
-            if (arreglosNuevos.containsKey(temporal)) {
+            if (ctx.contieneArregloNuevo(temporal)) {
                 continue;
             }
-            if (esTipoVoid(cuartetas.tipoDeTemporal(temporal))) {
+            if (ctx.esTipoVoid(ctx.tipoDeTemporal(temporal))) {
                 continue;
             }
-            linea(sb, tipoCDeTemporal(temporal) + " " + temporal + ";");
+            linea(sb, ctx.tipoCDeTemporal(temporal) + " " + temporal + ";");
         }
-        if (!temporalesDeUnidad(unidad.cuartetas).isEmpty()) {
-            linea(sb, "");
-        }
-        for (Cuarteta cuarteta : unidad.cuartetas) {
-            if (cuarteta.getOperador() == OperadorCuarteta.PARAMETRO) {
-                continue;
-            }
-            if (cuarteta.getOperador() == OperadorCuarteta.LLAMADA) {
-                String resultado = normalizar(cuarteta.getResultado());
-                String llamada = cuarteta.getArg1() + "()";
-                Tipo tipoFuncion = cuartetas.tipoDeFuncion(cuarteta.getArg1());
-                boolean esLlamadaVoid = esTipoVoid(tipoFuncion) || tipoFuncion == null;
-                if (resultado != null && !esLlamadaVoid) {
-                    linea(sb, resultado + " = " + llamada + ";");
-                } else {
-                    linea(sb, llamada + ";");
-                }
-                terminoConRetorno = false;
-                continue;
-            }
-            if (cuarteta.getOperador() == OperadorCuarteta.RETORNO) {
-                if (terminoConRetorno) {
+
+        Set<String> localesUnidad = ctx.getLocalesDeUnidad(unidad.getNombre());
+        if (localesUnidad != null) {
+            for (String nombre : localesUnidad) {
+                if (esNombreReservadoOTipo(nombre, ctx)) {
                     continue;
                 }
-                String dir = normalizar(cuarteta.getArg1());
-                if (dir != null) {
-                    linea(sb, "return " + dir + ";");
-                } else if (esVoid) {
-                    linea(sb, "return;");
+                if (ctx.esPunteroArreglo(nombre)) {
+                    linea(sb, ctx.tipoCDe(ctx.tipoPunteroArreglo(nombre))
+                            + "* " + nombre + ";");
+                } else if (ctx.getArreglos().containsKey(nombre)) {
+                    linea(sb, ctx.tipoCDeElementoArreglo(nombre) + " "
+                            + nombre + "[" + ctx.tamanioArreglo(nombre)
+                            + "];");
                 } else {
-                    linea(sb, "return 0;");
+                    linea(sb, ctx.tipoCDeVariable(nombre) + " "
+                            + nombre + ";");
                 }
-                terminoConRetorno = true;
-                continue;
-            }
-            terminoConRetorno = false;
-            String linea = emitirCuarteta(cuarteta);
-            if (linea != null) {
-                linea(sb, linea);
             }
         }
-        if (!terminoConRetorno && !esVoid) {
+        if (!temporalesUnidad.isEmpty()
+                || (localesUnidad != null && !localesUnidad.isEmpty())) {
+            linea(sb, "");
+        }
+
+        ctx.setUnidadEsVoid(esVoid);
+        ctx.setTerminoConRetorno(false);
+        for (Cuarteta cuarteta : unidad.getCuartetas()) {
+            if (!OperadorCuarteta.RETORNO.equals(cuarteta.getOperador())) {
+                ctx.setTerminoConRetorno(false);
+            }
+            cuarteta.aCodigoC(sb, ctx);
+        }
+        if (!ctx.terminoConRetorno() && !esVoid) {
             linea(sb, "return 0;");
         }
         sb.append("}\n\n");
     }
 
-    private String emitirCuarteta(Cuarteta cuarteta) {
-        String arg1 = normalizar(cuarteta.getArg1());
-        String arg2 = normalizar(cuarteta.getArg2());
-        String resultado = normalizar(cuarteta.getResultado());
+    private Set<String> temporalesDeUnidad(List<Cuarteta> cuartetasUnidad,
+            ListaCuartetas cuartetas) {
+        Set<String> locales = new LinkedHashSet<>();
+        for (Cuarteta cuarteta : cuartetasUnidad) {
+            agregarTemporalSiAplica(locales, cuarteta.getArg1(), cuartetas);
+            agregarTemporalSiAplica(locales, cuarteta.getArg2(), cuartetas);
+            agregarTemporalSiAplica(locales, cuarteta.getResultado(), cuartetas);
+        }
+        return locales;
+    }
 
-        switch (cuarteta.getOperador()) {
-            case ASIGNACION:
-                if (resultado != null) {
-                    if (esNuevoArregloHaciaVariable(arg1, resultado)) {
-                        return "memset(" + resultado + ", 0, "
-                                + (arreglosNuevos.get(arg1) != null
-                                ? arreglosNuevos.get(arg1) : "100")
-                                + " * sizeof(" + tipoElementoDeArreglo(resultado) + "));";
-                    }
-                    return (arg1 != null) ? (resultado + " = " + arg1 + ";")
-                            : (resultado + " = 0;");
-                }
-                return null;
-            case SUMA:
-                if (resultado != null
-                        && tipoDeOperando(cuarteta.getResultado()) != null
-                        && esDeTipo(tipoDeOperando(cuarteta.getResultado()), TipoDato.CADENA)) {
-                    return resultado + " = cad_concat("
-                            + operandoParaCadena(arg1) + ", "
-                            + operandoParaCadena(arg2) + ");";
-                }
-                return resultado + " = " + arg1 + " + " + arg2 + ";";
-            case RESTA:
-                return resultado + " = " + arg1 + " - " + arg2 + ";";
-            case MULTIPLICACION:
-                return resultado + " = " + arg1 + " * " + arg2 + ";";
-            case DIVISION:
-                return resultado + " = " + arg1 + " / " + arg2 + ";";
-            case MODULO:
-                return (esEntero(arg1) && esEntero(arg2))
-                        ? (resultado + " = " + arg1 + " % " + arg2 + ";")
-                        : (resultado + " = fmod(" + arg1 + ", " + arg2 + ");");
-            case MENOR_Q:
-                return resultado + " = " + arg1 + " < " + arg2 + ";";
-            case MENOR_EQ_Q:
-                return resultado + " = " + arg1 + " <= " + arg2 + ";";
-            case MAYOR_Q:
-                return resultado + " = " + arg1 + " > " + arg2 + ";";
-            case MAYOR_EQ_Q:
-                return resultado + " = " + arg1 + " >= " + arg2 + ";";
-            case IGUAL:
-                if (usaComparacionCadenasPara(arg1, arg2)) {
-                    return resultado + " = cad_igual(" + arg1 + ", " + arg2 + ");";
-                }
-                return resultado + " = " + arg1 + " == " + arg2 + ";";
-            case DISTINTO:
-                if (usaComparacionCadenasPara(arg1, arg2)) {
-                    return resultado + " = cad_distinto(" + arg1 + ", " + arg2 + ");";
-                }
-                return resultado + " = " + arg1 + " != " + arg2 + ";";
-            case AND:
-                return resultado + " = " + arg1 + " && " + arg2 + ";";
-            case OR:
-                return resultado + " = " + arg1 + " || " + arg2 + ";";
-            case NEGATIVO_UNARIO:
-                return resultado + " = -" + arg1 + ";";
-            case NOT:
-                return resultado + " = !" + arg1 + ";";
-            case INCREMENTO:
-                return arg1 + "++;";
-            case DECREMENTO:
-                return arg1 + "--;";
-            case ETIQUETA:
-                return arg1 + ":;";
-            case GOTO:
-                return "goto " + arg1 + ";";
-            case IF_FALSO:
-                return "if (!(" + arg1 + ")) goto " + arg2 + ";";
-            case IF_VERDADERO:
-                return "if (" + arg1 + ") goto " + arg2 + ";";
-            case IMPRIMIR:
-                return emitirImpresion(arg1, cuarteta.getResultado());
-            case LEER:
-                return emitirLectura(resultado);
-            case PUNTERO_INICIO:
-                if (resultado != null
-                        && arreglosNuevos.containsKey(cuarteta.getResultado())) {
-                    return null;
-                }
-                Tipo tipoObjeto = tipoDeOperando(cuarteta.getResultado());
-                String tipoBaseC = (tipoObjeto != null && tipoCValido(tipoObjeto))
-                        ? tipoObjeto.tipoC() : "void";
-                return resultado + " = (" + tipoBaseC + "*)malloc(sizeof(" + tipoBaseC + "));";
-            case PUNTERO_FINAL:
-                return null;
-            case COPIAR:
-                return "memcpy(" + resultado + ", " + arg1
-                        + ", sizeof(" + resultado + "));";
-            case ACCESO_INDICE:
-                return resultado + " = " + arg1 + "[(int)" + arg2 + "];";
-            case ACCESO_ATRIBUTO:
-                if (arg1 != null && arg2 != null && arg1.indexOf('[') < 0) {
-                    return resultado + " = " + arg1 + "_" + arg2 + ";";
-                }
-                return (arg1 != null) ? (resultado + " = " + arg1 + ";")
-                        : (resultado + " = 0;");
-            default:
-                return null;
+    private void agregarTemporalSiAplica(Set<String> locales,
+            String operando, ListaCuartetas cuartetas) {
+        if (operando != null
+                && TipoOperando.TEMPORAL.equals(
+                        cuartetas.categoriaDe(operando))) {
+            locales.add(operando);
         }
     }
 
-    private String emitirImpresion(String arg1, String resultado) {
-        boolean conSalto = "true".equalsIgnoreCase(resultado);
-        String salto = conSalto ? "\\n" : "";
-        if (arg1 == null) {
-            return "printf(\"" + salto + "\");";
-        }
-        boolean esCadena = esCategoria(arg1, TipoOperando.CONSTANTE_CADENA);
-        Tipo tipo = tipoDeOperando(arg1);
-        String formato;
-        if (esCadena || esDeTipo(tipo, TipoDato.CADENA)) {
-            formato = "%s";
-        } else if (esDeTipo(tipo, TipoDato.CHAR)) {
-            formato = "%c";
-        } else if (esDeTipo(tipo, TipoDato.ENTERO)
-                || esDeTipo(tipo, TipoDato.BOOLEAN)) {
-            formato = "%d";
-        } else {
-            formato = "%g";
-        }
-        return "printf(\"" + formato + salto + "\", " + arg1 + ");";
-    }
+    private static final java.util.Set<String> RESERVADAS_C =
+            java.util.Set.of("int", "double", "float", "char", "void",
+                    "long", "short", "unsigned", "signed", "struct",
+                    "if", "else", "while", "for", "return", "sizeof",
+                    "NULL", "break", "continue", "switch", "case",
+                    "default", "do", "typedef", "enum", "union",
+                    "const", "volatile", "static", "extern", "register",
+                    "auto");
 
-    private String emitirLectura(String resultado) {
-        if (resultado == null) {
-            return ";";
-        }
-        Tipo tipo = tipoDeVariableDe(resultado);
-        if (esDeTipo(tipo, TipoDato.DECIMAL)) {
-            return "scanf(\"%lf\", &" + resultado + ");";
-        }
-        if (esDeTipo(tipo, TipoDato.CHAR)) {
-            return "scanf(\" %c\", &" + resultado + ");";
-        }
-        if (esDeTipo(tipo, TipoDato.CADENA)) {
-            return "scanf(\"%s\", " + resultado + ");";
-        }
-        return "scanf(\"%d\", &" + resultado + ");";
-    }
-
-    private String operandoParaCadena(String operando) {
-        if (operando == null) {
-            return "\"\"";
-        }
-        Tipo tipo = tipoDeOperando(operando);
-        if (tipo != null && tipo.esNumerico()) {
-            return "cad_numero(" + operando + ")";
-        }
-        return operando;
-    }
-
-    private boolean usaComparacionCadenasPara(String izquierdo, String derecho) {
-        return usaComparacionCadenas
-                && (esDeTipo(tipoDeOperando(izquierdo), TipoDato.CADENA)
-                || esDeTipo(tipoDeOperando(derecho), TipoDato.CADENA));
-    }
-
-    private boolean esEntero(String operando) {
-        if (operando == null) {
-            return false;
-        }
-        TipoOperando cat = categoriaDe(operando);
-        if (cat == TipoOperando.CONSTANTE_ENTERA) {
+    private boolean esNombreReservadoOTipo(String nombre,
+            ContextoTraduccion contexto) {
+        if (nombre == null) {
             return true;
         }
-        return esDeTipo(tipoDeOperando(operando), TipoDato.ENTERO);
-    }
-
-    private Tipo tipoDeOperando(String operando) {
-        if (operando == null) {
-            return null;
+        if (RESERVADAS_C.contains(nombre)) {
+            return true;
         }
-        TipoOperando cat = categoriaDe(operando);
-        if (cat == TipoOperando.TEMPORAL) {
-            return cuartetas.tipoDeTemporal(operando);
-        }
-        if (cat == TipoOperando.CONSTANTE_CADENA) {
-            return primitivo(TipoDato.CADENA);
-        }
-        if (cat == TipoOperando.CONSTANTE_CARACTER) {
-            return primitivo(TipoDato.CHAR);
-        }
-        if (cat == TipoOperando.CONSTANTE_ENTERA) {
-            return primitivo(TipoDato.ENTERO);
-        }
-        if (cat == TipoOperando.CONSTANTE_DECIMAL) {
-            return primitivo(TipoDato.DECIMAL);
-        }
-        if (cat == TipoOperando.BOOLEANO_VERDADERO
-                || cat == TipoOperando.BOOLEANO_FALSO) {
-            return primitivo(TipoDato.BOOLEAN);
-        }
-        if (cat == TipoOperando.NULO) {
-            return primitivo(TipoDato.NULO);
-        }
-        String base = baseIndice(operando);
-        if (base != null) {
-            Tipo elemento = tipoDeArregloDe(base);
-            if (elemento != null) {
-                return elemento;
-            }
-            Tipo tipoBase = tipoDeVariableDe(base);
-            if (tipoBase instanceof TipoArreglo) {
-                return ((TipoArreglo) tipoBase).getTipoBase();
-            }
-            return tipoBase;
-        }
-        return tipoDeVariableDe(operando);
-    }
-
-    private Tipo primitivo(TipoDato dato) {
-        return new TipoPrimitivo(dato);
-    }
-
-    private String tipoCDeTemporal(String nombre) {
-        Tipo tipo = cuartetas.tipoDeTemporal(nombre);
-        return tipoCDe(tipo);
-    }
-
-    private String tipoCDeVariable(String nombre) {
-        return tipoCDe(tipoDeVariableDe(nombre));
-    }
-
-    private String tipoCDeElementoArreglo(String nombre) {
-        return tipoCDe(tipoDeArregloDe(nombre));
-    }
-
-    private String tipoCDeFuncion(String nombre) {
-        return tipoCDe(cuartetas.tipoDeFuncion(nombre));
-    }
-
-    private String tipoCDe(Tipo tipo) {
-        if (tipo instanceof TipoArreglo) {
-            return tipo.tipoC();
-        }
-        if (esObjetoPorReferencia(tipo)) {
-            return tipo.tipoC() + "*";
-        }
-        if (tipo instanceof TipoStructura) {
-            return tipo.tipoC();
-        }
-        return tipoCValido(tipo) ? tipo.tipoC() : "double";
-    }
-
-    private boolean tipoCValido(Tipo tipo) {
-        return tipo != null && tipo.tipoC() != null && !"error".equals(tipo.tipoC());
-    }
-
-    private Tipo tipoDeVariableDe(String nombre) {
-        Tipo tipo = cuartetas.tipoDeVariable(nombre);
-        if (tipo == null) {
-            tipo = cuartetas.tipoDeVariable(nombre.replace('_', '.'));
-        }
-        return tipo;
-    }
-
-    private Tipo tipoDeArregloDe(String nombre) {
-        Tipo tipo = cuartetas.tipoDeArreglo(nombre);
-        if (tipo == null) {
-            tipo = cuartetas.tipoDeArreglo(nombre.replace('_', '.'));
-        }
-        return tipo;
-    }
-
-    private boolean esDeTipo(Tipo tipo, TipoDato dato) {
-        return tipo != null && tipo.getTipoDato() == dato;
-    }
-
-    private boolean esTipoVoid(Tipo tipo) {
-        return tipo != null && tipo.getTipoDato() == TipoDato.VOID;
-    }
-
-    private String normalizar(String operando) {
-        if (operando == null) {
-            return null;
-        }
-        TipoOperando cat = categoriaDe(operando);
-        if (cat != null && cat != TipoOperando.FUNCION
-                && cat != TipoOperando.VARIABLE) {
-            if (cat == TipoOperando.BOOLEANO_VERDADERO) {
-                return "1";
-            }
-            if (cat == TipoOperando.BOOLEANO_FALSO
-                    || cat == TipoOperando.NULO) {
-                return "0";
-            }
-            return operando;
-        }
-        return formatearAccesoCampos(operando);
-    }
-
-    /**
-     * Convierte un operando aplanado tipo "base.campo" (o encadenado
-     * "base.sub.campo") al operador correcto en C: usa "->" cuando la parte
-     * izquierda es un objeto por referencia (heap, ej. instancias de clase
-     * Zetariano) y "." cuando es una estructura por valor (stack).
-     */
-    private String formatearAccesoCampos(String operando) {
-        if (operando == null || operando.indexOf('.') < 0) {
-            return operando;
-        }
-        List<String> segmentos = separarSegmentosPunto(operando);
-
-        StringBuilder resultado = new StringBuilder(segmentos.get(0));
-        Tipo tipoActual = tipoTrasIndices(tipoBase(segmentos.get(0)), segmentos.get(0));
-
-        for (int i = 1; i < segmentos.size(); i++) {
-            String segmento = segmentos.get(i);
-            boolean esPuntero = esObjetoPorReferencia(tipoActual);
-            resultado.append(esPuntero ? "->" : ".").append(segmento);
-
-            Tipo tipoCampo = (tipoActual instanceof TipoStructura)
-                    ? ((TipoStructura) tipoActual).getTipoAtributo(nombreSinIndices(segmento))
-                    : null;
-            tipoActual = tipoTrasIndices(tipoCampo, segmento);
-        }
-        return resultado.toString();
-    }
-
-    private List<String> separarSegmentosPunto(String operando) {
-        List<String> segmentos = new ArrayList<>();
-        int profundidad = 0;
-        int inicio = 0;
-        for (int i = 0; i < operando.length(); i++) {
-            char c = operando.charAt(i);
-            if (c == '[') {
-                profundidad++;
-            } else if (c == ']') {
-                profundidad--;
-            } else if (c == '.' && profundidad == 0) {
-                segmentos.add(operando.substring(inicio, i));
-                inicio = i + 1;
+        for (String clase : contexto.getEstructuras().keySet()) {
+            if (nombre.equals(clase)) {
+                return true;
             }
         }
-        segmentos.add(operando.substring(inicio));
-        return segmentos;
-    }
-
-    private String nombreSinIndices(String segmento) {
-        int corchete = segmento.indexOf('[');
-        return (corchete >= 0) ? segmento.substring(0, corchete) : segmento;
-    }
-
-    /**
-     * Tipo del primer segmento de la cadena (ej. "t1" en "t1.dato"). A
-     * diferencia de un campo intermedio, el segmento base puede ser un temporal
-     * (t1, t18, ...) cuyo tipo vive en el mapa de temporales, no en el de
-     * variables, por lo que hay que revisar la categoria primero.
-     */
-    private Tipo tipoBase(String segmento) {
-        String nombre = nombreSinIndices(segmento);
-        if (esCategoria(nombre, TipoOperando.TEMPORAL)) {
-            return cuartetas.tipoDeTemporal(nombre);
-        }
-        return tipoDeVariableDe(nombre);
-    }
-
-    private Tipo tipoTrasIndices(Tipo tipo, String segmento) {
-        Tipo actual = tipo;
-        int i = 0;
-        while (i < segmento.length() && actual != null) {
-            if (segmento.charAt(i) == '[' && actual instanceof TipoArreglo) {
-                actual = ((TipoArreglo) actual).getTipoBase();
-            }
-            i++;
-        }
-        return actual;
-    }
-
-    private TipoOperando categoriaDe(String operando) {
-        TipoOperando cat = cuartetas.categoriaDe(operando);
-        if (cat != null) {
-            return cat;
-        }
-        return null;
-    }
-
-    private boolean esCategoria(String operando, TipoOperando esperado) {
-        return categoriaDe(operando) == esperado;
-    }
-
-    private boolean esConstante(String operando) {
-        TipoOperando cat = categoriaDe(operando);
-        return cat == TipoOperando.CONSTANTE_ENTERA
-                || cat == TipoOperando.CONSTANTE_DECIMAL
-                || cat == TipoOperando.CONSTANTE_CADENA
-                || cat == TipoOperando.CONSTANTE_CARACTER
-                || cat == TipoOperando.BOOLEANO_VERDADERO
-                || cat == TipoOperando.BOOLEANO_FALSO
-                || cat == TipoOperando.NULO;
-    }
-
-    private boolean esNombreDeVariable(String operando) {
-        if (operando == null) {
-            return false;
-        }
-        TipoOperando cat = categoriaDe(operando);
-        return cat == null || cat == TipoOperando.VARIABLE;
-    }
-
-    private String baseIndice(String operando) {
-        int corchete = operando.indexOf('[');
-        if (corchete < 0) {
-            return null;
-        }
-        return operando.substring(0, corchete);
+        return false;
     }
 
     private void linea(StringBuilder sb, String texto) {
         sb.append("\t").append(texto).append('\n');
     }
 
-    private boolean esObjetoPorReferencia(Tipo tipo) {
-        return tipo instanceof TipoStructura
-                && "clase_z".equals(((TipoStructura) tipo).getAmbito());
+    private void corregirDimensionesArreglos(List<Unidad> unidades,
+            ContextoTraduccion ctx) {
+        java.util.Map<String, String> origenTemp = new java.util.LinkedHashMap<>();
+        java.util.Map<String, String> tempToUnit = new java.util.LinkedHashMap<>();
+        for (Unidad unidad : unidades) {
+            if (unidad.getNombre() == null) {
+                continue;
+            }
+            for (Cuarteta c : unidad.getCuartetas()) {
+                if (c.getOperador() == OperadorCuarteta.ASIGNACION
+                        && c.getArg1() != null
+                        && ctx.contieneArregloNuevo(c.getArg1())
+                        && c.getResultado() != null) {
+                    origenTemp.put(c.getResultado(), c.getArg1());
+                    tempToUnit.put(c.getResultado(), unidad.getNombre());
+                }
+            }
+        }
+        for (Unidad unidad : unidades) {
+            if (unidad.getNombre() == null) {
+                continue;
+            }
+            for (Cuarteta c : unidad.getCuartetas()) {
+                if (c.getOperador() == OperadorCuarteta.PUNTERO_INICIO
+                        && c.getResultado() != null
+                        && ctx.contieneArregloNuevo(c.getResultado())) {
+                    Tipo tipo = ctx.tipoDeTemporal(c.getResultado());
+                    if (!(tipo instanceof TipoArreglo)) {
+                        continue;
+                    }
+                    TipoArreglo tipoAlloc = (TipoArreglo) tipo;
+                    for (java.util.Map.Entry<String, String> entrada
+                            : origenTemp.entrySet()) {
+                        if (c.getResultado().equals(entrada.getValue())) {
+                            String nombreUnidad = tempToUnit.get(
+                                    entrada.getKey());
+                            String clase = ctx.claseDeUnidad(nombreUnidad);
+                            if (clase != null) {
+                                ctx.getDimsArreglosResueltas().put(
+                                        clase + "." + entrada.getKey(),
+                                        tipoAlloc);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

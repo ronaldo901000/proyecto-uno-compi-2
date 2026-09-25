@@ -58,9 +58,9 @@ public class DeclaracionVariable extends Declaracion {
         Tipo tipo = (tipoDato != null)
                 ? reglas.resolverTipo(contexto, tipoDato, fila, columna)
                 : ((valorInicial != null) ? valorInicial.getTipo() : null);
-        cuartetas.registrarTipoVariable(id, tipo);
+        cuartetas.registrarTipoVariableDeclarada(id, tipo);
         if (tipo instanceof com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) {
-            cuartetas.registrarTipoArreglo(id,
+            cuartetas.registrarTipoArregloDeclarado(id,
                     ((com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) tipo).getTipoBase());
         }
         if (valorInicial != null) {

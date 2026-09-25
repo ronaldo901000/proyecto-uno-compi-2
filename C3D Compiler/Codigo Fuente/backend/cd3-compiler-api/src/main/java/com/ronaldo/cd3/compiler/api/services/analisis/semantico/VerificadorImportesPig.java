@@ -304,12 +304,18 @@ public class VerificadorImportesPig {
     }
 
     private boolean coincidePorNombre(ArchivoDTO archivo, String importeNorm) {
-        String nombreBase = (archivo.getNombre() == null) ? "" : archivo.getNombre().toLowerCase();
+        String nombreBase = nombreBase(archivo.getNombre());
+        if (nombreBase == null || nombreBase.isEmpty()) {
+            return false;
+        }
         String extension = (archivo.getExtension() == null)
                 ? "" : archivo.getExtension().toLowerCase();
-        String nombreExt = (extension.isEmpty()) ? nombreBase : nombreBase + "." + extension;
-        String ultimo = (importeNorm.contains("/"))
-                ? importeNorm.substring(importeNorm.lastIndexOf('/') + 1) : importeNorm;
+        String nombreExt = (extension.isEmpty())
+                ? nombreBase.toLowerCase()
+                : nombreBase.toLowerCase() + "." + extension;
+        String importeBase = nombreBase(importeNorm);
+        String ultimo = (importeBase.contains("/"))
+                ? importeBase.substring(importeBase.lastIndexOf('/') + 1) : importeBase;
         if (ultimo.equals(nombreExt) || ultimo.equals(nombreBase)) {
             return true;
         }
@@ -320,22 +326,55 @@ public class VerificadorImportesPig {
         if (importeNorm == null || importeNorm.isEmpty()) {
             return "";
         }
-        String[] partes = importeNorm.split("/");
+        String importeBase = nombreBase(importeNorm);
+        String[] partes = importeBase.split("/");
         if (partes.length < 2) {
             return "";
         }
         return partes[partes.length - 2] + "." + partes[partes.length - 1];
     }
 
+    /**
+     * Normaliza una ruta de import a una ruta de sistema de archivos en
+     * minusculas. Los separadores de carpeta pueden venir como '.' o '/'
+     * (ej. "carpeta.Clase.z" o "carpeta/Clase.z"); la extension siempre va
+     * despues del ultimo punto y se conserva tal cual.
+     */
     private String normalizar(String ruta) {
         if (ruta == null || ruta.isEmpty()) {
             return "";
         }
-        String resultado = ruta.replace('.', '/').replace('\\', '/').toLowerCase();
+        String resultado = ruta.replace('\\', '/');
+        String extension = "";
+        String menor = resultado.toLowerCase();
+        for (String ext : ExtensionArchivos.todas()) {
+            if (menor.endsWith("." + ext)) {
+                extension = "." + ext;
+                resultado = resultado.substring(0, resultado.length() - extension.length());
+                break;
+            }
+        }
+        resultado = resultado.replace('.', '/');
         while (resultado.startsWith("/")) {
             resultado = resultado.substring(1);
         }
-        return resultado;
+        return resultado.toLowerCase() + extension;
+    }
+
+    private String nombreBase(String nombre) {
+        if (nombre == null) {
+            return "";
+        }
+        StringBuilder soporte = new StringBuilder(nombre);
+        int separador = Math.max(soporte.lastIndexOf("/"), soporte.lastIndexOf("\\"));
+        if (separador >= 0) {
+            soporte.delete(0, separador + 1);
+        }
+        int indice = soporte.lastIndexOf(".");
+        if (indice > 0) {
+            soporte.delete(indice, soporte.length());
+        }
+        return soporte.toString();
     }
 
     private Set<String> simbolosDe(ArchivoDTO archivo, List<ProgramaY> programasY) {
@@ -387,14 +426,6 @@ public class VerificadorImportesPig {
             }
         }
         return null;
-    }
-
-    private String nombreBase(String nombre) {
-        if (nombre == null) {
-            return "";
-        }
-        int indice = nombre.lastIndexOf('.');
-        return (indice > 0) ? nombre.substring(0, indice) : nombre;
     }
 
     private List<Expresion> listaSegura(List<Expresion> lista) {

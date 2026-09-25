@@ -1,7 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.expresion;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
-import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
@@ -11,13 +10,9 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoPrimitivo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -203,22 +198,16 @@ public class Llamada extends Expresion implements Instruccion {
         return tiposArgumentos;
     }
 
-    /**
-     * 
-     * @param contexto
-     * @param cuartetas
-     * @return 
-     */
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         String dirObjetivo = null;
-        
+
         if (objetivo != null) {
             dirObjetivo = objetivo.generarCuartetas(contexto, cuartetas);
         }
 
         List<String> temporalesArgumentos = new ArrayList<>();
-        
+
         if (argumentos != null) {
             for (Expresion arg : argumentos) {
                 temporalesArgumentos.add(arg.generarCuartetas(contexto, cuartetas));
@@ -228,64 +217,18 @@ public class Llamada extends Expresion implements Instruccion {
         SimboloFuncion funcion = resolverFuncion(contexto);
         String etiqueta = (funcion != null)
                 ? funcion.getEtiquetaInicio() : nombreFuncion;
-        List<SimboloParametro> parametros = (funcion != null)
-                ? funcion.getParametros() : null;
 
-        // Copiar campos del objeto hacia las variables del metodo
-        List<String> camposActivos = camposDeObjeto(funcion, contexto);
-        if (camposActivos != null && dirObjetivo != null) {
-            for (String campo : camposActivos) {
-                String destinoCampo = dirObjetivo + "." + campo;
-                Tipo tipoCampo = tipoDeCampo(funcion, contexto, campo);
-                cuartetas.registrarTipoVariable(destinoCampo, tipoCampo);
-                if (tipoCampo instanceof TipoArreglo) {
-                    cuartetas.registrarTipoArreglo(destinoCampo,
-                            ((TipoArreglo) tipoCampo).getTipoBase());
-                    cuartetas.agregar(OperadorCuarteta.COPIAR, destinoCampo,
-                            null, campo, fila, columna);
-                } else {
-                    cuartetas.agregar(OperadorCuarteta.ASIGNACION, destinoCampo,
-                            null, campo, fila, columna);
-                }
-            }
+        // Llamada a metodo: el receptor viaja como primer parametro (modelo this).
+        boolean esMetodo = funcion != null && funcion.getNombreClase() != null;
+        if (esMetodo) {
+            String receptor = (dirObjetivo != null) ? dirObjetivo : "this";
+            cuartetas.agregar(OperadorCuarteta.PARAMETRO, receptor,
+                    null, null, fila, columna);
         }
 
-        //Determinar parametros pasables por valor
-        List<Integer> indicesPasables = new ArrayList<>();
-        
-        if (parametros != null) {
-            for (int i = 0; i < parametros.size(); i++) {
-                if (esPasablePorValor(parametros.get(i).getTipo())) {
-                    indicesPasables.add(i);
-                }
-            }
-        }
-
-        // Se evalúa una sola vez y se reutiliza antes y después de la llamada
-        boolean pasaPorGuardado = (parametros != null
-                && parametros.size() == temporalesArgumentos.size());
-
-        Map<Integer, String> guardados = new HashMap<>();
-        if (pasaPorGuardado) {
-
-            for (int i : indicesPasables) {
-                SimboloParametro parametro = parametros.get(i);
-                cuartetas.registrarTipoVariable(parametro.getId(), parametro.getTipo());
-
-                String guardado = cuartetas.nuevoTemporal();
-                guardados.put(i, guardado);
-                cuartetas.registrarTipoTemporal(guardado, parametro.getTipo());
-
-                cuartetas.agregar(OperadorCuarteta.ASIGNACION, parametro.getId(),
-                        null, guardado, fila, columna);
-                cuartetas.agregar(OperadorCuarteta.ASIGNACION, temporalesArgumentos.get(i),
-                        null, parametro.getId(), fila, columna);
-            }
-        } else {
-            for (String dir : temporalesArgumentos) {
-                cuartetas.agregar(OperadorCuarteta.PARAMETRO, dir,
-                        null, null, fila, columna);
-            }
+        for (String dir : temporalesArgumentos) {
+            cuartetas.agregar(OperadorCuarteta.PARAMETRO, dir,
+                    null, null, fila, columna);
         }
 
         //Llamada
@@ -297,72 +240,7 @@ public class Llamada extends Expresion implements Instruccion {
         cuartetas.agregar(OperadorCuarteta.LLAMADA, etiqueta,
                 null, temporal, fila, columna);
 
-        // Restaurar valores previos de los parametros
-        if (pasaPorGuardado) {
-            for (int i : indicesPasables) {
-                cuartetas.agregar(OperadorCuarteta.ASIGNACION, guardados.get(i),
-                        null, parametros.get(i).getId(), fila, columna);
-            }
-        }
-
-        // Copiar de vuelta los campos del objeto
-        if (camposActivos != null && dirObjetivo != null) {
-            for (String campo : camposActivos) {
-                if (tipoDeCampo(funcion, contexto, campo) instanceof TipoArreglo) {
-                    cuartetas.agregar(OperadorCuarteta.COPIAR, campo,
-                            null, dirObjetivo + "." + campo, fila, columna);
-                } else {
-                    cuartetas.agregar(OperadorCuarteta.ASIGNACION, campo,
-                            null, dirObjetivo + "." + campo, fila, columna);
-                }
-            }
-        }
-
         return temporal;
-    }
-
-    private List<String> camposDeObjeto(SimboloFuncion funcion, Contexto contexto) {
-        if (funcion == null || objetivo == null) {
-            return null;
-        }
-        SimboloClase clase = claseDeFuncion(funcion, contexto);
-        if (clase == null
-                || !(clase.getTipo() instanceof TipoStructura)
-                || ((TipoStructura) clase.getTipo()).getAtributos().isEmpty()) {
-            return null;
-        }
-        TipoStructura tipoClase = (TipoStructura) clase.getTipo();
-        List<String> campos = new ArrayList<>();
-        for (Map.Entry<String, Tipo> atributo : tipoClase.getAtributos().entrySet()) {
-            campos.add(atributo.getKey());
-        }
-        return campos.isEmpty() ? null : campos;
-    }
-
-    private Tipo tipoDeCampo(SimboloFuncion funcion, Contexto contexto, String campo) {
-        SimboloClase clase = claseDeFuncion(funcion, contexto);
-        if (clase == null || !(clase.getTipo() instanceof TipoStructura)) {
-            return null;
-        }
-        return ((TipoStructura) clase.getTipo()).getTipoAtributo(campo);
-    }
-
-    private SimboloClase claseDeFuncion(SimboloFuncion funcion, Contexto contexto) {
-        String nombreClase = (funcion != null) ? funcion.getNombreClase() : null;
-        if (nombreClase == null) {
-            return null;
-        }
-        return contexto.getTablaSimbolos().buscarClase(nombreClase);
-    }
-
-    private boolean esPasablePorValor(Tipo tipo) {
-        if (tipo == null) {
-            return true;
-        }
-        if (tipo instanceof TipoPrimitivo) {
-            return tipo.getTipoDato() != TipoDato.NULO;
-        }
-        return true;
     }
 
     private SimboloFuncion resolverFuncion(Contexto contexto) {

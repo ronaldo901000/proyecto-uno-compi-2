@@ -3,10 +3,16 @@ package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 
 /**
+ * Cuarteta intermedia del compilador C3D. Cada subclase concreta implementa
+ * su propia traduccion a codigo C dentro de aCodigoC.
+ *
+ * Patron similar al proyecto PigLatin: cada cuarteta sabe traducirse por si
+ * misma, recibiendo el contexto compartido que contiene tipos, ambitos y
+ * formateo de operandos.
  *
  * @author ronaldo
  */
- public class Cuarteta {
+public abstract class Cuarteta {
 
     private OperadorCuarteta operador;
     private String arg1;
@@ -15,8 +21,8 @@ import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
     private int fila;
     private int columna;
 
-    public Cuarteta(OperadorCuarteta operador, String arg1, String arg2, String resultado,
-            int fila, int columna) {
+    public Cuarteta(OperadorCuarteta operador, String arg1, String arg2,
+            String resultado, int fila, int columna) {
         this.operador = operador;
         this.arg1 = arg1;
         this.arg2 = arg2;
@@ -24,7 +30,16 @@ import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
         this.fila = fila;
         this.columna = columna;
     }
-    
+
+    /**
+     * Traduce esta cuarteta a codigo C y lo appendea al StringBuilder.
+     * Cada subclase implementa su propia logica de traduccion.
+     *
+     * @param sb  StringBuilder donde se escribe el codigo C
+     * @param ctx Contexto compartido (tipos, ambitos, formateo)
+     */
+    public abstract void aCodigoC(StringBuilder sb, ContextoTraduccion ctx);
+
     public OperadorCuarteta getOperador() {
         return operador;
     }
@@ -67,6 +82,7 @@ import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 
     @Override
     public String toString() {
-        return "(" + operador + ", " + arg1 + ", " + arg2 + ", " + resultado + ")";
+        return "(" + operador + ", " + arg1 + ", " + arg2 + ", "
+                + resultado + ")";
     }
 }

@@ -54,13 +54,19 @@ public class TipoStructura extends Tipo {
     public int getTamañoHeap() {
         int tamaño = 0;
         for (Tipo tipoAtributo : atributos.values()) {
-            if (tipoAtributo instanceof TipoStructura) {
+            if (tipoAtributo instanceof TipoStructura
+                    || esArregloDeStructuras(tipoAtributo)) {
                 tamaño += TAMAÑO_REFERENCIA;
             } else {
                 tamaño += tipoAtributo.tamañoBytes();
             }
         }
         return tamaño;
+    }
+
+    private boolean esArregloDeStructuras(Tipo tipo) {
+        return tipo instanceof TipoArreglo
+                && ((TipoArreglo) tipo).getTipoBase() instanceof TipoStructura;
     }
 
     @Override

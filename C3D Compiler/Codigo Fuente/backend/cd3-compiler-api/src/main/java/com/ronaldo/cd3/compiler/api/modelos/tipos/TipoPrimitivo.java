@@ -59,7 +59,7 @@ public class TipoPrimitivo extends Tipo {
             case CHAR:
                 return "char";
             case BOOLEAN:
-                return "int";
+                return "bool";
             case NULO:
                 return "void*";
             case VOID:

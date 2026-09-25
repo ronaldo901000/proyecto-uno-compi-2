@@ -93,6 +93,8 @@ public class Operacion extends Expresion implements Verificable {
                     setTipo(reglas.numeroResultado(tablaTipos, iz, der));
                     return;
                 }
+                //verificar divisiones entre cero
+                
                 break;
                 
             case MODULO:

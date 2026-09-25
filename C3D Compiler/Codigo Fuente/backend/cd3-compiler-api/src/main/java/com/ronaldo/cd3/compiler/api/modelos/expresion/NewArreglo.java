@@ -98,6 +98,7 @@ public class NewArreglo extends Expresion implements Verificable {
         
         cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, tipoBase,
                 dirDimension, temporalPtr, fila, columna);
+        cuartetas.registrarTipoTemporal(temporalPtr, getTipo());
         
         return temporalPtr;
     }

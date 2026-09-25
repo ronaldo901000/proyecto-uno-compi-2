@@ -44,10 +44,13 @@ public class AnalizadorSemanticoPig {
 
         //Generacion de cuartetas
         if (!contexto.hayErrores() && !respuesta.isHayErrores()) {
+            
             Contexto contextoGeneracion = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
+            
             cuartetas.agregarEtiqueta("main", programa.getFila(), programa.getColumna());
             programa.generarCuartetas(contextoGeneracion, cuartetas);
             respuesta.setCuartetas(cuartetas.getCuartetas());
+            
         }
     }
 }

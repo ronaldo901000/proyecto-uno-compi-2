@@ -79,7 +79,7 @@ public class DeclaracionEstructura extends Declaracion {
             return null;
         }
         TipoStructura estructura = (TipoStructura) tipo;
-        cuartetas.registrarTipoVariable(id, tipo);
+        cuartetas.registrarTipoVariableDeclarada(id, tipo);
         for (String nombreAtributo : estructura.getAtributos().keySet()) {
             cuartetas.registrarTipoVariable(id + "." + nombreAtributo,
                     estructura.getTipoAtributo(nombreAtributo));

@@ -17,4 +17,12 @@ public enum ExtensionArchivos {
     public String getTexto() {
         return this.texto;
     }
+
+    public static java.util.List<String> todas() {
+        java.util.List<String> extensiones = new java.util.ArrayList<>();
+        for (ExtensionArchivos ext : ExtensionArchivos.values()) {
+            extensiones.add(ext.getTexto());
+        }
+        return extensiones;
+    }
 }

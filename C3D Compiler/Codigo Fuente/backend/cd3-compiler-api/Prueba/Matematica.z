@@ -1,0 +1,40 @@
+public class Matematica {
+    int llamadas;
+
+    public Matematica() {
+        llamadas = 0;
+    }
+
+    public int factorial(int n) {
+        if (n < 2) {
+            return 1;
+        }
+        return n * factorial(n - 1);
+    }
+
+    public int fibonacci(int n) {
+        llamadas++;
+        if (n < 2) {
+            return n;
+        }
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+
+    public int getLlamadas() {
+        return llamadas;
+    }
+
+    public boolean esPar(int n) {
+        if (n == 0) {
+            return true;
+        }
+        return esImpar(n - 1);
+    }
+
+    public boolean esImpar(int n) {
+        if (n == 0) {
+            return false;
+        }
+        return esPar(n - 1);
+    }
+}

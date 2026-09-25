@@ -21,12 +21,15 @@ public class AnalisisResorce {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response analizar(EntradaDTO entrada) {
-
         Analizador analizador = new Analizador();
         try {
             return Response.ok(analizador.iniciar(entrada)).build();
         } catch (EntradaException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (StackOverflowError | RuntimeException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error interno del compilador: " + ex)
+                    .build();
         }
     }
 }

@@ -1,0 +1,50 @@
+public class Contenedor {
+    int[] datos;
+    int[][] matriz;
+    Punto[] puntos;
+    int cantidad;
+
+    public Contenedor() {
+        datos = new int[5];
+        matriz = new int[2][4];
+        puntos = new Punto[3];
+        cantidad = 0;
+    }
+
+    public void agregar(int valor) {
+        datos[cantidad] = valor;
+        cantidad++;
+    }
+
+    public int sumarDatos() {
+        int suma = 0;
+        for (int i = 0; i < cantidad; i++) {
+            suma = suma + datos[i];
+        }
+        return suma;
+    }
+
+    public void llenarMatriz() {
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                matriz[i][j] = i * 10 + j;
+            }
+        }
+    }
+
+    public int getMatriz(int i, int j) {
+        return matriz[i][j];
+    }
+
+    public void guardarPunto(int pos, Punto p) {
+        puntos[pos] = p;
+    }
+
+    public Punto getPunto(int pos) {
+        return puntos[pos];
+    }
+
+    public boolean hayPunto(int pos) {
+        return puntos[pos] != null;
+    }
+}

@@ -2,11 +2,14 @@ package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.enums.TipoOperando;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -19,7 +22,11 @@ public class ListaCuartetas {
     private final Map<String, Tipo> tiposVariables;
     private final Map<String, Tipo> tiposArreglos;
     private final Map<String, Tipo> tiposFunciones;
+    private final Map<String, List<SimboloParametro>> parametrosFunciones;
     private final Map<String, TipoOperando> categoriasOperandos;
+    private final Map<String, Map<String, Tipo>> variablesDeclaradasPorUnidad;
+    private final Map<String, Map<String, Tipo>> arreglosDeclaradosPorUnidad;
+    private String unidadActual;
     private int contadorTemporales;
     private int contadorEtiquetas;
 
@@ -29,7 +36,11 @@ public class ListaCuartetas {
         this.tiposVariables = new HashMap<>();
         this.tiposArreglos = new HashMap<>();
         this.tiposFunciones = new HashMap<>();
+        this.parametrosFunciones = new HashMap<>();
         this.categoriasOperandos = new HashMap<>();
+        this.variablesDeclaradasPorUnidad = new HashMap<>();
+        this.arreglosDeclaradosPorUnidad = new HashMap<>();
+        this.unidadActual = null;
         this.contadorTemporales = 0;
         this.contadorEtiquetas = 0;
     }
@@ -63,17 +74,120 @@ public class ListaCuartetas {
         this.cuartetas.add(cuarteta);
     }
 
-    public void agregar(OperadorCuarteta operador, String arg1, String arg2, String resultado,
-            int fila, int columna) {
-        this.cuartetas.add(new Cuarteta(operador, arg1, arg2, resultado, fila, columna));
+    public void agregar(OperadorCuarteta operador, String arg1, String arg2,
+            String resultado, int fila, int columna) {
+        Cuarteta cuarteta;
+        switch (operador) {
+            case ASIGNACION:
+                cuarteta = new CuartetaAsignacion(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case SUMA: case RESTA: case MULTIPLICACION:
+            case DIVISION: case MODULO:
+                cuarteta = new CuartetaAritmetica(operador, arg1, arg2,
+                        resultado, fila, columna);
+                break;
+            case MENOR_Q: case MENOR_EQ_Q:
+            case MAYOR_Q: case MAYOR_EQ_Q:
+                cuarteta = new CuartetaComparacion(operador, arg1, arg2,
+                        resultado, fila, columna);
+                break;
+            case IGUAL: case DISTINTO:
+                cuarteta = new CuartetaIgualdad(operador, arg1, arg2,
+                        resultado, fila, columna);
+                break;
+            case AND: case OR:
+                cuarteta = new CuartetaLogicaBinaria(operador, arg1, arg2,
+                        resultado, fila, columna);
+                break;
+            case NEGATIVO_UNARIO: case NOT:
+                cuarteta = new CuartetaNegacion(operador, arg1, arg2,
+                        resultado, fila, columna);
+                break;
+            case INCREMENTO: case DECREMENTO:
+                cuarteta = new CuartetaIncrementoDecremento(operador, arg1,
+                        arg2, resultado, fila, columna);
+                break;
+            case ETIQUETA:
+                cuarteta = new CuartetaEtiqueta(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case GOTO:
+                cuarteta = new CuartetaSalto(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case IF_FALSO: case IF_VERDADERO:
+                cuarteta = new CuartetaCondicional(operador, arg1, arg2,
+                        resultado, fila, columna);
+                break;
+            case IMPRIMIR:
+                cuarteta = new CuartetaImprimir(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case LEER:
+                cuarteta = new CuartetaLeer(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case PUNTERO_INICIO:
+                cuarteta = new CuartetaPunteroInicio(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case PUNTERO_FINAL:
+                cuarteta = new CuartetaPunteroFinal(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case COPIAR:
+                cuarteta = new CuartetaCopiar(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case ACCESO_INDICE:
+                cuarteta = new CuartetaAccesoIndice(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case ACCESO_ATRIBUTO:
+                cuarteta = new CuartetaAccesoAtributo(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case PARAMETRO:
+                cuarteta = new CuartetaParametro(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case LLAMADA:
+                cuarteta = new CuartetaLlamada(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case RETORNO:
+                cuarteta = new CuartetaRetorno(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            default:
+                cuarteta = new CuartetaAsignacion(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+        }
+        this.cuartetas.add(cuarteta);
     }
 
     public void agregarEtiqueta(String etiqueta) {
         this.agregar(OperadorCuarteta.ETIQUETA, etiqueta, null, null, 0, 0);
+        this.actualizarUnidadActual(etiqueta);
     }
 
     public void agregarEtiqueta(String etiqueta, int fila, int columna) {
         this.agregar(OperadorCuarteta.ETIQUETA, etiqueta, null, null, fila, columna);
+        this.actualizarUnidadActual(etiqueta);
+    }
+
+    /**
+     * Las etiquetas de entrada de funcion (fun_..., metodo_..., constructor_...,
+     * main) delimitan una unidad de traduccion. Las etiquetas internas (L1, L2, ...)
+     * se registran como ETIQUETA_INTERNA antes de agregarse y no cambian la unidad.
+     */
+    private void actualizarUnidadActual(String etiqueta) {
+        if (etiqueta != null
+                && !TipoOperando.ETIQUETA_INTERNA.equals(this.categoriasOperandos.get(etiqueta))) {
+            this.unidadActual = etiqueta;
+        }
     }
 
     public Cuarteta get(int indice) {
@@ -116,9 +230,33 @@ public class ListaCuartetas {
         }
     }
 
+    /**
+     * Registra el tipo de una variable declarada dentro de la unidad
+     * actual (funcion, metodo, constructor o main). Las variables declaradas
+     * en una unidad de funcion deben traducirse como locales de esa unidad,
+     * no como globales.
+     */
+    public void registrarTipoVariableDeclarada(String nombre, Tipo tipo) {
+        this.registrarTipoVariable(nombre, tipo);
+        if (nombre != null && tipo != null && this.unidadActual != null) {
+            this.variablesDeclaradasPorUnidad
+                    .computeIfAbsent(this.unidadActual, k -> new HashMap<>())
+                    .put(nombre, tipo);
+        }
+    }
+
     public void registrarTipoArreglo(String nombre, Tipo tipoElemento) {
         if (nombre != null && tipoElemento != null) {
             this.tiposArreglos.put(nombre, tipoElemento);
+        }
+    }
+
+    public void registrarTipoArregloDeclarado(String nombre, Tipo tipoElemento) {
+        this.registrarTipoArreglo(nombre, tipoElemento);
+        if (nombre != null && tipoElemento != null && this.unidadActual != null) {
+            this.arreglosDeclaradosPorUnidad
+                    .computeIfAbsent(this.unidadActual, k -> new HashMap<>())
+                    .put(nombre, tipoElemento);
         }
     }
 
@@ -126,6 +264,20 @@ public class ListaCuartetas {
         if (nombre != null && tipoRetorno != null) {
             this.tiposFunciones.put(nombre, tipoRetorno);
         }
+    }
+
+    public void registrarParametrosFuncion(String etiqueta,
+            List<SimboloParametro> parametros) {
+        if (etiqueta != null && parametros != null) {
+            this.parametrosFunciones.put(etiqueta, parametros);
+        }
+    }
+
+    public List<SimboloParametro> parametrosDeFuncion(String etiqueta) {
+        if (etiqueta == null) {
+            return null;
+        }
+        return this.parametrosFunciones.get(etiqueta);
     }
 
     public Tipo tipoDeTemporal(String nombre) {
@@ -138,6 +290,27 @@ public class ListaCuartetas {
 
     public Tipo tipoDeArreglo(String nombre) {
         return this.tiposArreglos.get(nombre);
+    }
+
+    public Map<String, Map<String, Tipo>> getVariablesDeclaradasPorUnidad() {
+        return this.variablesDeclaradasPorUnidad;
+    }
+
+    public Map<String, Map<String, Tipo>> getArreglosDeclaradosPorUnidad() {
+        return this.arreglosDeclaradosPorUnidad;
+    }
+
+    public Map<String, Set<String>> getNombresDeclaradosPorUnidad() {
+        Map<String, Set<String>> nombres = new HashMap<>();
+        for (Map.Entry<String, Map<String, Tipo>> entrada : this.variablesDeclaradasPorUnidad.entrySet()) {
+            nombres.computeIfAbsent(entrada.getKey(), k -> new LinkedHashSet<>())
+                    .addAll(entrada.getValue().keySet());
+        }
+        for (Map.Entry<String, Map<String, Tipo>> entrada : this.arreglosDeclaradosPorUnidad.entrySet()) {
+            nombres.computeIfAbsent(entrada.getKey(), k -> new LinkedHashSet<>())
+                    .addAll(entrada.getValue().keySet());
+        }
+        return nombres;
     }
 
     public Tipo tipoDeFuncion(String nombre) {

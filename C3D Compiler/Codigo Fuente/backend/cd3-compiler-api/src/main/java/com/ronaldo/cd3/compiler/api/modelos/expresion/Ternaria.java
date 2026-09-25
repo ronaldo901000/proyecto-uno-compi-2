@@ -39,7 +39,6 @@ public class Ternaria extends Expresion implements Verificable {
         return falso;
     }
 
-    
     @Override
     public void verificarSemantica(Contexto contexto) {
 
@@ -93,19 +92,17 @@ public class Ternaria extends Expresion implements Verificable {
     /**
      * t1 = z == 1
      *
-     * if_true t1 goto et1 
-     * goto et2 
-     * 
-     * et1: a = v 
-     *      goto salida 
-     * 
-     * et2: a = f 
-     *      goto salida 
-     * 
-     * salida : 
+     * if_true t1 goto et1 goto et2
+     *
+     * et1: a = v goto salida
+     *
+     * et2: a = f goto salida
+     *
+     * salida :
+     *
      * @param contexto
      * @param cuartetas
-     * @return 
+     * @return
      */
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
@@ -122,29 +119,24 @@ public class Ternaria extends Expresion implements Verificable {
         String et1 = cuartetas.nuevaEtiqueta();
         String et2 = cuartetas.nuevaEtiqueta();
 
-        cuartetas.agregar(OperadorCuarteta.IF_VERDADERO, t1, null, et1, fila, columna);
-        cuartetas.agregar(OperadorCuarteta.GOTO, null, null, et2, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.IF_VERDADERO, t1, et1, null, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.GOTO, et2, null, null, fila, columna);
 
-        // rama verdadera
         cuartetas.agregarEtiqueta(et1);
         String idVerdadero = (verdadero != null)
-                ? verdadero.generarCuartetas(contexto, cuartetas)
-                : null;
+                ? verdadero.generarCuartetas(contexto, cuartetas) : null;
         cuartetas.agregar(OperadorCuarteta.ASIGNACION, idVerdadero, null, temporal, fila, columna);
-        cuartetas.agregar(OperadorCuarteta.GOTO, null, null, salida, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.GOTO, salida, null, null, fila, columna);
 
-        // rama falsa
         cuartetas.agregarEtiqueta(et2);
         String idFalso = (falso != null)
-                ? falso.generarCuartetas(contexto, cuartetas)
-                : null;
+                ? falso.generarCuartetas(contexto, cuartetas) : null;
         cuartetas.agregar(OperadorCuarteta.ASIGNACION, idFalso, null, temporal, fila, columna);
-        cuartetas.agregar(OperadorCuarteta.GOTO, null, null, salida, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.GOTO, salida, null, null, fila, columna);
 
         //salida
         cuartetas.agregarEtiqueta(salida);
 
         return temporal;
     }
-
 }

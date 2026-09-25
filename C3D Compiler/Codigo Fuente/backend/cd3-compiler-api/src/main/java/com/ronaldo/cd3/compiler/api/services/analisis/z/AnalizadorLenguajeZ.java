@@ -101,10 +101,18 @@ public class AnalizadorLenguajeZ implements Analizable {
         if (nombre == null) {
             return "";
         }
-        if (nombre.toLowerCase().endsWith(".z")) {
-            return nombre.substring(0, nombre.length() - 2);
+        String base = nombre;
+        int separador = nombre.lastIndexOf('/');
+        if (separador < 0) {
+            separador = nombre.lastIndexOf('\\');
         }
-        return nombre;
+        if (separador >= 0) {
+            base = nombre.substring(separador + 1);
+        }
+        if (base.toLowerCase().endsWith(".z")) {
+            base = base.substring(0, base.length() - 2);
+        }
+        return base;
     }
 
 }
