@@ -94,6 +94,15 @@ public class DeclaracionArreglo extends Declaracion {
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         Tipo base = reglas.resolverTipo(contexto, tipoDato, fila, columna);
         cuartetas.registrarTipoArregloDeclarado(id, base);
+
+        List<Integer> tamanios = new ArrayList<>();
+        for (Expresion dim : dimensiones) {
+            Integer tam = (dim != null) ? reglas.constanteEntera(dim) : null;
+            tamanios.add((tam != null && tam > 0) ? tam : 0);
+        }
+        Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamanios);
+        cuartetas.registrarTipoVariableDeclarada(id, tipoArreglo);
+
         if (valoresIniciales != null) {
             for (int i = 0; i < valoresIniciales.size(); i++) {
                 Expresion valor = valoresIniciales.get(i);

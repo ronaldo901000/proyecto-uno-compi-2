@@ -25,8 +25,14 @@ dum (opcion != 4) {
         pila.apilar(lectura);
     } aliter (opcion == 2 ) { 
         lectura = pila.desapilar();
-        >> "Elemento desapilado: ";
-        >> lectura;
+
+        si(lectura == -1){
+            >> "PILA VACIA"                    
+        }
+        aliter{
+            >> "Elemento desapilado: ";
+            >> lectura;
+        }finis;
     } aliter (opcion == 3 ) { 
         >> pila.toString();
     } aliter (opcion == 4 ) { 

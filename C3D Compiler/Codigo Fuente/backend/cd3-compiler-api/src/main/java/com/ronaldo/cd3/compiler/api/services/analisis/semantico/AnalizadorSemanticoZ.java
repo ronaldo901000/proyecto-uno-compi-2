@@ -8,6 +8,7 @@ import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -18,6 +19,13 @@ public class AnalizadorSemanticoZ {
     public void analizar(List<ClaseZ> clases, RespuestaDTO respuesta,
             TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
             ListaCuartetas cuartetas) {
+        analizar(clases, respuesta, tablaTipos, tablaSimbolos,
+                cuartetas, null);
+    }
+
+    public void analizar(List<ClaseZ> clases, RespuestaDTO respuesta,
+            TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
+            ListaCuartetas cuartetas, Set<String> rutasImportadas) {
 
         if (clases == null || clases.isEmpty()) {
             return;
@@ -52,11 +60,16 @@ public class AnalizadorSemanticoZ {
             respuesta.setHayErrores(true);
         }
 
-        //Generacion de cuartetas
+        //Generacion de cuartetas solo para archivos importados
         if (!contexto.hayErrores() && !respuesta.isHayErrores()) {
             Contexto contextoGeneracion = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
             contextoGeneracion.setEsLenguajeZ(true);
             for (ClaseZ clase : clases) {
+                if (rutasImportadas != null
+                        && !rutasImportadas.contains(
+                                clase.getArchivo().getRuta())) {
+                    continue;
+                }
                 contextoGeneracion.setRuta(clase.getArchivo().getRuta());
                 clase.generarCuartetas(contextoGeneracion, cuartetas);
             }

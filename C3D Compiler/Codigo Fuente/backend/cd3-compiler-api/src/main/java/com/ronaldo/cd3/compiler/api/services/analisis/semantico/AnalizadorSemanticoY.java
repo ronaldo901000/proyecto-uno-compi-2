@@ -8,6 +8,7 @@ import com.ronaldo.cd3.compiler.api.modelos.programaY.ProgramaY;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -18,6 +19,13 @@ public class AnalizadorSemanticoY {
     public void analizar(List<ProgramaY> programas, RespuestaDTO respuesta,
             TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
             ListaCuartetas cuartetas) {
+        analizar(programas, respuesta, tablaTipos, tablaSimbolos,
+                cuartetas, null);
+    }
+
+    public void analizar(List<ProgramaY> programas, RespuestaDTO respuesta,
+            TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
+            ListaCuartetas cuartetas, Set<String> rutasImportadas) {
 
         if (programas == null || programas.isEmpty()) {
             return;
@@ -44,10 +52,15 @@ public class AnalizadorSemanticoY {
             respuesta.setHayErrores(true);
         }
 
-        //INICIO DE LA GENERACION DE LA CUARTETA
+        //GENERACION DE CUARTETAS solo para archivos importados
         if (!contexto.hayErrores() && !respuesta.isHayErrores()) {
             Contexto contextoGeneracion = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
             for (ProgramaY programa : programas) {
+                if (rutasImportadas != null
+                        && !rutasImportadas.contains(
+                                programa.getArchivo().getRuta())) {
+                    continue;
+                }
                 contextoGeneracion.setRuta(programa.getArchivo().getRuta());
                 programa.generarCuartetas(contextoGeneracion, cuartetas);
             }

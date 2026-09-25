@@ -25,6 +25,7 @@ public class CuartetaLeer extends Cuarteta {
         } else if (ctx.esDeTipo(tipo, TipoDato.CHAR)) {
             ctx.linea(sb, "scanf(\" %c\", &" + res + ");");
         } else if (ctx.esDeTipo(tipo, TipoDato.CADENA)) {
+            ctx.linea(sb, res + " = (char*)malloc(256 * sizeof(char));");
             ctx.linea(sb, "scanf(\"%s\", " + res + ");");
         } else {
             ctx.linea(sb, "scanf(\"%d\", &" + res + ");");

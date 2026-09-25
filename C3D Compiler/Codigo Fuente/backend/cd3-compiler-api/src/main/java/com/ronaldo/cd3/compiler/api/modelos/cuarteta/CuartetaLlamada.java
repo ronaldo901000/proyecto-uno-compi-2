@@ -32,13 +32,18 @@ public class CuartetaLlamada extends Cuarteta {
             if (clase != null) {
                 paramIdx = 1;
             }
+            List<SimboloParametro> paramsLlamador = ctx.getCuartetas()
+                    .parametrosDeFuncion(ctx.getUnidadActual());
             for (int i = 0; i < args.size()
                     && paramIdx < params.size(); i++) {
                 SimboloParametro param = params.get(paramIdx);
                 if (param.getTipo() instanceof TipoStructura
                         && !ctx.esObjetoPorReferencia(
                                 param.getTipo())) {
-                    args.set(i, "&" + args.get(i));
+                    String argRaiz = extraerRaiz(args.get(i));
+                    if (!yaEsPuntero(argRaiz, paramsLlamador)) {
+                        args.set(i, "&" + args.get(i));
+                    }
                 }
                 paramIdx++;
             }
@@ -54,5 +59,42 @@ public class CuartetaLlamada extends Cuarteta {
         } else {
             ctx.linea(sb, llamada + ";");
         }
+    }
+
+    private String extraerRaiz(String operando) {
+        if (operando == null) {
+            return null;
+        }
+        String raiz = operando;
+        if (raiz.startsWith("&")) {
+            raiz = raiz.substring(1);
+        }
+        int bracket = raiz.indexOf('[');
+        if (bracket >= 0) {
+            raiz = raiz.substring(0, bracket);
+        }
+        int dot = raiz.indexOf('.');
+        if (dot >= 0) {
+            raiz = raiz.substring(0, dot);
+        }
+        int arrow = raiz.indexOf('>');
+        if (arrow >= 0 && arrow > 0 && raiz.charAt(arrow - 1) == '-') {
+            raiz = raiz.substring(0, arrow - 1);
+        }
+        return raiz;
+    }
+
+    private boolean yaEsPuntero(String argRaiz,
+            List<SimboloParametro> paramsLlamador) {
+        if (paramsLlamador == null || argRaiz == null) {
+            return false;
+        }
+        for (SimboloParametro p : paramsLlamador) {
+            if (argRaiz.equals(p.getId())
+                    && p.getTipo() instanceof TipoStructura) {
+                return true;
+            }
+        }
+        return false;
     }
 }

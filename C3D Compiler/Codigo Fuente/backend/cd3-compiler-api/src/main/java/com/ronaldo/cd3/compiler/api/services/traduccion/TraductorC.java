@@ -33,6 +33,7 @@ public class TraductorC {
         List<Unidad> unidades = separarUnidades(lista, cuartetas);
         ctx.analizar(unidades);
         ctx.clasificarAmbitosVariables(unidades);
+        sembrarArreglosSinCuartetas(ctx);
         corregirDimensionesArreglos(unidades, ctx);
 
         StringBuilder sb = new StringBuilder();
@@ -237,7 +238,9 @@ public class TraductorC {
                 if (ctx.esPunteroArreglo(nombre)) {
                     linea(sb, ctx.tipoCDe(ctx.tipoPunteroArreglo(nombre))
                             + "* " + nombre + ";");
-                } else if (ctx.getArreglos().containsKey(nombre)) {
+                } else if (ctx.getArreglos().containsKey(nombre)
+                        && ctx.esArregloEnUnidad(nombre,
+                                unidad.getNombre())) {
                     linea(sb, ctx.tipoCDeElementoArreglo(nombre) + " "
                             + nombre + "[" + ctx.tamanioArreglo(nombre)
                             + "];");
@@ -313,6 +316,39 @@ public class TraductorC {
 
     private void linea(StringBuilder sb, String texto) {
         sb.append("\t").append(texto).append('\n');
+    }
+
+    private void sembrarArreglosSinCuartetas(ContextoTraduccion ctx) {
+        for (Map.Entry<String, Map<String, Tipo>> entrada
+                : ctx.getCuartetas()
+                        .getVariablesDeclaradasPorUnidad().entrySet()) {
+            String unidad = entrada.getKey();
+            for (Map.Entry<String, Tipo> var
+                    : entrada.getValue().entrySet()) {
+                String nombre = var.getKey();
+                if (!(var.getValue() instanceof TipoArreglo)) {
+                    continue;
+                }
+                if (ctx.getArreglos().containsKey(nombre)) {
+                    continue;
+                }
+                TipoArreglo tipoArr = (TipoArreglo) var.getValue();
+                int total = tipoArr.getTotalElementos();
+                if (total <= 0) {
+                    continue;
+                }
+                boolean esGlobal = ctx.nombreMain(unidad);
+                if (!esGlobal) {
+                    Set<String> locales = ctx.getLocalesPorUnidad()
+                            .get(unidad);
+                    if (locales != null && locales.contains(nombre)) {
+                        ctx.getArreglos().put(nombre, total);
+                    }
+                    continue;
+                }
+                ctx.getArreglos().put(nombre, total);
+            }
+        }
     }
 
     private void corregirDimensionesArreglos(List<Unidad> unidades,

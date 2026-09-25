@@ -214,6 +214,12 @@ public class ContextoTraduccion {
                 || punterosArreglo.containsKey(nombre);
     }
 
+    public boolean esArregloEnUnidad(String nombre, String unidad) {
+        Map<String, Tipo> declaradas = cuartetas
+                .getArreglosDeclaradosPorUnidad().get(unidad);
+        return declaradas != null && declaradas.containsKey(nombre);
+    }
+
     public boolean usaAyudasCadenas() {
         return usaConcatenacion || usaComparacionCadenas;
     }

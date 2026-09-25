@@ -1,0 +1,94 @@
+// AgenteZetariano.z
+// Prueba: constructores sobrecargados, objetos que viven en el heap,
+// recursividad clasica, recursividad sobre una cadena de objetos
+// (auto-referencia), matriz 2D como atributo de instancia,
+// comparacion contra null, ternario, incremento.
+
+public class AgenteZetariano {
+    String nombre;
+    int nivel;
+    int poder;
+    int[][] matrizEnergia;
+    AgenteZetariano siguiente;
+
+    public AgenteZetariano(String nombreParametro, int nivelParametro) {
+        nombre = nombreParametro;
+        nivel = nivelParametro;
+        poder = nivel * 10;
+        matrizEnergia = new int[3][3];
+        siguiente = null;
+    }
+
+    // Sobrecarga de constructor
+    public AgenteZetariano() {
+        nombre = "Agente desconocido";
+        nivel = 1;
+        poder = 10;
+        matrizEnergia = new int[3][3];
+        siguiente = null;
+    }
+
+    public void enlazar(AgenteZetariano otro) {
+        siguiente = otro;
+    }
+
+    // Recursividad sobre una cadena de objetos auto-referenciada
+    public int poderTotalCadena() {
+        if (siguiente == null) {
+            return poder;
+        } else {
+            return poder + siguiente.poderTotalCadena();
+        }
+    }
+
+    public int contarCadena() {
+        if (siguiente == null) {
+            return 1;
+        } else {
+            return 1 + siguiente.contarCadena();
+        }
+    }
+
+    // Recursividad numerica clasica, invocada como metodo de instancia
+    public int potenciaRecursiva(int base, int exponente) {
+        if (exponente == 0) {
+            return 1;
+        } else {
+            return base * potenciaRecursiva(base, exponente - 1);
+        }
+    }
+
+    // Matriz 2D como atributo de instancia
+    public void llenarMatrizEnergia() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                matrizEnergia[i][j] = (i + 1) * (j + 1) * nivel;
+            }
+        }
+    }
+
+    public int sumarDiagonal() {
+        int suma = 0;
+        for (int i = 0; i < 3; i++) {
+            suma = suma + matrizEnergia[i][i];
+        }
+        return suma;
+    }
+
+    public int obtenerCelda(int fila, int columna) {
+        return matrizEnergia[fila][columna];
+    }
+
+    public boolean esMasFuerteQue(AgenteZetariano otro) {
+        return (otro == null) ? true : (poder > otro.poder);
+    }
+
+    public void subirNivel() {
+        nivel++;
+        poder = nivel * 10;
+    }
+
+    public String describir() {
+        return "Agente " + nombre + " nivel " + nivel + " poder " + poder;
+    }
+}

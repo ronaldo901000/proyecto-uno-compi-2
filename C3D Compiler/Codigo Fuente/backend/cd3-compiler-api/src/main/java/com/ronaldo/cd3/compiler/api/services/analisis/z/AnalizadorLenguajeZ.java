@@ -17,6 +17,7 @@ import com.ronaldo.cd3.compiler.api.zetariano.LenguajeZLexer;
 import com.ronaldo.cd3.compiler.api.zetariano.LenguajeZParser;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -27,11 +28,35 @@ import org.antlr.v4.runtime.tree.ParseTree;
  */
 public class AnalizadorLenguajeZ implements Analizable {
 
+    private List<ClaseZ> clases = new ArrayList<>();
+
+    public List<ClaseZ> getClases() {
+        return clases;
+    }
+
     @Override
     public void analizar(List<ArchivoDTO> archivos, RespuestaDTO respuesta,
             TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
             ListaCuartetas cuartetas) {
-        List<ClaseZ> clases = new ArrayList<>();
+        analizar(archivos, respuesta, tablaTipos, tablaSimbolos,
+                cuartetas, null);
+    }
+
+    public void analizar(List<ArchivoDTO> archivos, RespuestaDTO respuesta,
+            TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
+            ListaCuartetas cuartetas, Set<String> rutasImportadas) {
+        parsear(archivos, respuesta);
+        if (respuesta.isHayErrores()) {
+            return;
+        }
+
+        AnalizadorSemanticoZ analizadorSemanticoZ = new AnalizadorSemanticoZ();
+        analizadorSemanticoZ.analizar(clases, respuesta, tablaTipos,
+                tablaSimbolos, cuartetas, rutasImportadas);
+    }
+
+    public void parsear(List<ArchivoDTO> archivos, RespuestaDTO respuesta) {
+        clases = new ArrayList<>();
         for (ArchivoDTO archivo : archivos) {
             List<ErrorAnalisis> erroresEncontrados = new ArrayList<>();
 
@@ -92,9 +117,6 @@ public class AnalizadorLenguajeZ implements Analizable {
             }
 
         }
-
-        AnalizadorSemanticoZ analizadorSemanticoZ = new AnalizadorSemanticoZ();
-        analizadorSemanticoZ.analizar(clases, respuesta, tablaTipos, tablaSimbolos, cuartetas);
     }
 
     private String nombreBaseArchivo(String nombre) {

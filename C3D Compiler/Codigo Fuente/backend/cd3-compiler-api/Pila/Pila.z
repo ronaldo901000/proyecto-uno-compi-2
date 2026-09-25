@@ -17,6 +17,9 @@ public class Pila {
 
     // desapilar (pop)
     public int desapilar() {
+        if (cima == null) {
+            return -1;
+        }
         int dato = cima.getDato();
         cima = cima.getSiguiente();
         tamanio--;

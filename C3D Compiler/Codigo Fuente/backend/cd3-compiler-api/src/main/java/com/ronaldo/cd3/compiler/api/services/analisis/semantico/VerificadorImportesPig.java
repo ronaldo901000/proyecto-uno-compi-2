@@ -64,6 +64,12 @@ public class VerificadorImportesPig {
         TIPOS_PRIMITIVOS.add("null");
     }
 
+    private final Set<String> rutasArchivosImportados = new HashSet<>();
+
+    public Set<String> getRutasArchivosImportados() {
+        return rutasArchivosImportados;
+    }
+
     public void verificar(Contexto contexto, ProgramaPig programa,
             List<ArchivoDTO> archivosImportables, List<ProgramaY> programasY) {
 
@@ -81,6 +87,7 @@ public class VerificadorImportesPig {
                             "La ruta del import '" + importacion.getRuta() + "' no existe");
                     continue;
                 }
+                rutasArchivosImportados.add(archivo.getRuta());
                 importados.addAll(simbolosDe(archivo, programasY));
             }
         }
