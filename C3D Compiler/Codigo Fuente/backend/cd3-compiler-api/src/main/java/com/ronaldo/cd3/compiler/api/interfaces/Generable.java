@@ -9,12 +9,5 @@ import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
  */
 public interface Generable {
 
-    /**
-     * Genera las cuartetas (codigo de tres direcciones) del nodo.
-     *
-     * Para las expresiones devuelve la direccion (literal, variable o
-     * temporal) donde queda almacenado el resultado. Para las instrucciones
-     * devuelve null, ya que solo emiten cuartetas al {@code ListaCuartetas}.
-     */
     String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas);
 }

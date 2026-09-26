@@ -7,11 +7,7 @@ import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Cuarteta que cierra una llamada a funcion: ensambla la invocacion con los
- * argumentos acumulados por las cuartetas PARAMETRO anteriores y la asigna al
- * temporal receptor, o la emite sola si la funcion retorna void.
- */
+
 public class CuartetaLlamada extends Cuarteta {
 
     public CuartetaLlamada(String arg1, String arg2, String resultado,

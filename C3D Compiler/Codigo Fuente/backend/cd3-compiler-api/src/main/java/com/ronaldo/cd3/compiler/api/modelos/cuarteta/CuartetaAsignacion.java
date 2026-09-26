@@ -20,16 +20,14 @@ public class CuartetaAsignacion extends Cuarteta {
         }
         if (ctx.esNuevoArregloHaciaVariable(getArg1(), getResultado())) {
             String cantidad = calcularCantidadTotal(getArg1(), ctx);
-            if (cantidad == null) {
-                cantidad = "100";
-            }
+
             String elemento = ctx.tipoCDeElementoArreglo(getResultado());
             ctx.linea(sb, res + " = (" + elemento + "*)calloc("
                     + cantidad + ", sizeof(" + elemento + "));");
             return;
         }
         String a1 = ctx.formatearOperando(getArg1());
-        if (a1 != null && esAsignacionArreglo(res, a1, ctx)) {
+        if (a1 != null && esAsignacionArreglo(res, ctx)) {
             ctx.linea(sb, "memcpy(" + res + ", " + a1
                     + ", sizeof(" + res + "));");
             return;
@@ -52,8 +50,11 @@ public class CuartetaAsignacion extends Cuarteta {
         return ctx.arregloNuevoCantidad(origen);
     }
 
-    private boolean esAsignacionArreglo(String res, String a1,
+    private boolean esAsignacionArreglo(String res,
             ContextoTraduccion ctx) {
+        if (res.indexOf('[') >= 0) {
+            return false;
+        }
         String raizArg1 = raizSinIndices(getArg1());
         return ctx.esArreglo(raizArg1);
     }

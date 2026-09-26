@@ -24,6 +24,7 @@ export class HeaderComponent {
 
   public compilar(): void {
     this.avisoService.limpiarError();
+    this.avisoService.resetearHayCodigo();
     const raiz = this.arbolService.getArbol();
     if (raiz) {
       const entrada = this.creacionEntradaService.crearArchivos(raiz);
@@ -32,8 +33,8 @@ export class HeaderComponent {
         next: (resultado: Respuesta) => {
           this.respuestaCompilacionService.setRespuesta(resultado);
 
-          if (resultado.codigoC) {
-            this.descargarArchivoC(resultado.codigoC);
+          if (resultado.codigoCGenerado) {
+            this.avisoService.hayCodigoC.set(true);
           }
         },
         error: (error) => {
@@ -43,16 +44,6 @@ export class HeaderComponent {
     }
   }
 
-  private descargarArchivoC(codigoC: string, nombreArchivo: string = 'salida.c'): void {
-    const blob = new Blob([codigoC], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const enlace = document.createElement('a');
-    enlace.href = url;
-    enlace.download = nombreArchivo;
-    document.body.appendChild(enlace);
-    enlace.click();
-    document.body.removeChild(enlace);
-    window.URL.revokeObjectURL(url);
-  }
+
 
 }

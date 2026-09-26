@@ -26,6 +26,8 @@ public class ListaCuartetas {
     private final Map<String, TipoOperando> categoriasOperandos;
     private final Map<String, Map<String, Tipo>> variablesDeclaradasPorUnidad;
     private final Map<String, Map<String, Tipo>> arreglosDeclaradosPorUnidad;
+    private final Map<String, String> dimensionesArreglo;
+    private final Map<String, Tipo> tiposEstructuras;
     private String unidadActual;
     private int contadorTemporales;
     private int contadorEtiquetas;
@@ -40,6 +42,8 @@ public class ListaCuartetas {
         this.categoriasOperandos = new HashMap<>();
         this.variablesDeclaradasPorUnidad = new HashMap<>();
         this.arreglosDeclaradosPorUnidad = new HashMap<>();
+        this.dimensionesArreglo = new HashMap<>();
+        this.tiposEstructuras = new HashMap<>();
         this.unidadActual = null;
         this.contadorTemporales = 0;
         this.contadorEtiquetas = 0;
@@ -178,11 +182,7 @@ public class ListaCuartetas {
         this.actualizarUnidadActual(etiqueta);
     }
 
-    /**
-     * Las etiquetas de entrada de funcion (fun_..., metodo_..., constructor_...,
-     * main) delimitan una unidad de traduccion. Las etiquetas internas (L1, L2, ...)
-     * se registran como ETIQUETA_INTERNA antes de agregarse y no cambian la unidad.
-     */
+
     private void actualizarUnidadActual(String etiqueta) {
         if (etiqueta != null
                 && !TipoOperando.ETIQUETA_INTERNA.equals(this.categoriasOperandos.get(etiqueta))) {
@@ -194,7 +194,7 @@ public class ListaCuartetas {
         return this.cuartetas.get(indice);
     }
 
-    public int getTamanio() {
+    public int getTamaño() {
         return this.cuartetas.size();
     }
 
@@ -230,14 +230,13 @@ public class ListaCuartetas {
         }
     }
 
-    /**
-     * Registra el tipo de una variable declarada dentro de la unidad
-     * actual (funcion, metodo, constructor o main). Las variables declaradas
-     * en una unidad de funcion deben traducirse como locales de esa unidad,
-     * no como globales.
-     */
+
     public void registrarTipoVariableDeclarada(String nombre, Tipo tipo) {
         this.registrarTipoVariable(nombre, tipo);
+        TipoOperando cat = categoriasOperandos.get(nombre);
+        if (cat == TipoOperando.TEMPORAL) {
+            categoriasOperandos.put(nombre, TipoOperando.VARIABLE);
+        }
         if (nombre != null && tipo != null && this.unidadActual != null) {
             this.variablesDeclaradasPorUnidad
                     .computeIfAbsent(this.unidadActual, k -> new HashMap<>())
@@ -257,6 +256,22 @@ public class ListaCuartetas {
             this.arreglosDeclaradosPorUnidad
                     .computeIfAbsent(this.unidadActual, k -> new HashMap<>())
                     .put(nombre, tipoElemento);
+        }
+    }
+
+    public void registrarDimensionArreglo(String nombre, String expresionTamano) {
+        if (nombre != null && expresionTamano != null) {
+            this.dimensionesArreglo.put(nombre, expresionTamano);
+        }
+    }
+
+    public String getDimensionArreglo(String nombre) {
+        return this.dimensionesArreglo.get(nombre);
+    }
+
+    public void registrarTipoEstructura(String nombre, Tipo tipo) {
+        if (nombre != null && tipo != null) {
+            this.tiposEstructuras.put(nombre, tipo);
         }
     }
 
@@ -323,6 +338,7 @@ public class ListaCuartetas {
         tipos.addAll(this.tiposTemporales.values());
         tipos.addAll(this.tiposFunciones.values());
         tipos.addAll(this.tiposArreglos.values());
+        tipos.addAll(this.tiposEstructuras.values());
         return tipos;
     }
 }

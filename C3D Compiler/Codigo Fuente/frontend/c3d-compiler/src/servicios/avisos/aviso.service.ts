@@ -6,6 +6,7 @@ import { Injectable, signal } from "@angular/core";
 export class AvisoService {
   hayError = signal(false);
   mensajeError = signal('');
+  hayCodigoC = signal(false);
 
   mostrarError(mensaje: string) {
     this.mensajeError.set(mensaje);
@@ -15,5 +16,9 @@ export class AvisoService {
   limpiarError() {
     this.hayError.set(false);
     this.mensajeError.set('');
+  }
+
+  resetearHayCodigo(){
+    this.hayCodigoC.set(false);
   }
 }

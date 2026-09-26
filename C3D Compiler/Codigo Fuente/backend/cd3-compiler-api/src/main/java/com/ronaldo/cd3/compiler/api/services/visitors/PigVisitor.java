@@ -19,7 +19,6 @@ import com.ronaldo.cd3.compiler.api.modelos.instruccion.Continuar;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Imprimir;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.IncrementoDecremento;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.Retorno;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Romper;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.ciclo.CicloHacerMientras;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.ciclo.CicloMientras;

@@ -402,9 +402,11 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int columna = ctx.start.getCharPositionInLine();
         String nombre = ctx.ID().getText();
         String tipoRetorno = ctx.tipo_dato_general().getText();
+        int dimensionesRetorno = ctx.CORCH_A().size();
         List<Parametro> parametros = extraerParametros(ctx.parametros());
         List<Instruccion> cuerpo = visitarInstrucciones(ctx.instruccion());
-        return new FuncionDef(nombre, parametros, tipoRetorno, cuerpo, fila, columna);
+        return new FuncionDef(nombre, parametros, tipoRetorno, dimensionesRetorno,
+                cuerpo, fila, columna);
     }
 
     private List<Parametro> extraerParametros(LenguajeZParser.ParametrosContext ctx) {

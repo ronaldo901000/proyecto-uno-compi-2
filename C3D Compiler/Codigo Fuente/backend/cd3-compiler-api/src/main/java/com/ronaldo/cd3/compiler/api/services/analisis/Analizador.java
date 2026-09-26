@@ -18,6 +18,7 @@ import com.ronaldo.cd3.compiler.api.services.analisis.semantico.AnalizadorSemant
 import com.ronaldo.cd3.compiler.api.services.analisis.semantico.VerificadorImportesPig;
 import com.ronaldo.cd3.compiler.api.services.analisis.y.AnalizadorLenguajeY;
 import com.ronaldo.cd3.compiler.api.services.analisis.z.AnalizadorLenguajeZ;
+import com.ronaldo.cd3.compiler.api.services.generador.archivo.GeneradorArchivos;
 import com.ronaldo.cd3.compiler.api.services.separador.archivos.SeparadorArchivos;
 import com.ronaldo.cd3.compiler.api.services.traduccion.TraductorC;
 import java.util.ArrayList;
@@ -110,7 +111,11 @@ public class Analizador {
 
             TraductorC traductorC = new TraductorC();
             String codigoC = traductorC.traducir(cuartetas);
-            respuestaDTO.setCodigoC(codigoC);
+            respuestaDTO.setCodigoCGenerado(true);
+            
+            //generar el archivo .c y el ejecutable
+            GeneradorArchivos generador = new GeneradorArchivos();
+            generador.generarArchivo(codigoC);
 
         }
 

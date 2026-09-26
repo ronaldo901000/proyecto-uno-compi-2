@@ -2,10 +2,7 @@ package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 
-/**
- * Cuarteta de retorno de una unidad. Emite return <valor> cuando hay operando,
- * return; para unidades void y return 0 en caso contrario. Las semanas
- * consecutivas se ignoran para no generar codigo inalcanzable.
+/*
  */
 public class CuartetaRetorno extends Cuarteta {
 

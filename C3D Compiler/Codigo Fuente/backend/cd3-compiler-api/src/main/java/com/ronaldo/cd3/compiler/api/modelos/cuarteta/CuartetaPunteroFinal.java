@@ -12,6 +12,6 @@ public class CuartetaPunteroFinal extends Cuarteta {
 
     @Override
     public void aCodigoC(StringBuilder sb, ContextoTraduccion ctx) {
-        // No emite nada
+        
     }
 }

@@ -341,12 +341,6 @@ public class VerificadorImportesPig {
         return partes[partes.length - 2] + "." + partes[partes.length - 1];
     }
 
-    /**
-     * Normaliza una ruta de import a una ruta de sistema de archivos en
-     * minusculas. Los separadores de carpeta pueden venir como '.' o '/'
-     * (ej. "carpeta.Clase.z" o "carpeta/Clase.z"); la extension siempre va
-     * despues del ultimo punto y se conserva tal cual.
-     */
     private String normalizar(String ruta) {
         if (ruta == null || ruta.isEmpty()) {
             return "";

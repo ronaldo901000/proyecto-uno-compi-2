@@ -14,9 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Analisis previo de las unidades antes de traducirlas a codigo C: poblado
- * de funciones, temporales, escalares, arreglos, punteros y estructuras, y
- * clasificacion de variables del programa en globales y locales por unidad.
  *
  * @author ronaldo
  */
@@ -28,11 +25,7 @@ public class AnalisisAmbitos {
         this.contexto = contexto;
     }
 
-    /**
-     * Analiza las unidades para poblar el contexto: nombres de funciones,
-     * temporales, escalares, arreglos, punteros, estructuras y las banderas
-     * de ayudas de cadenas (cad_concat, cad_igual, ...).
-     */
+
     public void analizar(List<Unidad> unidades) {
         for (Unidad unidad : unidades) {
             if (unidad.getNombre() != null) {
@@ -90,20 +83,9 @@ public class AnalisisAmbitos {
         }
     }
 
-    /**
-     * Clasifica las variables del programa en globales y locales por unidad.
-     * Regla principal: una variable declarada dentro del cuerpo de una unidad
-     * (funcion, metodo, constructor) es local de esa unidad; una variable
-     * declarada en main (o en bloque VARIABILES) es global.
-     * Fallback: variables que nunca se declararon se clasifican por uso
-     * (usadas en main o en dos o mas unidades -> global; usadas en una sola
-     * unidad nueva -> local). Los atributos de la clase de cada unidad y sus
-     * parametros formales quedan fuera de ambas listas: se traducen como
-     * this->campo y como parametros de la firma.
-     */
     public void clasificarAmbitosVariables(List<Unidad> unidades) {
-        Map<String, Set<String>> declaradas =
-                contexto.getCuartetas().getNombresDeclaradosPorUnidad();
+        Map<String, Set<String>> declaradas
+                = contexto.getCuartetas().getNombresDeclaradosPorUnidad();
         Set<String> nombresDeclarados = new LinkedHashSet<>();
         for (Set<String> nombres : declaradas.values()) {
             nombresDeclarados.addAll(nombres);
@@ -176,6 +158,9 @@ public class AnalisisAmbitos {
         if (base == null) {
             return;
         }
+        if (contexto.esCategoria(base, TipoOperando.TEMPORAL)) {
+            return;
+        }
         if (parametros != null && parametros.contains(base)) {
             return;
         }
@@ -185,11 +170,7 @@ public class AnalisisAmbitos {
         usos.computeIfAbsent(base, k -> new LinkedHashSet<>()).add(unidad);
     }
 
-    /**
-     * Analiza un operando de una cuarteta y lo clasifica dentro de los
-     * conjuntos del contexto: temporales, temporales puntero, escalares,
-     * arreglos, punteros de arreglo y punteros de estructura.
-     */
+
     private void analizarOperando(String operando) {
         if (operando == null) {
             return;
@@ -225,12 +206,17 @@ public class AnalisisAmbitos {
                 contexto.getTemporalesPuntero().add(base);
             } else if (contexto.esNombreDeVariable(base)
                     && !contexto.getFunciones().contains(base)) {
-                Integer maximo = maximoIndiceNumerico(operando);
-                int tamanio = (maximo != null) ? (maximo + 1) : 100;
-                contexto.getArreglos().put(base,
-                        Math.max(contexto.getArreglos().getOrDefault(base, 0),
-                                tamanio));
-                contexto.getEscalares().remove(base);
+                if (contexto.getArreglos().containsKey(base)) {
+                    Integer maximo = maximoIndiceNumerico(operando);
+                    int tamanio = (maximo != null) ? (maximo + 1) : 100;
+                    contexto.getArreglos().put(base,
+                            Math.max(contexto.getArreglos().getOrDefault(base, 0),
+                                    tamanio));
+                    contexto.getEscalares().remove(base);
+                } else if (contexto.getCuartetas().getDimensionArreglo(base)
+                        != null) {
+                    contexto.getEscalares().remove(base);
+                }
             }
             return;
         }
@@ -297,10 +283,7 @@ public class AnalisisAmbitos {
         }
     }
 
-    /**
-     * Base de un identificador: lo recorta en su primer '[' y su primer '.'
-     * (ej. "persona.notas[2]" -> "persona").
-     */
+
     public String raizIdentificador(String operando) {
         if (operando == null || operando.isEmpty()) {
             return null;
@@ -311,8 +294,17 @@ public class AnalisisAmbitos {
             base = operando.substring(0, corchete);
         }
         int punto = base.indexOf('.');
-        if (punto >= 0) {
-            base = base.substring(0, punto);
+        int flecha = base.indexOf("->");
+        int corte = -1;
+        if (punto >= 0 && flecha >= 0) {
+            corte = Math.min(punto, flecha);
+        } else if (punto >= 0) {
+            corte = punto;
+        } else if (flecha >= 0) {
+            corte = flecha;
+        }
+        if (corte >= 0) {
+            base = base.substring(0, corte);
         }
         return base;
     }
@@ -381,13 +373,10 @@ public class AnalisisAmbitos {
         return true;
     }
 
-    /**
-     * Estructuras recolectadas, ordenadas por dependencia (una estructura
-     * que apunta a otra se emite despues).
-     */
+
     public List<TipoStructura> listaEstructuras() {
-        List<TipoStructura> pendientes =
-                new java.util.ArrayList<>(contexto.getEstructuras().values());
+        List<TipoStructura> pendientes
+                = new java.util.ArrayList<>(contexto.getEstructuras().values());
         List<TipoStructura> ordenadas = new java.util.ArrayList<>();
         Set<String> emitidas = new LinkedHashSet<>();
         while (!pendientes.isEmpty()) {
@@ -412,13 +401,10 @@ public class AnalisisAmbitos {
         return ordenadas;
     }
 
-    /**
-     * Nombres de los parametros formales registrados de una unidad, o null
-     * si no tiene.
-     */
+
     private Set<String> parametrosDeUnidad(String nombre) {
-        List<SimboloParametro> parametros =
-                contexto.getCuartetas().parametrosDeFuncion(nombre);
+        List<SimboloParametro> parametros
+                = contexto.getCuartetas().parametrosDeFuncion(nombre);
         if (parametros == null || parametros.isEmpty()) {
             return null;
         }

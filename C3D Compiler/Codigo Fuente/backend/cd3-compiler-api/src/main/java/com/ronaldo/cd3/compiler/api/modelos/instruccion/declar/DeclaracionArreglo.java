@@ -95,13 +95,39 @@ public class DeclaracionArreglo extends Declaracion {
         Tipo base = reglas.resolverTipo(contexto, tipoDato, fila, columna);
         cuartetas.registrarTipoArregloDeclarado(id, base);
 
-        List<Integer> tamanios = new ArrayList<>();
+        List<Integer> tamaños = new ArrayList<>();
+        
+        boolean tieneDimension = false;
+        
         for (Expresion dim : dimensiones) {
             Integer tam = (dim != null) ? reglas.constanteEntera(dim) : null;
-            tamanios.add((tam != null && tam > 0) ? tam : 0);
+            tamaños.add((tam != null && tam > 0) ? tam : 0);
+            if (tam == null && dim != null) {
+                tieneDimension = true;
+            }
         }
-        Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamanios);
+        
+        Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamaños);
         cuartetas.registrarTipoVariableDeclarada(id, tipoArreglo);
+
+        if (tieneDimension) {
+            StringBuilder expr = new StringBuilder();
+            for (int i = 0; i < dimensiones.size(); i++) {
+                Expresion dim = dimensiones.get(i);
+                if (dim == null) {
+                    expr.append("1");
+                } else if (i > 0) {
+                    expr.append(" * (");
+                    String dirDim = dim.generarCuartetas(contexto, cuartetas);
+                    expr.append(dirDim);
+                    expr.append(")");
+                } else {
+                    String dirDim = dim.generarCuartetas(contexto, cuartetas);
+                    expr.append(dirDim);
+                }
+            }
+            cuartetas.registrarDimensionArreglo(id, expr.toString());
+        }
 
         if (valoresIniciales != null) {
             for (int i = 0; i < valoresIniciales.size(); i++) {

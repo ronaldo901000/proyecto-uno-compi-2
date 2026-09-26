@@ -1,8 +1,13 @@
 <div class="page-container d-flex flex-column flex-grow-1">
   <div class="row g-2 flex-grow-1 min-h-0">
     @if (avisoService.hayError()) {
-      <div class="alert alert-danger text-center " role="alert">
+      <div class="alert alert-danger text-center" role="alert">
         {{ avisoService.mensajeError() }}
+      </div>
+    }
+    @if (avisoService.hayCodigoC()) {
+      <div class="alert alert-success text-center" role="alert">
+        ¡Codigo C generado con exito!
       </div>
     }
     <div class="col-3 d-flex flex-column min-h-0">

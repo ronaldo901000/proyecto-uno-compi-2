@@ -14,9 +14,10 @@ public class RespuestaDTO {
     private boolean hayErrores;
     private List<ErrorAnalisis> errores;
     private List<Cuarteta> cuartetas;
-    private String codigoC;
+    private boolean codigoCGenerado;
 
     public RespuestaDTO() {
+        codigoCGenerado = false;
         this.errores = new ArrayList<>();
         this.cuartetas = new ArrayList<>();
     }
@@ -26,8 +27,8 @@ public class RespuestaDTO {
             this.errores.add(error);
         }
     }
-    
-    public void agregarUnError(ErrorAnalisis error){
+
+    public void agregarUnError(ErrorAnalisis error) {
         this.errores.add(error);
     }
 
@@ -55,12 +56,12 @@ public class RespuestaDTO {
         this.cuartetas = cuartetas;
     }
 
-    public String getCodigoC() {
-        return codigoC;
+    public boolean isCodigoCGenerado() {
+        return codigoCGenerado;
     }
 
-    public void setCodigoC(String codigoC) {
-        this.codigoC = codigoC;
+    public void setCodigoCGenerado(boolean codigoCGenerado) {
+        this.codigoCGenerado = codigoCGenerado;
     }
 
 }

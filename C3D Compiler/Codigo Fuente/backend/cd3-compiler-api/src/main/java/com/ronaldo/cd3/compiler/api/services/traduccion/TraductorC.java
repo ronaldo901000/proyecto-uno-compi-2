@@ -15,10 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Orquestador fino que genera codigo C a partir de cuartetas.
- * Delega la traduccion de cada cuarteta a su subclase concreta
- * (patron PigLatin), incluyendo PARAMETRO, LLAMADA y RETORNO.
+/*
+ * 
+ * @author ronaldo
  */
 public class TraductorC {
 
@@ -144,7 +143,6 @@ public class TraductorC {
         sb.append("#include <stdlib.h>\n");
         sb.append("#include <string.h>\n");
         sb.append("#include <stdbool.h>\n");
-        sb.append("#include <math.h>\n\n");
     }
 
     private void emitirEstructuras(StringBuilder sb, ContextoTraduccion ctx) {
@@ -230,6 +228,8 @@ public class TraductorC {
         }
 
         Set<String> localesUnidad = ctx.getLocalesDeUnidad(unidad.getNombre());
+        Tipo tipoRetornoFuncion = ctx.tipoDeFuncionDe(unidad.getNombre());
+        boolean funcionRetornaArreglo = (tipoRetornoFuncion instanceof TipoArreglo);
         if (localesUnidad != null) {
             for (String nombre : localesUnidad) {
                 if (esNombreReservadoOTipo(nombre, ctx)) {
@@ -238,12 +238,28 @@ public class TraductorC {
                 if (ctx.esPunteroArreglo(nombre)) {
                     linea(sb, ctx.tipoCDe(ctx.tipoPunteroArreglo(nombre))
                             + "* " + nombre + ";");
+                } else if (ctx.getCuartetas().getDimensionArreglo(nombre)
+                        != null) {
+                    String tipoElemento = ctx.tipoCDeElementoArreglo(nombre);
+                    String exprTamano = ctx.getCuartetas()
+                            .getDimensionArreglo(nombre);
+                    linea(sb, tipoElemento + "* " + nombre
+                            + " = (" + tipoElemento + "*) calloc("
+                            + exprTamano + ", sizeof(" + tipoElemento + "));");
                 } else if (ctx.getArreglos().containsKey(nombre)
                         && ctx.esArregloEnUnidad(nombre,
                                 unidad.getNombre())) {
-                    linea(sb, ctx.tipoCDeElementoArreglo(nombre) + " "
-                            + nombre + "[" + ctx.tamanioArreglo(nombre)
-                            + "];");
+                    if (funcionRetornaArreglo) {
+                        String tipoElemento = ctx.tipoCDeElementoArreglo(nombre);
+                        int tamaño = ctx.tamañoArreglo(nombre);
+                        linea(sb, tipoElemento + "* " + nombre
+                                + " = (" + tipoElemento + "*) calloc("
+                                + tamaño + ", sizeof(" + tipoElemento + "));");
+                    } else {
+                        linea(sb, ctx.tipoCDeElementoArreglo(nombre) + " "
+                                + nombre + "[" + ctx.tamañoArreglo(nombre)
+                                + "];");
+                    }
                 } else {
                     linea(sb, ctx.tipoCDeVariable(nombre) + " "
                             + nombre + ";");
@@ -289,8 +305,8 @@ public class TraductorC {
         }
     }
 
-    private static final java.util.Set<String> RESERVADAS_C =
-            java.util.Set.of("int", "double", "float", "char", "void",
+    private static final Set<String> RESERVADAS_C
+            = Set.of("int", "double", "float", "char", "void",
                     "long", "short", "unsigned", "signed", "struct",
                     "if", "else", "while", "for", "return", "sizeof",
                     "NULL", "break", "continue", "switch", "case",
@@ -332,9 +348,50 @@ public class TraductorC {
                 if (ctx.getArreglos().containsKey(nombre)) {
                     continue;
                 }
+                if (ctx.esPunteroArreglo(nombre)) {
+                    continue;
+                }
                 TipoArreglo tipoArr = (TipoArreglo) var.getValue();
+                boolean todasDimensionesDesconocidas = true;
+                for (Integer dim : tipoArr.getDimensiones()) {
+                    if (dim != null && dim > 0) {
+                        todasDimensionesDesconocidas = false;
+                        break;
+                    }
+                }
+                if (todasDimensionesDesconocidas) {
+                    if (ctx.getCuartetas().getDimensionArreglo(nombre) != null) {
+                        continue;
+                    }
+                    ctx.registrarPunteroArreglo(nombre,
+                            tipoArr.getTipoBase());
+                    continue;
+                }
                 int total = tipoArr.getTotalElementos();
                 if (total <= 0) {
+                    continue;
+                }
+                ctx.getDimsLocales().put(nombre, tipoArr);
+                boolean asignadoDesdeLlamada = false;
+                for (Cuarteta c : ctx.getCuartetas().getCuartetas()) {
+                    if (c.getOperador() == OperadorCuarteta.ASIGNACION
+                            && nombre.equals(c.getResultado())
+                            && c.getArg1() != null) {
+                        for (Cuarteta c2 : ctx.getCuartetas().getCuartetas()) {
+                            if (c2.getOperador() == OperadorCuarteta.LLAMADA
+                                    && c.getArg1().equals(c2.getResultado())) {
+                                asignadoDesdeLlamada = true;
+                                break;
+                            }
+                        }
+                        if (asignadoDesdeLlamada) {
+                            break;
+                        }
+                    }
+                }
+                if (asignadoDesdeLlamada) {
+                    ctx.registrarPunteroArreglo(nombre,
+                            tipoArr.getTipoBase());
                     continue;
                 }
                 boolean esGlobal = ctx.nombreMain(unidad);

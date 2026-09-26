@@ -207,12 +207,19 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         } else {
             tipoRetornoT = reglas.resolverTipo(
                     contexto, metodo.getTipoRetorno(), metodo.getFila(), metodo.getColumna());
+            if (metodo.getDimensionesRetorno() > 0 && !reglas.esError(tipoRetornoT)) {
+                List<Integer> dims = new ArrayList<>();
+                for (int i = 0; i < metodo.getDimensionesRetorno(); i++) {
+                    dims.add(0);
+                }
+                tipoRetornoT = contexto.getTablaTipos().getArreglo(tipoRetornoT, dims);
+            }
         }
         verificarCuerpo(contexto, metodo.getNombre(), metodo.getParametros(),
                 tipoRetornoT, metodo.getCuerpo(), metodo.getFila(), metodo.getColumna());
         if (!reglas.esVoid(tipoRetornoT) && !reglas.siempreRetorna(metodo.getCuerpo())) {
             contexto.agregarError(metodo.getFila(), metodo.getColumna(), metodo.getNombre(),
-                    "El método '" + metodo.getNombre() + "' de tipo " + tipoRetornoT
+                    "El metodo '" + metodo.getNombre() + "' de tipo " + tipoRetornoT
                     + " no retorna en todos sus caminos de ejecución");
         }
     }
@@ -277,6 +284,13 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         } else {
             tipoRetornoT = reglas.resolverTipo(
                     contexto, metodo.getTipoRetorno(), metodo.getFila(), metodo.getColumna());
+            if (metodo.getDimensionesRetorno() > 0 && !reglas.esError(tipoRetornoT)) {
+                List<Integer> dims = new ArrayList<>();
+                for (int i = 0; i < metodo.getDimensionesRetorno(); i++) {
+                    dims.add(0);
+                }
+                tipoRetornoT = contexto.getTablaTipos().getArreglo(tipoRetornoT, dims);
+            }
         }
         if (reglas.esError(tipoRetornoT)) {
             return null;
@@ -342,6 +356,9 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         }
         SimboloClase claseAnterior = contexto.getClaseActual();
         contexto.setClaseActual(simboloClase);
+        if (simboloClase.getTipo() != null) {
+            cuartetas.registrarTipoEstructura(nombre, simboloClase.getTipo());
+        }
         if (simboloClase.getAtributos() != null) {
             for (SimboloVariable atributo : simboloClase.getAtributos().values()) {
                 cuartetas.registrarTipoVariable(atributo.getId(), atributo.getTipo());

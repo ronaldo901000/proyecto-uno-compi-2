@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Estado compartido durante la traduccion de las cuartetas a codigo C.
- * Fachada que delega el analisis de ambitos a {@link AnalisisAmbitos} y
- * el formateo de operandos a {@link FormateoOperandos}.
+ * Estado compartido durante la traduccion de las cuartetas a codigo C. Fachada
+ * que delega el analisis de ambitos a {@link AnalisisAmbitos} y el formateo de
+ * operandos a {@link FormateoOperandos}.
  *
  * @author ronaldo
  */
@@ -30,10 +30,11 @@ public class ContextoTraduccion {
     private final Map<String, Tipo> punterosArreglo = new LinkedHashMap<>();
     private final Map<String, TipoStructura> estructuras = new LinkedHashMap<>();
     private final Map<String, String> arreglosNuevos = new LinkedHashMap<>();
-    private final Map<String, TipoStructura> punterosEstructura =
-            new LinkedHashMap<>();
-    private final Map<String, TipoArreglo> dimsArreglosResueltas =
-            new LinkedHashMap<>();
+    private final Map<String, TipoStructura> punterosEstructura
+            = new LinkedHashMap<>();
+    private final Map<String, TipoArreglo> dimsArreglosResueltas
+            = new LinkedHashMap<>();
+    private final Map<String, TipoArreglo> dimsLocales = new LinkedHashMap<>();
     private final ListaCuartetas cuartetas;
     private boolean usaConcatenacion = false;
     private boolean usaComparacionCadenas = false;
@@ -89,8 +90,8 @@ public class ContextoTraduccion {
         return analisis.raizIdentificador(operando);
     }
 
-    public boolean tamanioConocido(TipoArreglo arreglo) {
-        return formateo.tamanioConocido(arreglo);
+    public boolean tamañoConocido(TipoArreglo arreglo) {
+        return formateo.tamañoConocido(arreglo);
     }
 
     public Set<String> getFunciones() {
@@ -177,6 +178,10 @@ public class ContextoTraduccion {
         return dimsArreglosResueltas;
     }
 
+    public Map<String, TipoArreglo> getDimsLocales() {
+        return dimsLocales;
+    }
+
     public Set<String> getLocalesDeUnidad(String unidad) {
         return localesPorUnidad.get(unidad);
     }
@@ -193,6 +198,12 @@ public class ContextoTraduccion {
         return punterosArreglo.containsKey(nombre);
     }
 
+    public void registrarPunteroArreglo(String nombre, Tipo tipoBase) {
+        punterosArreglo.put(nombre, tipoBase);
+        arreglos.remove(nombre);
+        escalares.remove(nombre);
+    }
+
     public Tipo tipoPunteroArreglo(String nombre) {
         return punterosArreglo.get(nombre);
     }
@@ -205,7 +216,7 @@ public class ContextoTraduccion {
         return punterosEstructura.get(nombre);
     }
 
-    public Integer tamanioArreglo(String nombre) {
+    public Integer tamañoArreglo(String nombre) {
         return arreglos.get(nombre);
     }
 
@@ -282,7 +293,13 @@ public class ContextoTraduccion {
 
     public String tipoCDe(Tipo tipo) {
         if (tipo instanceof TipoArreglo) {
-            return tipo.tipoC();
+            TipoArreglo arreglo = (TipoArreglo) tipo;
+            String texto = tipo.tipoC();
+
+            if (esObjetoPorReferencia(arreglo.getTipoBase())) {
+                texto = texto + "*";
+            }
+            return texto;
         }
         if (esObjetoPorReferencia(tipo)) {
             return tipo.tipoC() + "*";

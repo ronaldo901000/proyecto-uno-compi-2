@@ -218,7 +218,6 @@ public class Llamada extends Expresion implements Instruccion {
         String etiqueta = (funcion != null)
                 ? funcion.getEtiquetaInicio() : nombreFuncion;
 
-        // Llamada a metodo: el receptor viaja como primer parametro (modelo this).
         boolean esMetodo = funcion != null && funcion.getNombreClase() != null;
         if (esMetodo) {
             String receptor = (dirObjetivo != null) ? dirObjetivo : "this";
@@ -254,18 +253,18 @@ public class Llamada extends Expresion implements Instruccion {
             if (clase == null) {
                 return null;
             }
-            return resolverMetodo(clase, clase.getMetodosPorNombre(nombreFuncion));
+            return resolverMetodo(clase.getMetodosPorNombre(nombreFuncion));
         }
         if (contexto.getClaseActual() != null
                 && contexto.getClaseActual().getMetodosPorNombre(nombreFuncion) != null
                 && !contexto.getClaseActual().getMetodosPorNombre(nombreFuncion).isEmpty()) {
-            return resolverMetodo(contexto.getClaseActual(),
+            return resolverMetodo(
                     contexto.getClaseActual().getMetodosPorNombre(nombreFuncion));
         }
         return resolverFuncionLibre(contexto);
     }
 
-    private SimboloFuncion resolverMetodo(SimboloClase clase,
+    private SimboloFuncion resolverMetodo(
             List<SimboloFuncion> candidatas) {
 
         List<Tipo> tipos = tiposDeArgumentos();

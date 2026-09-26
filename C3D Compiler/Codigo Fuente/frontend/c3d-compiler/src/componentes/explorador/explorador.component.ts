@@ -19,17 +19,15 @@ export class ExploradorComponent {
   tipoCreacion: TipoNodo = 'archivo';
   modalError: string = '';
 
-  // Estado para controlar el comportamiento del modal
   modoAccion: 'crear' | 'editar' = 'crear';
   nombreInicial: string = '';
   extensionInicial: ExtensionArchivo = 'y';
 
-  // Estado para deshabilitar el botón mientras se importan/leen archivos
   public importando: boolean = false;
 
   constructor(public arbolService: ArbolTrabajoService) { }
 
-  // Abrir modal para CREAR archivo o carpeta
+
   public abrirModalCrear(tipo: TipoNodo): void {
     this.modoAccion = 'crear';
     this.tipoCreacion = tipo;
@@ -39,7 +37,7 @@ export class ExploradorComponent {
     this.modalVisible = true;
   }
 
-  // Abrir modal para EDITAR/RENOMBRAR el nodo seleccionado
+
   public abrirModalEdicion(): void {
     const nodo = this.arbolService.getNodoSeleccionado();
     if (!nodo) return;
@@ -57,7 +55,6 @@ export class ExploradorComponent {
     this.modalError = '';
   }
 
-  // Procesa la confirmación del modal (tanto para creación como para edición)
   public procesarAccionModal(datos: { nombre: string; extension: ExtensionArchivo }): void {
     const nombreLimpio = datos.nombre.trim();
 
@@ -112,7 +109,7 @@ export class ExploradorComponent {
     }
   }
 
-  // Handler del input webkitdirectory: importa la carpeta seleccionada (con contenido)
+
   public async onCarpetaSeleccionada(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -133,7 +130,7 @@ export class ExploradorComponent {
       alert('Ocurrió un error inesperado al importar el proyecto.');
     } finally {
       this.importando = false;
-      input.value = ''; // permite reimportar la misma carpeta después
+      input.value = ''; 
     }
   }
 }

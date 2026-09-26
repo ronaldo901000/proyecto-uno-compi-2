@@ -124,7 +124,14 @@ public class FormateoOperandos {
                 }
             }
         }
-        return contexto.esPunteroEstructura(nombre);
+        if (contexto.esPunteroEstructura(nombre)) {
+            return true;
+        }
+        Tipo tipoVar = tipoBase(nombre);
+        if (tipoVar instanceof TipoStructura) {
+            return contexto.esObjetoPorReferencia(tipoVar);
+        }
+        return false;
     }
 
     private Tipo tipoBase(String segmento) {
@@ -188,7 +195,7 @@ public class FormateoOperandos {
         return sb.toString();
     }
 
-    public boolean tamanioConocido(TipoArreglo arreglo) {
+    public boolean tamañoConocido(TipoArreglo arreglo) {
         List<Integer> dimensiones = arreglo.getDimensiones();
         if (dimensiones == null || dimensiones.isEmpty()) {
             return false;
@@ -220,15 +227,36 @@ public class FormateoOperandos {
         if (dims.isEmpty() || indices.size() > dims.size()) {
             return operando;
         }
+        List<Integer> dimsOriginales = dims;
+        boolean esPlano = true;
+        for (Integer d : dims) {
+            if (d != null && d > 0) {
+                esPlano = false;
+                break;
+            }
+        }
+        if (esPlano) {
+            TipoArreglo original = contexto.getDimsLocales().get(baseLimpio);
+            if (original == null) {
+                original = contexto.getDimsArreglosResueltas().values()
+                        .stream().filter(t -> t != null
+                                && t.getDimensiones().size() == dims.size())
+                        .findFirst().orElse(null);
+            }
+            if (original != null) {
+                dimsOriginales = original.getDimensiones();
+            }
+        }
         StringBuilder plano = new StringBuilder();
         for (int i = 0; i < indices.size(); i++) {
             if (i > 0) {
                 plano.append(" + ");
             }
-            if (i < dims.size()) {
+            if (i < dimsOriginales.size()) {
                 int stride = 1;
-                for (int j = i + 1; j < dims.size(); j++) {
-                    stride *= dims.get(j);
+                for (int j = i + 1; j < dimsOriginales.size(); j++) {
+                    Integer dim = dimsOriginales.get(j);
+                    stride *= (dim != null && dim > 0) ? dim : 1;
                 }
                 if (indices.get(i).contains("*")) {
                     plano.append(indices.get(i));
@@ -249,6 +277,14 @@ public class FormateoOperandos {
         String unidad = contexto.getUnidadActual();
         if (unidad == null) {
             return null;
+        }
+        TipoArreglo local = contexto.getDimsLocales().get(nombreCampo);
+        if (local != null) {
+            return local;
+        }
+        Tipo tipoVar = tipoDeVariableDe(nombreCampo);
+        if (tipoVar instanceof TipoArreglo) {
+            return tipoVar;
         }
         String clase = contexto.claseDeUnidad(unidad);
         if (clase == null) {
@@ -346,6 +382,16 @@ public class FormateoOperandos {
             tipo = contexto.getCuartetas().tipoDeVariable(
                     limpio.replace('_', '.'));
         }
+        if (tipo == null && limpio.contains("->")) {
+            // El tipo de un acceso encadenado (ej. "amigo.nombre") se
+            // registra en su forma con punto/guion bajo (ver
+            // Acceso.generarCuartetas). Si llegamos aqui es porque el
+            // operando ya fue normalizado de "." a "->" (formatearOperando),
+            // asi que probamos tambien con esa conversion revertida antes
+            // de rendirnos.
+            tipo = contexto.getCuartetas().tipoDeVariable(
+                    limpio.replace("->", "."));
+        }
         return tipo;
     }
 
@@ -404,7 +450,7 @@ public class FormateoOperandos {
             String tipoElemento = contexto.esObjetoPorReferencia(base)
                     ? base.tipoC() + "*"
                     : (contexto.tipoCValido(base) ? base.tipoC() : "int");
-            if (tamanioConocido(arreglo)) {
+            if (tamañoConocido(arreglo)) {
                 return tipoElemento + " " + nombre
                         + "[" + arreglo.getTotalElementos() + "]";
             }

@@ -11,7 +11,7 @@ clase
     ;
     
 contenido
-    : (atributo | constructor |metodo)*
+    : (atributo | metodo | constructor)*
     ;
 
 
@@ -21,8 +21,8 @@ atributo
     ;
 
 declaracion
-    : dec_var_simple
-    | dec_array
+    : dec_array
+    | dec_var_simple
     ;
 
 dec_var_simple
@@ -148,7 +148,7 @@ procedimiento
     ;
 
 funcion
-    : PUBLIC tipo_dato_general ID PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
+    : PUBLIC tipo_dato_general (CORCH_A CORCH_C)* ID PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
     ;
 
 parametros

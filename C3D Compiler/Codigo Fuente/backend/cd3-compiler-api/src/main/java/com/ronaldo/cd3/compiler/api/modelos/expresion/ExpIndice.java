@@ -95,14 +95,14 @@ public class ExpIndice extends Expresion implements Verificable {
     }
 
     private Tipo tipoDeIndice(Contexto contexto, TipoArreglo arregloTipado) {
-        
+
         if (arregloTipado.getNumeroDimensiones() <= 1) {
             return arregloTipado.getTipoBase();
         }
-        
+
         List<Integer> restantes = arregloTipado.getDimensiones()
                 .subList(1, arregloTipado.getNumeroDimensiones());
-        
+
         return contexto.getTablaTipos().getArreglo(arregloTipado.getTipoBase(), restantes);
     }
 

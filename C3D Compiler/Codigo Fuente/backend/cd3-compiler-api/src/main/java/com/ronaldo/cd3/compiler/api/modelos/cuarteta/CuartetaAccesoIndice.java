@@ -17,6 +17,7 @@ public class CuartetaAccesoIndice extends Cuarteta {
         String res = ctx.formatearOperando(getResultado());
         String acceso = a1 + "[(int)" + a2 + "]";
         String plano = ctx.aplanarSiPunteroArreglo(acceso);
+        
         if (plano.contains("*") && a1.indexOf('[') < 0
                 && res.indexOf('[') < 0) {
             int ini = a1.length() + 1;
@@ -27,6 +28,7 @@ public class CuartetaAccesoIndice extends Cuarteta {
                 return;
             }
         }
+        
         ctx.linea(sb, res + " = " + plano + ";");
     }
 }
