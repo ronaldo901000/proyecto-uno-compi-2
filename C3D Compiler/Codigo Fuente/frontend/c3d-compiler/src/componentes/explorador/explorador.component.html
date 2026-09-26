@@ -1,87 +1,93 @@
 <div class="contenedor-explorador bg-dark text-light h-100 d-flex flex-column">
-  <div
-    class="p-2 border-bottom border-secondary d-flex justify-content-between align-items-center"
-  >
+  <div class="p-2 border-bottom border-secondary d-flex flex-wrap gap-2 justify-content-between align-items-center">
 
-
+    <!-- Herramientas del árbol: se deshabilitan si no hay proyecto o no hay selección válida -->
     <div class="d-flex gap-1">
-      @if (arbolService.hayProyecto$ | async) {
-        <!-- Nuevo archivo -->
-        <button
-          class="btn btn-sm btn-outline-secondary"
-          title="Nuevo archivo"
-          [disabled]="!(arbolService.puedeCrearEnSeleccion$ | async)"
-          (click)="abrirModalCrear('archivo')"
-        >
-          <i class="bi bi-file-earmark-plus"></i>
-        </button>
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        title="Nuevo archivo"
+        [disabled]="!(arbolService.puedeCrearEnSeleccion$ | async)"
+        (click)="abrirModalCrear('archivo')"
+      >
+        <i class="bi bi-file-earmark-plus"></i>
+      </button>
 
-        <!-- Nueva carpeta -->
-        <button
-          class="btn btn-sm btn-outline-secondary"
-          title="Nueva carpeta"
-          [disabled]="!(arbolService.puedeCrearEnSeleccion$ | async)"
-          (click)="abrirModalCrear('carpeta')"
-        >
-          <i class="bi bi-folder-plus"></i>
-        </button>
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        title="Nueva carpeta"
+        [disabled]="!(arbolService.puedeCrearEnSeleccion$ | async)"
+        (click)="abrirModalCrear('carpeta')"
+      >
+        <i class="bi bi-folder-plus"></i>
+      </button>
 
-        <!-- Editar Nombre (Se deshabilita si no hay un elemento seleccionado) -->
-        <button
-          class="btn btn-sm btn-outline-secondary"
-          title="Editar Nombre"
-          [disabled]="!(arbolService.puedeEliminarSeleccion$ | async)"
-          (click)="abrirModalEdicion()"
-        >
-          <i class="bi bi-pencil"></i>
-        </button>
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        title="Editar Nombre"
+        [disabled]="!(arbolService.puedeEliminarSeleccion$ | async)"
+        (click)="abrirModalEdicion()"
+      >
+        <i class="bi bi-pencil"></i>
+      </button>
 
-        <!-- Eliminar -->
-        <button
-          class="btn btn-sm btn-outline-danger"
-          title="Eliminar"
-          [disabled]="!(arbolService.puedeEliminarSeleccion$ | async)"
-          (click)="eliminar()"
-        >
-          <i class="bi bi-trash"></i>
-        </button>
-      } @else {
-        <!-- Input oculto para seleccionar carpeta desde el explorador del sistema -->
-        <input
-          #inputProyecto
-          type="file"
-          webkitdirectory
-          directory
-          multiple
-          style="display: none"
-          (change)="onCarpetaSeleccionada($event)"
-        />
+      <button
+        class="btn btn-sm btn-outline-danger"
+        title="Eliminar"
+        [disabled]="!(arbolService.puedeEliminarSeleccion$ | async)"
+        (click)="eliminar()"
+      >
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>
 
-        <!-- Abrir Proyecto -->
-        <button
-          class="btn btn-sm btn-warning"
-          title="Abrir Proyecto"
-          [disabled]="importando"
-          (click)="inputProyecto.click()"
-        >
-          @if (importando) {
-            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
-            Importando...
-          } @else {
-            <i class="bi bi-folder2-open me-1"></i> Abrir Proyecto
-          }
-        </button>
+    <!-- Gestión del proyecto: SIEMPRE visibles -->
+    <div class="d-flex gap-1">
+      <input
+        #inputProyecto
+        type="file"
+        webkitdirectory
+        directory
+        multiple
+        style="display: none"
+        (change)="onCarpetaSeleccionada($event)"
+      />
 
-        <!-- Crear Proyecto -->
-        <button
-          class="btn btn-sm btn-primary"
-          title="Crear Proyecto"
-          [disabled]="importando"
-          (click)="abrirModalProyecto()"
-        >
-          <i class="bi bi-folder-plus me-1"></i> Nuevo Proyecto
-        </button>
-      }
+      <button
+        class="btn btn-sm btn-warning"
+        title="Abrir Proyecto"
+        [disabled]="importando"
+        (click)="inputProyecto.click()"
+      >
+        @if (importando) {
+          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          Importando...
+        } @else {
+          <i class="bi bi-folder2-open me-1"></i> Abrir Proyecto
+        }
+      </button>
+
+      <button
+        class="btn btn-sm btn-primary"
+        title="Nuevo Proyecto"
+        [disabled]="importando"
+        (click)="abrirModalProyecto()"
+      >
+        <i class="bi bi-folder-plus me-1"></i> Nuevo Proyecto
+      </button>
+
+      <button
+        class="btn btn-sm btn-success"
+        title="Descargar Proyecto"
+        [disabled]="!(arbolService.hayProyecto$ | async) || descargando"
+        (click)="descargarProyecto()"
+      >
+        @if (descargando) {
+          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          Generando...
+        } @else {
+          <i class="bi bi-download me-1"></i> Descargar
+        }
+      </button>
     </div>
   </div>
 

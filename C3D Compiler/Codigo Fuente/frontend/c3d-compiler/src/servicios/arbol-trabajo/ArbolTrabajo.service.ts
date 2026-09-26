@@ -4,7 +4,7 @@ import { NodoArchivo } from "../../modelos/nodo-archivo/NodoArchivo";
 import { TipoNodo } from "../../modelos/tipo-nodo/TipoNodo";
 import { ExtensionArchivo } from "../../modelos/extension-archivo/ExtensionArchivo";
 import { RespuestaAccionArchivo } from "../../modelos/respuesta-creacion/RespuestaCreacion";
-
+import JSZip from 'jszip';
 @Injectable({ providedIn: 'root' })
 export class ArbolTrabajoService {
 
@@ -57,6 +57,7 @@ export class ArbolTrabajoService {
 
         this.contenidosArchivos.clear();
         this.arbolSubject.next(raizProyecto);
+        this.seleccionarNodo(raizProyecto);
     }
 
     public cerrarProyecto(): void {
@@ -102,7 +103,7 @@ export class ArbolTrabajoService {
         const insertado = this.insertarEnArbolRecursivo(arbolActual, nodoSeleccionado.ruta, nuevoNodo);
 
         if (insertado) {
-         
+
             if (tipo === 'archivo') {
                 this.contenidosArchivos.set(nuevaRuta, '');
             }
@@ -238,7 +239,7 @@ export class ArbolTrabajoService {
             nodoSeleccionado.nombre = nuevoNombreTrim;
             nodoSeleccionado.ruta = nuevoNombreTrim;
 
-           
+
             const mapeoRutas = new Map<string, string>();
             this.recolectarMapeoRutas(nodoSeleccionado, rutaAnteriorRaiz, mapeoRutas);
 
@@ -361,7 +362,7 @@ export class ArbolTrabajoService {
 
 
 
-    
+
 
     public async importarProyectoDesdeArchivos(archivos: FileList): Promise<RespuestaAccionArchivo> {
         if (archivos.length === 0) {
@@ -479,5 +480,41 @@ export class ArbolTrabajoService {
             nodo.hijos = nodo.hijos.filter(hijo => this.limpiarCarpetasVacias(hijo));
         }
         return !!nodo.hijos && nodo.hijos.length > 0;
+    }
+
+
+
+    public async descargarProyectoComoZip(): Promise<void> {
+        const raiz = this.arbolSubject.value;
+        if (!raiz) return;
+
+        const zip = new JSZip();
+        const carpetaRaiz = zip.folder(raiz.nombre) ?? zip;
+
+        (raiz.hijos ?? []).forEach(hijo => this.agregarNodoAZip(hijo, carpetaRaiz));
+
+        const blob = await zip.generateAsync({ type: 'blob' });
+        this.descargarBlob(blob, `${raiz.nombre}.zip`);
+    }
+
+    private agregarNodoAZip(nodo: NodoArchivo, carpetaZip: JSZip): void {
+        if (nodo.tipo === 'archivo') {
+            const nombreCompleto = nodo.extension ? `${nodo.nombre}.${nodo.extension}` : nodo.nombre;
+            const contenido = this.contenidosArchivos.get(nodo.ruta) ?? '';
+            carpetaZip.file(nombreCompleto, contenido);
+            return;
+        }
+
+        const subCarpeta = carpetaZip.folder(nodo.nombre) ?? carpetaZip;
+        (nodo.hijos ?? []).forEach(hijo => this.agregarNodoAZip(hijo, subCarpeta));
+    }
+
+    private descargarBlob(blob: Blob, nombreArchivo: string): void {
+        const url = URL.createObjectURL(blob);
+        const enlace = document.createElement('a');
+        enlace.href = url;
+        enlace.download = nombreArchivo;
+        enlace.click();
+        URL.revokeObjectURL(url);
     }
 }

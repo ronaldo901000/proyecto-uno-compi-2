@@ -24,6 +24,7 @@ export class ExploradorComponent {
   extensionInicial: ExtensionArchivo = 'y';
 
   public importando: boolean = false;
+  public descargando: boolean = false;
 
   constructor(public arbolService: ArbolTrabajoService) { }
 
@@ -88,6 +89,10 @@ export class ExploradorComponent {
   }
 
   public abrirModalProyecto(): void {
+    if (this.arbolService.getArbol() && !confirm('Esto reemplazará el proyecto actual. ¿Continuar?')) {
+      return;
+    }
+
     const nombre = prompt('Ingresa el nombre del nuevo proyecto:');
     if (nombre && nombre.trim() !== '') {
       this.arbolService.crearNuevoProyecto(nombre.trim());
@@ -109,7 +114,6 @@ export class ExploradorComponent {
     }
   }
 
-
   public async onCarpetaSeleccionada(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -130,7 +134,21 @@ export class ExploradorComponent {
       alert('Ocurrió un error inesperado al importar el proyecto.');
     } finally {
       this.importando = false;
-      input.value = ''; 
+      input.value = '';
+    }
+  }
+
+  public async descargarProyecto(): Promise<void> {
+    if (!this.arbolService.getArbol()) return;
+
+    this.descargando = true;
+    try {
+      await this.arbolService.descargarProyectoComoZip();
+    } catch (error) {
+      console.error('Error al descargar el proyecto:', error);
+      alert('Ocurrió un error al generar el archivo para descargar.');
+    } finally {
+      this.descargando = false;
     }
   }
 }

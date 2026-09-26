@@ -36,11 +36,13 @@ public class TipoArreglo extends Tipo {
         return dimensiones.size();
     }
 
-    public void actualizarDimension(int indice, int extension) {
+    public TipoArreglo conDimensionActualizada(int indice, int extension) {
         if (indice < 0 || indice >= dimensiones.size()) {
-            return;
+            return this;
         }
-        dimensiones.set(indice, extension);
+        List<Integer> nuevasDimensiones = new ArrayList<>(dimensiones);
+        nuevasDimensiones.set(indice, extension);
+        return new TipoArreglo(tipoBase, nuevasDimensiones);
     }
 
     public int getTotalElementos() {

@@ -230,11 +230,16 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
         if (!dimsReales) {
             return;
         }
-        for (int i = 0; i < tipoRetorno.getNumeroDimensiones()
+        TipoArreglo tipoActualizado = tipoRetorno;
+        for (int i = 0; i < tipoActualizado.getNumeroDimensiones()
                 && i < tipoArrVar.getNumeroDimensiones(); i++) {
-            tipoRetorno.actualizarDimension(i,
-                    tipoArrVar.getDimensiones().get(i));
+            tipoActualizado = tipoActualizado.conDimensionActualizada(
+                    i, tipoArrVar.getDimensiones().get(i));
         }
+
+
+        simbolo.setTipoRetorno(tipoActualizado);
+        cuartetas.registrarTipoFuncion(simbolo.getEtiquetaInicio(), tipoActualizado);
     }
 
 }
