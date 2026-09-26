@@ -208,10 +208,10 @@ public class AnalisisAmbitos {
                     && !contexto.getFunciones().contains(base)) {
                 if (contexto.getArreglos().containsKey(base)) {
                     Integer maximo = maximoIndiceNumerico(operando);
-                    int tamanio = (maximo != null) ? (maximo + 1) : 100;
+                    int tamaño = (maximo != null) ? (maximo + 1) : 100;
                     contexto.getArreglos().put(base,
                             Math.max(contexto.getArreglos().getOrDefault(base, 0),
-                                    tamanio));
+                                    tamaño));
                     contexto.getEscalares().remove(base);
                 } else if (contexto.getCuartetas().getDimensionArreglo(base)
                         != null) {

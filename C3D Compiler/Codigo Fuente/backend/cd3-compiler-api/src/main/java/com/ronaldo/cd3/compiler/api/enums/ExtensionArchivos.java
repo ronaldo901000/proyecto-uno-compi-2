@@ -1,5 +1,8 @@
 package com.ronaldo.cd3.compiler.api.enums;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author ronaldo
@@ -18,8 +21,8 @@ public enum ExtensionArchivos {
         return this.texto;
     }
 
-    public static java.util.List<String> todas() {
-        java.util.List<String> extensiones = new java.util.ArrayList<>();
+    public static List<String> todas() {
+        List<String> extensiones = new ArrayList<>();
         for (ExtensionArchivos ext : ExtensionArchivos.values()) {
             extensiones.add(ext.getTexto());
         }

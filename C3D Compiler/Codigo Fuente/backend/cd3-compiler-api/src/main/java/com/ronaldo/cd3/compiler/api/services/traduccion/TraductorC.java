@@ -410,8 +410,8 @@ public class TraductorC {
 
     private void corregirDimensionesArreglos(List<Unidad> unidades,
             ContextoTraduccion ctx) {
-        java.util.Map<String, String> origenTemp = new java.util.LinkedHashMap<>();
-        java.util.Map<String, String> tempToUnit = new java.util.LinkedHashMap<>();
+        Map<String, String> origenTemp = new java.util.LinkedHashMap<>();
+        Map<String, String> tempToUnit = new java.util.LinkedHashMap<>();
         for (Unidad unidad : unidades) {
             if (unidad.getNombre() == null) {
                 continue;
@@ -439,7 +439,7 @@ public class TraductorC {
                         continue;
                     }
                     TipoArreglo tipoAlloc = (TipoArreglo) tipo;
-                    for (java.util.Map.Entry<String, String> entrada
+                    for (Map.Entry<String, String> entrada
                             : origenTemp.entrySet()) {
                         if (c.getResultado().equals(entrada.getValue())) {
                             String nombreUnidad = tempToUnit.get(
