@@ -7,6 +7,7 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -376,7 +377,7 @@ public class AnalisisAmbitos {
 
     public List<TipoStructura> listaEstructuras() {
         List<TipoStructura> pendientes
-                = new java.util.ArrayList<>(contexto.getEstructuras().values());
+                = new ArrayList<>(contexto.getEstructuras().values());
         List<TipoStructura> ordenadas = new java.util.ArrayList<>();
         Set<String> emitidas = new LinkedHashSet<>();
         while (!pendientes.isEmpty()) {

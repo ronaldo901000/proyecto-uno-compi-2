@@ -14,10 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Estado compartido durante la traduccion de las cuartetas a codigo C. Fachada
- * que delega el analisis de ambitos a {@link AnalisisAmbitos} y el formateo de
- * operandos a {@link FormateoOperandos}.
- *
  * @author ronaldo
  */
 public class ContextoTraduccion {
