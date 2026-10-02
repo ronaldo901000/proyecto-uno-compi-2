@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.clasesZ;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.interfaces.Generable;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
@@ -17,15 +18,17 @@ import java.util.List;
  * @author ronaldo
  */
 public class ConstructorZ extends Nodo implements Verificable, Generable {
-
+    
+    protected ModificadoresAcceso modAcceso;
     private String nombre;
     private List<Parametro> parametros;
     private List<Instruccion> cuerpo;
     private SimboloFuncion simbolo;
 
-    public ConstructorZ(String nombre, List<Parametro> parametros,
+    public ConstructorZ(ModificadoresAcceso modAcceso, String nombre, List<Parametro> parametros,
             List<Instruccion> cuerpo, int fila, int columna) {
         super(fila, columna);
+        this.modAcceso = modAcceso;
         this.nombre = nombre;
         this.parametros = parametros;
         this.cuerpo = cuerpo;

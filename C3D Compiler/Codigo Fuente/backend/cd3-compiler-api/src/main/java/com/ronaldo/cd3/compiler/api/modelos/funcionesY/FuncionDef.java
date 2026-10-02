@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.funcionesY;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.interfaces.Generable;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
@@ -30,6 +31,8 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
     private int dimensionesRetorno;
     private List<Instruccion> cuerpo;
     private SimboloFuncion simbolo;
+    private ModificadoresAcceso modAcceso;
+    private boolean tieneOverride;
 
     public FuncionDef(String nombre, List<Parametro> parametros,
             String tipoRetorno, List<Instruccion> cuerpo, int fila, int columna) {
@@ -41,6 +44,30 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
             List<Instruccion> cuerpo, int fila, int columna) {
 
         super(fila, columna);
+        this.nombre = nombre;
+        this.parametros = parametros;
+        this.tipoRetorno = tipoRetorno;
+        this.dimensionesRetorno = dimensionesRetorno;
+        this.cuerpo = cuerpo;
+    }
+
+    /**
+     * CONSTRUCTORES PARA EL LENGUAJE Z*
+     */
+    public FuncionDef(boolean tieneOverride, ModificadoresAcceso modAcceso, String nombre, List<Parametro> parametros,
+            String tipoRetorno, List<Instruccion> cuerpo, int fila, int columna) {
+        this(nombre, parametros, tipoRetorno, 0, cuerpo, fila, columna);
+        this.modAcceso = modAcceso;
+        this.tieneOverride = tieneOverride;
+    }
+
+    public FuncionDef(boolean tieneOverride, ModificadoresAcceso modAcceso, String nombre, List<Parametro> parametros,
+            String tipoRetorno, int dimensionesRetorno,
+            List<Instruccion> cuerpo, int fila, int columna) {
+
+        super(fila, columna);
+        this.tieneOverride = tieneOverride;
+        this.modAcceso = modAcceso;
         this.nombre = nombre;
         this.parametros = parametros;
         this.tipoRetorno = tipoRetorno;
@@ -157,18 +184,18 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
         if (simbolo == null) {
             return null;
         }
-        
+
         cuartetas.registrarTipoFuncion(simbolo.getEtiquetaInicio(),
                 simbolo.getTipoRetorno());
-        
+
         cuartetas.agregarEtiqueta(simbolo.getEtiquetaInicio(), fila, columna);
-        
+
         for (SimboloParametro parametro : simbolo.getParametros()) {
             cuartetas.registrarTipoVariable(parametro.getId(), parametro.getTipo());
         }
         cuartetas.registrarParametrosFuncion(simbolo.getEtiquetaInicio(),
                 simbolo.getParametros());
-        
+
         if (cuerpo != null) {
             for (Instruccion instruccion : cuerpo) {
                 instruccion.generarCuartetas(contexto, cuartetas);
@@ -236,7 +263,6 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
             tipoActualizado = tipoActualizado.conDimensionActualizada(
                     i, tipoArrVar.getDimensiones().get(i));
         }
-
 
         simbolo.setTipoRetorno(tipoActualizado);
         cuartetas.registrarTipoFuncion(simbolo.getEtiquetaInicio(), tipoActualizado);

@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.declar;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
@@ -21,8 +22,18 @@ public class DeclaracionArreglo extends Declaracion {
     private List<Expresion> dimensiones;
     private List<Expresion> valoresIniciales;
 
-    public DeclaracionArreglo(List<Expresion> dimensiones, List<Expresion> valoresIniciales, String tipoDato, String id, int fila, int columna) {
+    public DeclaracionArreglo(List<Expresion> dimensiones, List<Expresion> valoresIniciales,
+            String tipoDato, String id, int fila, int columna) {
+
         super(tipoDato, id, fila, columna);
+        this.dimensiones = dimensiones;
+        this.valoresIniciales = valoresIniciales;
+    }
+
+    public DeclaracionArreglo(List<Expresion> dimensiones, List<Expresion> valoresIniciales,
+            ModificadoresAcceso modAcceso, String tipoDato, String id, int fila, int columna) {
+        
+        super(modAcceso, tipoDato, id, fila, columna);
         this.dimensiones = dimensiones;
         this.valoresIniciales = valoresIniciales;
     }
@@ -96,9 +107,9 @@ public class DeclaracionArreglo extends Declaracion {
         cuartetas.registrarTipoArregloDeclarado(id, base);
 
         List<Integer> tamaños = new ArrayList<>();
-        
+
         boolean tieneDimension = false;
-        
+
         for (Expresion dim : dimensiones) {
             Integer tam = (dim != null) ? reglas.constanteEntera(dim) : null;
             tamaños.add((tam != null && tam > 0) ? tam : 0);
@@ -106,7 +117,7 @@ public class DeclaracionArreglo extends Declaracion {
                 tieneDimension = true;
             }
         }
-        
+
         Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamaños);
         cuartetas.registrarTipoVariableDeclarada(id, tipoArreglo);
 

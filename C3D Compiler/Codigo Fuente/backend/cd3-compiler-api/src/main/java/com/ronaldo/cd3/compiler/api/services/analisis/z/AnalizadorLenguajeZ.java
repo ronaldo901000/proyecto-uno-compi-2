@@ -98,7 +98,7 @@ public class AnalizadorLenguajeZ implements Analizable {
             ZVisitor visitor = new ZVisitor();
             LenguajeZParser.ProgramaContext programa = (LenguajeZParser.ProgramaContext) arbol;
             LenguajeZParser.ClaseContext claseCtx = programa.clase();
-            String nombreClase = claseCtx.ID().getText();
+            String nombreClase = claseCtx.ID(0).getText();
 
             if (nombreClase.equals(nombreBaseArchivo(archivo.getNombre()))) {
                 ClaseZ ast = (ClaseZ) visitor.visitClase(claseCtx);

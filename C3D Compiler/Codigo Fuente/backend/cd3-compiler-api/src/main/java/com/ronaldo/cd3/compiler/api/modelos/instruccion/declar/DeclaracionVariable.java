@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.declar;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
@@ -19,6 +20,11 @@ public class DeclaracionVariable extends Declaracion {
 
     public DeclaracionVariable(Expresion valorInicial, String tipoDato, String id, int fila, int columna) {
         super(tipoDato, id, fila, columna);
+        this.valorInicial = valorInicial;
+    }
+
+    public DeclaracionVariable(Expresion valorInicial, ModificadoresAcceso modAcceso, String tipoDato, String id, int fila, int columna) {
+        super(modAcceso, tipoDato, id, fila, columna);
         this.valorInicial = valorInicial;
     }
 

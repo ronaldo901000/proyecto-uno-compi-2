@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.services.visitors;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.Operador;
 import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.interfaces.Visitable;
@@ -54,7 +55,12 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
     public ClaseZ visitClase(LenguajeZParser.ClaseContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        String nombre = ctx.ID().getText();
+        String nombre = ctx.ID(0).getText();
+        String nombrePadre = null;
+
+        if (ctx.ID(1) != null) {
+            nombrePadre = ctx.ID(1).getText();
+        }
 
         List<Declaracion> atributos = new ArrayList<>();
         for (LenguajeZParser.AtributoContext a : ctx.contenido().atributo()) {
@@ -71,7 +77,7 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
             metodos.add(visitMetodo(m));
         }
 
-        return new ClaseZ(nombre, atributos, constructores, metodos, fila, columna);
+        return new ClaseZ(nombre, nombrePadre, atributos, constructores, metodos, fila, columna);
     }
 
     @Override
@@ -95,7 +101,10 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         String nombre = ctx.ID().getText();
         Expresion valorInicial = (ctx.expresion() != null)
                 ? (Expresion) visit(ctx.expresion()) : null;
-        return new DeclaracionVariable(valorInicial, tipoDato, nombre, fila, columna);
+
+        ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
+
+        return new DeclaracionVariable(valorInicial, modAcceso, tipoDato, nombre, fila, columna);
     }
 
     @Override
@@ -115,7 +124,9 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
             }
         }
 
-        return new DeclaracionArreglo(dimensiones, valoresIniciales, tipoDato, nombre, fila, columna);
+        ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
+
+        return new DeclaracionArreglo(dimensiones, valoresIniciales, modAcceso, tipoDato, nombre, fila, columna);
     }
 
     private List<Expresion> extraerDimensionesArreglo(LenguajeZParser.Dec_arrayContext ctx) {
@@ -155,9 +166,27 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
         String nombre = ctx.ID().getText();
+        String acceso = ctx.mod_acceso().getText();
         List<Parametro> parametros = extraerParametros(ctx.parametros());
         List<Instruccion> cuerpo = visitarInstrucciones(ctx.instruccion());
-        return new ConstructorZ(nombre, parametros, cuerpo, fila, columna);
+        ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
+
+        return new ConstructorZ(modAcceso, nombre, parametros, cuerpo, fila, columna);
+    }
+
+    public ModificadoresAcceso generarModAcceso(LenguajeZParser.Mod_accesoContext ctx) {
+        if (ctx != null) {
+
+            if (ctx.getText().equals(ModificadoresAcceso.PUBLIC.getTexto())) {
+                return ModificadoresAcceso.PUBLIC;
+            } else if (ctx.getText().equals(ModificadoresAcceso.PRIVATE.getTexto())) {
+                return ModificadoresAcceso.PRIVATE;
+            } else if (ctx.getText().equals(ModificadoresAcceso.PROTECTED.getTexto())) {
+                return ModificadoresAcceso.PROTECTED;
+            }
+        }
+        return ModificadoresAcceso.DEFAULT;
+
     }
 
     @Override
@@ -393,7 +422,11 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         String nombre = ctx.ID().getText();
         List<Parametro> parametros = extraerParametros(ctx.parametros());
         List<Instruccion> cuerpo = visitarInstrucciones(ctx.instruccion());
-        return new FuncionDef(nombre, parametros, null, cuerpo, fila, columna);
+
+        boolean tieneOverride = true ? ctx.OVERRIDE() != null : false;
+        ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
+
+        return new FuncionDef(tieneOverride, modAcceso, nombre, parametros, null, cuerpo, fila, columna);
     }
 
     @Override
@@ -405,7 +438,11 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int dimensionesRetorno = ctx.CORCH_A().size();
         List<Parametro> parametros = extraerParametros(ctx.parametros());
         List<Instruccion> cuerpo = visitarInstrucciones(ctx.instruccion());
-        return new FuncionDef(nombre, parametros, tipoRetorno, dimensionesRetorno,
+
+        boolean tieneOverride = true ? ctx.OVERRIDE() != null : false;
+        ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
+
+        return new FuncionDef(tieneOverride, modAcceso, nombre, parametros, tipoRetorno, dimensionesRetorno,
                 cuerpo, fila, columna);
     }
 

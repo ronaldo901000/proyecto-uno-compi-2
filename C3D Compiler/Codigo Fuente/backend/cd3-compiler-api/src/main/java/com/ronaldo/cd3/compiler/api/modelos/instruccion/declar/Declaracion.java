@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.instruccion.declar;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 
@@ -9,6 +10,7 @@ import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
  */
 public abstract class Declaracion extends Nodo implements Instruccion {
 
+    protected ModificadoresAcceso modAcceso;
     protected String tipoDato;
     protected String id;
 
@@ -16,6 +18,13 @@ public abstract class Declaracion extends Nodo implements Instruccion {
         super(fila, columna);
         this.tipoDato = tipoDato;
         this.id = id;
+    }
+
+    public Declaracion(ModificadoresAcceso modAcceso, String tipoDato, String id, int fila, int columna) {
+        super(fila, columna);
+        this.tipoDato = tipoDato;
+        this.id = id;
+        this.modAcceso = modAcceso;
     }
 
     public String getTipoDato() {

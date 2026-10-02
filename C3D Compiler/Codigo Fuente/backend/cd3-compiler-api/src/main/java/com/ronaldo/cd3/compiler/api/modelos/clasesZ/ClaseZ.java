@@ -41,8 +41,9 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
     private List<FuncionDef> metodos;
     private SimboloClase simboloClase;
     private ArchivoDTO archivo;
+    private String nombrePadre;
 
-    public ClaseZ(String nombre, List<Declaracion> atributos,
+    public ClaseZ(String nombre, String nombrePadre, List<Declaracion> atributos,
             List<ConstructorZ> constructores, List<FuncionDef> metodos,
             int fila, int columna) {
         super(fila, columna);
@@ -50,6 +51,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         this.atributos = atributos;
         this.constructores = constructores;
         this.metodos = metodos;
+        this.nombrePadre = nombrePadre;
     }
 
     public String getNombre() {
@@ -76,6 +78,19 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
     public void verificarSemantica(Contexto contexto) {
         registrarEstructuraYDeclaraciones(contexto);
         verificarCuerpos(contexto);
+    }
+
+    public void verificarHerencia(Contexto contexto) {
+        if (nombrePadre != null) {
+            Simbolo padre = contexto.getTablaSimbolos().buscarOtroSimbolo(nombrePadre);
+
+            if (padre == null || !(padre instanceof SimboloClase)) {
+                contexto.agregarError(fila, columna, nombrePadre,
+                        "No existe la clase '" + nombrePadre + "' NO para extends." 
+                );
+            }
+        }
+
     }
 
     public void registrarEstructuraYDeclaraciones(Contexto contexto) {

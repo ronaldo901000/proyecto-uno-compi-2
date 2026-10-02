@@ -7,7 +7,7 @@ programa
     ;
 
 clase
-    : PUBLIC CLASS ID LLAVE_A contenido LLAVE_C
+    : (PUBLIC)? CLASS ID (EXTENDS ID)? LLAVE_A contenido LLAVE_C
     ;
     
 contenido
@@ -26,11 +26,11 @@ declaracion
     ;
 
 dec_var_simple
-    : tipo_dato_general ID (EQ expresion)?
+    : (mod_acceso)? tipo_dato_general ID (EQ expresion)?
     ;
 
 dec_array
-    : tipo_dato_general 
+    : (mod_acceso)? tipo_dato_general 
     (CORCH_A expresion? CORCH_C)+ 
     ID 
     (EQ ( LLAVE_A valores_iniciales? LLAVE_C 
@@ -43,7 +43,7 @@ valores_iniciales
 
 /**CONSTRUCTOR**/
 constructor
-    : PUBLIC ID PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
+    : (mod_acceso)? ID PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
     ;
 
 
@@ -144,11 +144,11 @@ metodo
 
 /**void**/
 procedimiento
-    : PUBLIC VOID ID PAR_A parametros? PAR_C LLAVE_A instruccion*  LLAVE_C
+    : OVERRIDE? (mod_acceso)? VOID ID PAR_A parametros? PAR_C LLAVE_A instruccion*  LLAVE_C
     ;
 
 funcion
-    : PUBLIC tipo_dato_general (CORCH_A CORCH_C)* ID PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
+    : OVERRIDE? (mod_acceso)? tipo_dato_general (CORCH_A CORCH_C)* ID PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
     ;
 
 parametros
@@ -243,10 +243,20 @@ tipo_dato_primitivo
     ;
 
 
+mod_acceso
+    : PUBLIC
+    | PRIVATE
+    | PROTECTED
+    ;
+
 /**ANALISIS LEXICO**/
 
 /**Palabras Reservadas**/
 PUBLIC:     'public';
+PRIVATE:    'private';
+PROTECTED:  'protected';
+EXTENDS:    'extends';
+OVERRIDE:    '@Override';
 CLASS:      'class';
 VOID:       'void';
 INT:        'int';

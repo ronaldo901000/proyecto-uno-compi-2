@@ -26,7 +26,7 @@ declaracion
 
 // Declaraciones de variables, estructuras u objetos
 dec_var
-    : ESTO ID (DOS_P (tipo_dato | ID)? expresion)?
+    : ESTO ID (DOS_P (tipo_dato | ID)? expresion)? (DOS_P ID)?
     | SERIES ID CORCH_A expresion CORCH_C DOS_P? (tipo_dato | ID)? expresion?
     ;
 
@@ -192,7 +192,7 @@ PER:        'per';
 PERGE:      'perge';
 INTERRUMPE: 'interrumpe';
 NON:        'non';
-
+NULL:       'null';
 /** Simbolos **/
 MAS:         '+';
 MENOS:       '-';

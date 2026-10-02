@@ -34,22 +34,21 @@ public class AnalizadorSemanticoZ {
         Contexto contexto = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
         contexto.setEsLenguajeZ(true);
 
-        //Pasada cero: pre-registrar el nombre de todas las clases para que el
-        //orden de los archivos no afecte la resolucion de tipos (ej. una clase
-        //que usa como atributo/parametro un tipo definido en otro archivo).
+
         for (ClaseZ clase : clases) {
             tablaTipos.registrarClase(clase.getNombre());
         }
 
-        //Primera pasada: registrar las clases (atributos, metodos y constructores)
+        //Primera pasada: registrar las clases (herencia, atributos, metodos y constructores)
         for (ClaseZ clase : clases) {
             contexto.setRuta(clase.getArchivo().getRuta());
             clase.registrarEstructuraYDeclaraciones(contexto);
         }
 
-        //Segunda pasada: verificar los cuerpos de los metodos y constructores
+        //Segunda pasada: verificar los cuerpos de los metodos, extends y constructores
         for (ClaseZ clase : clases) {
             contexto.setRuta(clase.getArchivo().getRuta());
+            clase.verificarHerencia(contexto);
             clase.verificarCuerpos(contexto);
         }
 
