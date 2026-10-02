@@ -86,7 +86,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
 
             if (padre == null || !(padre instanceof SimboloClase)) {
                 contexto.agregarError(fila, columna, nombrePadre,
-                        "No existe la clase '" + nombrePadre + "' NO para extends." 
+                        "No existe la clase '" + nombrePadre + "' NO se puede usar extends." 
                 );
             }
         }
