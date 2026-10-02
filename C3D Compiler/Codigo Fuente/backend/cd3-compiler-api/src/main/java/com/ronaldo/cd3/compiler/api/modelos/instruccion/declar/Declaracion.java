@@ -35,4 +35,10 @@ public abstract class Declaracion extends Nodo implements Instruccion {
         return id;
     }
 
+    public ModificadoresAcceso getModAcceso() {
+        return modAcceso;
+    }
+    
+    
+
 }
