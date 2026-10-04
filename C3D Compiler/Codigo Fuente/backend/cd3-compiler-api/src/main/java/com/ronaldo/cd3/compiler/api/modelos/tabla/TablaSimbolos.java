@@ -299,23 +299,4 @@ public class TablaSimbolos {
         return "Ambito: " + nombreAmbito + " -> " + simbolos.keySet();
     }
 
-    public void imprimir() {
-        imprimir(0);
-    }
-
-    private void imprimir(int nivel) {
-        StringBuilder sangria = new StringBuilder();
-        for (int i = 0; i < nivel; i++) {
-            sangria.append("  ");
-        }
-        System.out.println(sangria + "AMBITO: " + nombreAmbito);
-        for (Simbolo simbolo : simbolos.values()) {
-            System.out.println(sangria + "  - " + simbolo.getRol()
-                    + " " + simbolo.getId()
-                    + " : " + simbolo.getTipo());
-        }
-        for (TablaSimbolos ambito : ambitos) {
-            ambito.imprimir(nivel + 1);
-        }
-    }
 }

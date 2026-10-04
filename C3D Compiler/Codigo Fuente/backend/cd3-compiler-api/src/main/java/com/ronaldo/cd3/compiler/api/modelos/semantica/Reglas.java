@@ -9,6 +9,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.AccesoVariable;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.ExpIndice;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Literal;
+import com.ronaldo.cd3.compiler.api.modelos.expresion.LlamadaThis;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Operacion;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Unario;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Continuar;
@@ -362,7 +363,8 @@ public class Reglas {
     public boolean esLvalue(Expresion expresion) {
         return expresion instanceof AccesoVariable
                 || expresion instanceof Acceso
-                || expresion instanceof ExpIndice;
+                || expresion instanceof ExpIndice
+                || expresion instanceof LlamadaThis;
     }
 
     public boolean siempreRetorna(List<Instruccion> instrucciones) {

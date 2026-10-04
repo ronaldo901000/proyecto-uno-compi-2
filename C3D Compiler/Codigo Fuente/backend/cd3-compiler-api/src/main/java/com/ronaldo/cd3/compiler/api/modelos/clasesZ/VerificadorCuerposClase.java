@@ -72,7 +72,7 @@ public class VerificadorCuerposClase {
         SimboloClase simboloClase = clase.getSimboloClase();
 
         TablaSimbolos anterior = contexto.nuevoAmbito(nombreMiembro);
-        sembrarAtributos(contexto, simboloClase);
+        registrarAtributosEnAmbito(contexto, simboloClase);
 
         int posicion = 0;
         if (parametros != null) {
@@ -100,7 +100,7 @@ public class VerificadorCuerposClase {
         contexto.restaurarAmbito(anterior);
     }
 
-    private void sembrarAtributos(Contexto contexto, SimboloClase simboloClase) {
+    private void registrarAtributosEnAmbito(Contexto contexto, SimboloClase simboloClase) {
         if (simboloClase == null) {
             return;
         }

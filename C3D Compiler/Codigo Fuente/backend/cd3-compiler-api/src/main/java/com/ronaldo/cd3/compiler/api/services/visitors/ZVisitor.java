@@ -13,6 +13,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Literal;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Llamada;
+import com.ronaldo.cd3.compiler.api.modelos.expresion.LlamadaThis;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.NewObjeto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.NewArreglo;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Operacion;
@@ -233,6 +234,9 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         if (ctx.ciclo_do_while() != null) {
             return visitCiclo_do_while(ctx.ciclo_do_while());
         }
+        if (ctx.llamada_this() != null) {
+            return visitLlamada_this(ctx.llamada_this());
+        }
         return null;
     }
 
@@ -261,8 +265,11 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
 
-        if (ctx.lvalue() == null) {
+        if (ctx.ID() != null) {
             return new AccesoVariable(ctx.ID().getText(), fila, columna);
+        }
+        if (ctx.llamada_this() != null) {
+            return visitLlamada_this(ctx.llamada_this());
         }
         if (ctx.CORCH_A() != null) {
             Expresion arreglo = visitarLvalue(ctx.lvalue());
@@ -608,6 +615,11 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
     }
 
     @Override
+    public LlamadaThis visitExpThis(LenguajeZParser.ExpThisContext ctx) {
+        return visitLlamada_this(ctx.llamada_this());
+    }
+
+    @Override
     public Llamada visitExpLlamadaEncadenada(LenguajeZParser.ExpLlamadaEncadenadaContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
@@ -799,6 +811,28 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
             }
         }
         return resultado;
+    }
+
+    @Override
+    public LlamadaThis visitLlamada_this(LenguajeZParser.Llamada_thisContext ctx) {
+        int fila = ctx.start.getLine();
+        int columna = ctx.start.getCharPositionInLine();
+
+        if (ctx.ID() != null) {
+
+            AccesoVariable variable = new AccesoVariable(ctx.ID().getText(), fila, columna);
+
+            return new LlamadaThis(variable, null, fila, columna);
+
+        } else if (ctx.llamada_metodo() != null) {
+            Llamada llamada = visitLlamada_metodo(ctx.llamada_metodo());
+
+            return new LlamadaThis(null, llamada, fila, columna);
+
+        }
+
+        return null;
+
     }
 
 }

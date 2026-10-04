@@ -18,7 +18,7 @@ public class ColorToken {
         this.inicio = inicio;
         this.fin = fin;
         this.id = id;
-
+        
         if (opcion.equals(ExtensionArchivos.Y.getTexto())) {
             definirColorY();
         } else if (opcion.equals(ExtensionArchivos.Z.getTexto())) {
@@ -137,97 +137,111 @@ public class ColorToken {
     }
 
     public void definirColorZ() {
+        
+        
         switch (this.id) {
 
-            // PALABRAS RESERVADAS DEL LENGUAJE Z (Magenta)
+            // MODIFICADORES DE ACCESO (Morado)
             case 1:  // PUBLIC
-            case 2:  // CLASS
-            case 3:  // VOID
-            case 9:  // NEW
-            case 10: // RETURN
-            case 11: // IF
-            case 12: // ELSE
-            case 15: // SWITCH
-            case 16: // CASE
-            case 17: // BREAK
-            case 18: // CONTINUE
-            case 19: // DEFAULT
-            case 20: // PRINTLN
-            case 21: // PRINT
-            case 22: // READLN
-            case 23: // FOR
-            case 24: // WHILE
-            case 25: // DO
-            case 26: // NULL
+            case 2:  // PRIVATE
+            case 3:  // PROTECTED
+                this.color = "#9577f4";
+                break;
+                
+            // Rosa
+            case 5:// OVERRIDE
+            case 14:// RETURN
+                this.color = "#FF79C6";
+                break;
+
+            // PALABRAS RESERVADAS DEL LENGUAJE Z (Magenta)
+            case 4:  // EXTENDS
+            case 6:  // CLASS
+            case 7:  // VOID
+            case 13: // NEW
+            case 15: // IF
+            case 16: // ELSE
+            case 19: // SWITCH
+            case 20: // CASE
+            case 21: // BREAK
+            case 22: // CONTINUE
+            case 23: // DEFAULT
+            case 24: // PRINTLN
+            case 25: // PRINT
+            case 26: // READLN
+            case 27: // FOR
+            case 28: // WHILE
+            case 29: // DO
+            case 30: // NULL
                 this.color = "#C678DD";
                 break;
 
             // TIPOS DE DATOS PRIMITIVOS (Cyan brillante)
-            case 4: // INT
-            case 5: // DOUBLE
-            case 6: // STRING
-            case 7: // CHAR
-            case 8: // BOOLEAN
+            case 8:  // INT
+            case 9:  // DOUBLE
+            case 10: // STRING
+            case 11: // CHAR
+            case 12: // BOOLEAN
                 this.color = "#56B6C2";
                 break;
 
             // VALORES LITERALES Y CONSTANTES (Naranja)
-            case 13: // TRUE
-            case 14: // FALSE
-            case 59: // ENTERO
-            case 60: // DECIMAL
+            case 17: // TRUE
+            case 18: // FALSE
+            case 63: // ENTERO
+            case 64: // DECIMAL
                 this.color = "#D19A66";
                 break;
 
             // CADENAS Y CARACTERES (Verde suave)
-            case 61: // CADENA
-            case 62: // LIT_CHAR
+            case 65: // CADENA
+            case 66: // LIT_CHAR
                 this.color = "#98C379";
                 break;
 
             // IDENTIFICADORES (Azul claro)
-            case 58: // ID
+            case 62: // ID
                 this.color = "#61AFEF";
                 break;
 
             // COMENTARIOS (Gris oscuro)
-            case 64: // COMENTARIO_LINEA
-            case 65: // COMENTARIO_BLOQUE
+            case 68: // COMENTARIO_LINEA
+            case 69: // COMENTARIO_BLOQUE
                 this.color = "#5C6370";
                 break;
 
             // OPERADORES Y SÍMBOLOS DE PUNTUACIÓN (Amarillo suave)
-            case 27: // MAS_EQ
-            case 28: // MENOS_EQ
-            case 29: // MULTI_EQ
-            case 30: // MAS
-            case 31: // MENOS
-            case 32: // MULTI
-            case 33: // DIV
-            case 34: // MODULO
-            case 35: // EQ
-            case 36: // EQ_EQ
-            case 37: // NO_EQ
-            case 38: // MAYOR_Q
-            case 39: // MAYOR_EQ_Q
-            case 40: // MENOR_Q
-            case 41: // MENOR_EQ_Q
-            case 42: // AND
-            case 43: // OR
-            case 44: // NOT
-            case 45: // MAS_MAS
-            case 46: // MENOS_MENOS
-            case 47: // PUNTO
-            case 48: // COMA
-            case 49: // DOS_P
-            case 50: // P_COMA
-            case 51: // LLAVE_A
-            case 52: // LLAVE_C
-            case 53: // CORCH_A
-            case 54: // CORCH_C
-            case 55: // PAR_A
-            case 56: // PAR_C
-            case 57: // INTERROGACION
+            case 31: // MAS_EQ
+            case 32: // MENOS_EQ
+            case 33: // MULTI_EQ
+            case 34: // MAS
+            case 35: // MENOS
+            case 36: // MULTI
+            case 37: // DIV
+            case 38: // MODULO
+            case 39: // EQ
+            case 40: // EQ_EQ
+            case 41: // NO_EQ
+            case 42: // MAYOR_Q
+            case 43: // MAYOR_EQ_Q
+            case 44: // MENOR_Q
+            case 45: // MENOR_EQ_Q
+            case 46: // AND
+            case 47: // OR
+            case 48: // NOT
+            case 49: // MAS_MAS
+            case 50: // MENOS_MENOS
+            case 51: // PUNTO
+            case 52: // COMA
+            case 53: // DOS_P
+            case 54: // P_COMA
+            case 55: // LLAVE_A
+            case 56: // LLAVE_C
+            case 57: // CORCH_A
+            case 58: // CORCH_C
+            case 59: // PAR_A
+            case 60: // PAR_C
+            case 61: // INTERROGACION
                 this.color = "#E5C07B";
                 break;
 
@@ -285,13 +299,13 @@ public class ColorToken {
                 break;
 
             // IDENTIFICADORES
-            case 49: 
+            case 49:
                 this.color = "#61AFEF";
                 break;
 
             // COMENTARIOS
-            case 54: 
-            case 55: 
+            case 54:
+            case 55:
                 this.color = "#5C6370";
                 break;
 

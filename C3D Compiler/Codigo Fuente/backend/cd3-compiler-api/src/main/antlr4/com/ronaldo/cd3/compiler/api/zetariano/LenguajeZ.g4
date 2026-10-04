@@ -53,6 +53,7 @@ instruccion
     | asignacion
     | suma_resta_abrev
     | llamada_metodo
+    | llamada_this
     | llamada_metodo_objeto
     | funcion_especial
     | BREAK
@@ -72,6 +73,7 @@ asignacion
 
 lvalue
     : ID
+    | llamada_this
     | lvalue CORCH_A expresion CORCH_C
     | lvalue PUNTO ID
     ;
@@ -201,6 +203,7 @@ expresion
 
 expr_base
     : PAR_A expresion PAR_C                                 # expParentesis
+    | llamada_this                                          # expThis
     | llamada_metodo                                        # expLlamada
     | expr_base PUNTO ID                                    # expAcceso
     | expr_base PUNTO llamada_metodo                        # expLlamadaEncadenada
@@ -249,6 +252,11 @@ mod_acceso
     | PROTECTED
     ;
 
+//llamada a atributos o metodos this.atributo this.metodo(), this.metodo(argumento)
+llamada_this
+    : THIS PUNTO ( ID | llamada_metodo)
+    ;
+
 /**ANALISIS LEXICO**/
 
 /**Palabras Reservadas**/
@@ -256,7 +264,8 @@ PUBLIC:     'public';
 PRIVATE:    'private';
 PROTECTED:  'protected';
 EXTENDS:    'extends';
-OVERRIDE:    '@Override';
+OVERRIDE:   '@Override';
+THIS:       'this';
 CLASS:      'class';
 VOID:       'void';
 INT:        'int';

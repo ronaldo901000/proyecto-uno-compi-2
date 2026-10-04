@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.clasesZ;
 
+import com.ronaldo.cd3.compiler.api.modelos.clasesZ.registradores.RegistradorClase;
 import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Generable;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
@@ -9,7 +10,6 @@ import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.Declaracion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
-import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.Simbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
@@ -43,38 +43,6 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         this.metodos = metodos;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getNombrePadre() {
-        return nombrePadre;
-    }
-
-    public List<Declaracion> getAtributos() {
-        return atributos;
-    }
-
-    public List<ConstructorZ> getConstructores() {
-        return constructores;
-    }
-
-    public List<FuncionDef> getMetodos() {
-        return metodos;
-    }
-
-    public SimboloClase getSimboloClase() {
-        return simboloClase;
-    }
-
-    public ArchivoDTO getArchivo() {
-        return archivo;
-    }
-
-    public void setArchivo(ArchivoDTO archivo) {
-        this.archivo = archivo;
-    }
-
     @Override
     public void verificarSemantica(Contexto contexto) {
         registrarEstructuraYDeclaraciones(contexto);
@@ -85,8 +53,12 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         if (nombrePadre == null) {
             return;
         }
-        Simbolo padre = contexto.getTablaSimbolos().buscarOtroSimbolo(nombrePadre);
-        if (!(padre instanceof SimboloClase)) {
+        if (nombrePadre.equals(nombre)) {
+            contexto.agregarError(fila, columna, nombrePadre,
+                    "La clase '" + nombre + "' no puede heredar de sí misma.");
+            return;
+        }
+        if (contexto.getTablaSimbolos().buscarClase(nombrePadre) == null) {
             contexto.agregarError(fila, columna, nombrePadre,
                     "No existe la clase '" + nombrePadre + "'. No se puede usar extends.");
         }
@@ -143,4 +115,37 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         contexto.setClaseActual(claseAnterior);
         return null;
     }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getNombrePadre() {
+        return nombrePadre;
+    }
+
+    public List<Declaracion> getAtributos() {
+        return atributos;
+    }
+
+    public List<ConstructorZ> getConstructores() {
+        return constructores;
+    }
+
+    public List<FuncionDef> getMetodos() {
+        return metodos;
+    }
+
+    public SimboloClase getSimboloClase() {
+        return simboloClase;
+    }
+
+    public ArchivoDTO getArchivo() {
+        return archivo;
+    }
+
+    public void setArchivo(ArchivoDTO archivo) {
+        this.archivo = archivo;
+    }
+
 }
