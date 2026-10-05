@@ -50,6 +50,16 @@ public class SimboloClase extends Simbolo {
         return null;
     }
 
+    public SimboloFuncion buscarMetodo(String nombreMetodo) {
+        for (SimboloClase actual = this; actual != null; actual = actual.clasePadre) {
+            SimboloFuncion metodo = actual.metodos.get(nombreMetodo);
+            if (metodo != null) {
+                return metodo;
+            }
+        }
+        return null;
+    }
+
     public Map<String, SimboloVariable> getAtributos() {
         return atributos;
     }
@@ -73,11 +83,25 @@ public class SimboloClase extends Simbolo {
 
     public List<SimboloFuncion> getMetodosPorNombre(String nombreMetodo) {
         List<SimboloFuncion> encontrados = new ArrayList<>();
+
+        for (SimboloClase actual = this; actual != null; actual = actual.clasePadre) {
+            for (SimboloFuncion metodo : actual.metodos.values()) {
+                if (metodo.getId().equals(nombreMetodo)) {
+                    
+                    
+                    metodo.imprimirDatosFuncion();
+                    encontrados.add(metodo);
+                }
+            }
+        }
+
+        /*
         for (SimboloFuncion metodo : metodos.values()) {
             if (metodo.getId().equals(nombreMetodo)) {
                 encontrados.add(metodo);
             }
         }
+        */
         return encontrados;
     }
 

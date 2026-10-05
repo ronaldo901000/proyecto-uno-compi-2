@@ -80,4 +80,17 @@ public class SimboloFuncion extends Simbolo {
     public void setModAcceso(ModificadoresAcceso modAcceso) {
         this.modAcceso = modAcceso;
     }
+    
+    public void imprimirDatosFuncion(){
+        System.out.println("");
+        System.out.println("ACCESO: " + modAcceso.getTexto());
+        System.out.println("TIPO: " + getTipo().tipoC());
+        System.out.println("NOMBRE: " + getId());
+        System.out.println("PARAMETROS");
+        for (SimboloParametro p : parametros) {
+            System.out.println("    TIPO: "+ p.getTipo().tipoC() + "    ID: " + p.getId());
+            
+        }
+        System.out.println("");
+    }
 }

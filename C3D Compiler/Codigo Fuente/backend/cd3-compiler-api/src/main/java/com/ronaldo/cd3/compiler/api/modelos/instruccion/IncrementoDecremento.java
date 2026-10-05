@@ -7,7 +7,7 @@ import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Direccion;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
-import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 
 /**
  *

@@ -5,7 +5,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.Declaracion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.DeclaracionArreglo;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.DeclaracionVariable;
-import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;

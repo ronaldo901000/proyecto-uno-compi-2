@@ -6,7 +6,7 @@ import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
-import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.ArrayList;

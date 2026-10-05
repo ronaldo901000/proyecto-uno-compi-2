@@ -3,7 +3,7 @@ package com.ronaldo.cd3.compiler.api.modelos.clasesZ.registradores;
 import com.ronaldo.cd3.compiler.api.modelos.clasesZ.ClaseZ;
 import com.ronaldo.cd3.compiler.api.modelos.clasesZ.ResolutorTipoRetorno;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
-import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.Simbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;

@@ -4,7 +4,7 @@ import com.ronaldo.cd3.compiler.api.modelos.clasesZ.ResolutorTipoRetorno;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
 import com.ronaldo.cd3.compiler.api.modelos.funcionesY.Parametro;
-import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;

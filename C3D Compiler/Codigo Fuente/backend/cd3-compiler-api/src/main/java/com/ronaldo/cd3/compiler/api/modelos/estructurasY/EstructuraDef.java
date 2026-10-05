@@ -3,7 +3,7 @@ package com.ronaldo.cd3.compiler.api.modelos.estructurasY;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
-import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloEstructura;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
