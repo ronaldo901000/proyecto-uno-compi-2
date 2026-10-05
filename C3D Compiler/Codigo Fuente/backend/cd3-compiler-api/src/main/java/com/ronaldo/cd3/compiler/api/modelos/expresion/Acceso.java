@@ -4,6 +4,7 @@ import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.VerificadorAcceso;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
@@ -16,6 +17,7 @@ import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 public class Acceso extends Expresion implements Verificable {
 
     private final Reglas reglas = new Reglas();
+    private final VerificadorAcceso verificadorAcceso = new VerificadorAcceso();
     private Expresion objeto;
     private String atributo;
 
@@ -38,14 +40,14 @@ public class Acceso extends Expresion implements Verificable {
         if (objeto != null) {
             objeto.verificarSemantica(contexto);
         }
-        
+
         Tipo tipoObjeto = (objeto != null) ? objeto.getTipo() : null;
-        
+
         if (reglas.esError(tipoObjeto)) {
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
-        
+
         // verificar si el objeto es de tipo primitivo, indicar que no tiene acceso .algo
         if (!(tipoObjeto instanceof TipoStructura)) {
             contexto.agregarError(fila, columna, atributo,
@@ -55,13 +57,13 @@ public class Acceso extends Expresion implements Verificable {
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
-        
+
         TipoStructura estructura = (TipoStructura) tipoObjeto;
         SimboloClase clase = contexto.getTablaSimbolos().buscarClase(
                 estructura.getNombreStruct());
         if (clase != null) {
-            SimboloVariable atributoSimbolo = clase.getAtributo(atributo);
-            
+            SimboloVariable atributoSimbolo = clase.buscarAtributo(atributo);
+
             if (atributoSimbolo == null) {
                 contexto.agregarError(fila, columna, atributo,
                         "El atributo '" + atributo + "' no existe en la clase '"
@@ -70,10 +72,15 @@ public class Acceso extends Expresion implements Verificable {
                 return;
             }
             
+            System.out.println("DEBUG " + atributo + " mod=" + atributoSimbolo.getModAcceso()
+                    + " dueña=" + atributoSimbolo.getNombreClase());
+            
+            verificadorAcceso.verificar(contexto, fila, columna, atributo,
+                    atributoSimbolo.getModAcceso(), atributoSimbolo.getNombreClase());
             setTipo(atributoSimbolo.getTipo());
             return;
         }
-        
+
         Tipo tipoAtributo = estructura.getTipoAtributo(atributo);
         if (tipoAtributo == null) {
             contexto.agregarError(fila, columna, atributo,
@@ -90,12 +97,12 @@ public class Acceso extends Expresion implements Verificable {
         String base = (objeto != null)
                 ? objeto.generarCuartetas(contexto, cuartetas)
                 : null;
-        
+
         String nombreAplanado = (base != null) ? base + "." + atributo : atributo;
-        
+
         cuartetas.registrarTipoVariable(nombreAplanado, getTipo());
         cuartetas.registrarTipoVariable(nombreAplanado.replace('.', '_'), getTipo());
-        
+
         return nombreAplanado;
     }
 

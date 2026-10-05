@@ -4,6 +4,8 @@ import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 
 /**
  *
@@ -27,7 +29,13 @@ public class LlamadaThis extends Expresion implements Instruccion {
             llamada.verificarSemantica(contexto);
             setTipo(llamada.getTipo());
         } else {
+            SimboloClase claseActual = contexto.getClaseActual();
+            TablaSimbolos ambitoPrevio = contexto.getAmbito();
+            if (claseActual != null && claseActual.getAmbito() != null) {
+                contexto.setAmbito(claseActual.getAmbito());
+            }
             variable.verificarSemantica(contexto);
+            contexto.setAmbito(ambitoPrevio);
             setTipo(variable.getTipo());
         }
 
@@ -38,7 +46,7 @@ public class LlamadaThis extends Expresion implements Instruccion {
         if (esMetodo()) {
             return llamada.generarCuartetas(contexto, cuartetas);
         }
-        
+
         return variable.generarCuartetas(contexto, cuartetas);
 
     }

@@ -9,6 +9,7 @@ import com.ronaldo.cd3.compiler.api.exceptions.EntradaException;
 public class ArchivoDTO {
 
     private String ruta;
+    private String paquete;
     private String nombre;
     private String contenido;
     private String extension;
@@ -49,6 +50,14 @@ public class ArchivoDTO {
         if (contenido == null) {
             throw new EntradaException("El Archivo " + this.nombre + "no tiene contenido");
         }
+    }
+
+    public String getPaquete() {
+        return paquete;
+    }
+
+    public void setPaquete(String paquete) {
+        this.paquete = paquete;
     }
 
 }

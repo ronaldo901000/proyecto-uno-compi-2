@@ -51,7 +51,7 @@ public class Analizador {
         analizadorY.analizar(archivosY, respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
 
         AnalizadorLenguajeZ analizadorZ = new AnalizadorLenguajeZ();
-        analizadorZ.parsear(archivosZ, respuestaDTO);
+        analizadorZ.analizar(archivosZ, respuestaDTO);
 
         AnalizadorLenguajePig analizadorPig = new AnalizadorLenguajePig();
         analizadorPig.analizar(archivosPig, respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
@@ -76,6 +76,7 @@ public class Analizador {
                 tablaTipos, tablaSimbolos, cuartetas, Collections.emptySet());
 
         Set<String> rutasImportadas = new LinkedHashSet<>();
+        
         for (ProgramaPig programa : analizadorPig.getProgramas()) {
             VerificadorImportesPig verificador = new VerificadorImportesPig();
             Contexto contextoTmp = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
@@ -91,11 +92,14 @@ public class Analizador {
                 programa.generarCuartetas(contextoGen, cuartetas);
             }
         }
+        
         for (ClaseZ clase : analizadorZ.getClases()) {
+            
             if (rutasImportadas.contains(clase.getArchivo().getRuta())) {
                 contextoGen.setRuta(clase.getArchivo().getRuta());
                 clase.generarCuartetas(contextoGen, cuartetas);
             }
+            
         }
 
         AnalizadorSemanticoPig analizadorSemPig = new AnalizadorSemanticoPig();

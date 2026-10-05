@@ -4,6 +4,7 @@ import com.ronaldo.cd3.compiler.api.modelos.clasesZ.ClaseZ;
 import com.ronaldo.cd3.compiler.api.modelos.clasesZ.ResolutorTipoRetorno;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.Simbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloEstructura;
@@ -16,24 +17,24 @@ import java.util.Map;
  * @author ronaldo
  */
 public class RegistradorClase {
-
+    
     private final ClaseZ clase;
     private final String nombre;
     private final Reglas reglas;
-
+    
     public RegistradorClase(ClaseZ clase, Reglas reglas, ResolutorTipoRetorno resolutorRetorno) {
         this.clase = clase;
         this.nombre = clase.getNombre();
         this.reglas = reglas;
     }
-
+    
     public SimboloClase registrar(Contexto contexto) {
         if (existeConflictoDeNombre(contexto)) {
             return null;
         }
-
+        
         TipoStructura tipoClase = contexto.getTablaTipos().registrarClase(nombre);
-
+        
         RegistradorAtributos registradorAtributos = new RegistradorAtributos(
                 clase.getAtributos(), nombre, reglas
         );
@@ -41,13 +42,17 @@ public class RegistradorClase {
                 contexto,
                 tipoClase
         );
-
+        
         SimboloClase nuevaClase = new SimboloClase(nombre, calcularTamañoHeap(atributosSimbolo));
-
+        nuevaClase.setRutaPaquete(clase.getArchivo().getPaquete());
         nuevaClase.setTipo(tipoClase);
+        
+        TablaSimbolos ambitoClase = contexto.getTablaSimbolos().nuevoAmbito("clase_" + nombre);
         for (SimboloVariable atributo : atributosSimbolo.values()) {
             nuevaClase.agregarAtributo(atributo);
+            ambitoClase.agregar(atributo);
         }
+        nuevaClase.setAmbito(ambitoClase);
 
         //registro de metodos
         RegistradorMetodos registradorMetodos = new RegistradorMetodos(nombre, clase.getMetodos(), reglas);
@@ -59,7 +64,7 @@ public class RegistradorClase {
                 clase.getConstructores()
         );
         registradorConstructores.registrarConstructores(contexto, nuevaClase);
-
+        
         if (!contexto.getTablaSimbolos().agregar(nuevaClase)) {
             contexto.agregarError(clase.getFila(), clase.getColumna(), nombre,
                     "Ya existe una clase llamada '" + nombre + "'");
@@ -73,18 +78,18 @@ public class RegistradorClase {
      */
     private boolean existeConflictoDeNombre(Contexto contexto) {
         Simbolo existente = contexto.getTablaSimbolos().buscarOtroSimbolo(nombre);
-
+        
         if (existente == null || existente instanceof SimboloEstructura) {
             return false;
         }
-
+        
         String mensaje = (existente instanceof SimboloClase)
                 ? "Ya existe una clase llamada '" + nombre + "'"
                 : "Ya existe un identificador llamado '" + nombre + "'";
         contexto.agregarError(clase.getFila(), clase.getColumna(), nombre, mensaje);
         return true;
     }
-
+    
     private int calcularTamañoHeap(Map<String, SimboloVariable> atributosSimbolo) {
         int total = 0;
         for (SimboloVariable atributo : atributosSimbolo.values()) {
@@ -92,5 +97,5 @@ public class RegistradorClase {
         }
         return total;
     }
-
+    
 }

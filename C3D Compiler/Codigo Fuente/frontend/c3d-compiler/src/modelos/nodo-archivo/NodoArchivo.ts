@@ -3,6 +3,7 @@ import { TipoNodo } from "../tipo-nodo/TipoNodo"
 
 export interface NodoArchivo {
     ruta: string;
+    paquete:string;
     nombre:string;
     tipo:TipoNodo;
     contenido?:string;

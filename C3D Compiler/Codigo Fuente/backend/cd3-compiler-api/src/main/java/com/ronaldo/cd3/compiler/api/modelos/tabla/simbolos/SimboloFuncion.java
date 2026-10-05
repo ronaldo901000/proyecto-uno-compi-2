@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.RolSimbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.List;
@@ -15,6 +16,7 @@ public class SimboloFuncion extends Simbolo {
     private String etiquetaInicio;
     private String nombreClase;
     private boolean esMetodo;
+    private ModificadoresAcceso modAcceso = ModificadoresAcceso.DEFAULT;
 
     public SimboloFuncion(String id, Tipo tipoRetorno,
             List<SimboloParametro> parametros,
@@ -69,5 +71,13 @@ public class SimboloFuncion extends Simbolo {
 
     public void setEsMetodo(boolean esMetodo) {
         this.esMetodo = esMetodo;
+    }
+
+    public ModificadoresAcceso getModAcceso() {
+        return modAcceso;
+    }
+
+    public void setModAcceso(ModificadoresAcceso modAcceso) {
+        this.modAcceso = modAcceso;
     }
 }

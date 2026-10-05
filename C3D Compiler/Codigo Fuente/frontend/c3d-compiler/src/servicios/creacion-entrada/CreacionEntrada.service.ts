@@ -30,6 +30,7 @@ export class CreacionEntradaService {
         if (nodo.tipo === 'archivo') {
             acumulador.push({
                 ruta: nodo.ruta,
+                paquete:nodo.paquete,
                 nombre: nodo.nombre,
                 contenido: this.arbolTrabajoService.getContenidoArchivo(nodo.ruta) ?? '',
                 extension: nodo.extension ?? ''

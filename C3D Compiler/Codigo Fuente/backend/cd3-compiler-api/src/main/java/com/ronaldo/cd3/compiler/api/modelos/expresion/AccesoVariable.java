@@ -3,6 +3,7 @@ package com.ronaldo.cd3.compiler.api.modelos.expresion;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.VerificadorAcceso;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.Simbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
@@ -14,6 +15,7 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 public class AccesoVariable extends Expresion implements Verificable {
 
     private String id;
+    private final VerificadorAcceso verificadorAcceso = new VerificadorAcceso();
 
     public AccesoVariable(String id, int fila, int columna) {
         super(fila, columna);
@@ -32,7 +34,10 @@ public class AccesoVariable extends Expresion implements Verificable {
     public void verificarSemantica(Contexto contexto) {
         Simbolo simbolo = contexto.getAmbito().buscar(id);
         if (simbolo instanceof SimboloVariable) {
-            setTipo(((SimboloVariable) simbolo).getTipo());
+            SimboloVariable variable = (SimboloVariable) simbolo;
+            verificadorAcceso.verificar(contexto, fila, columna, id,
+                    variable.getModAcceso(), variable.getNombreClase());
+            setTipo(variable.getTipo());
             return;
         }
         if (simbolo instanceof SimboloParametro) {

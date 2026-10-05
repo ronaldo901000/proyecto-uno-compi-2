@@ -27,6 +27,7 @@ public class Contexto {
     private boolean esLenguajeZ;
     private final ArrayDeque<String> pilaEtiquetasContinuar = new ArrayDeque<>();
     private final ArrayDeque<String> pilaEtiquetasRomper = new ArrayDeque<>();
+    private String rutaPaquete;
 
     public Contexto(TablaTipos tablaTipos, TablaSimbolos tablaSimbolos,
             TablaSimbolos ambito) {
@@ -156,6 +157,14 @@ public class Contexto {
 
     public String getEtiquetaRomperActual() {
         return this.pilaEtiquetasRomper.peek();
+    }
+
+    public String getRutaPaquete() {
+        return rutaPaquete;
+    }
+
+    public void setRutaPaquete(String rutaPaquete) {
+        this.rutaPaquete = rutaPaquete;
     }
 
 }

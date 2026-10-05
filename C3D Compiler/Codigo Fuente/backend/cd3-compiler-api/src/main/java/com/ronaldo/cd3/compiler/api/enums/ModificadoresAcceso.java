@@ -5,8 +5,8 @@ package com.ronaldo.cd3.compiler.api.enums;
  * @author ronaldo
  */
 public enum ModificadoresAcceso {
-    PRIVATE("public"), 
-    PUBLIC("private"), 
+    PRIVATE("private"), 
+    PUBLIC("public"), 
     PROTECTED("protected"), 
     DEFAULT("");
     

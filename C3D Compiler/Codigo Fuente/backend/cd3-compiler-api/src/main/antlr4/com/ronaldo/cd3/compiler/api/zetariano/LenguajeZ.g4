@@ -17,7 +17,7 @@ contenido
 
 /**ATRIBUTO**/
 atributo
-    : declaracion P_COMA
+    : (mod_acceso)? declaracion P_COMA
     ;
 
 declaracion
@@ -26,15 +26,19 @@ declaracion
     ;
 
 dec_var_simple
-    : (mod_acceso)? tipo_dato_general ID (EQ expresion)?
+    : tipo_dato_general ID (EQ expresion)?
     ;
 
 dec_array
-    : (mod_acceso)? tipo_dato_general 
+    : tipo_dato_general 
     (CORCH_A expresion? CORCH_C)+ 
     ID 
-    (EQ ( LLAVE_A valores_iniciales? LLAVE_C 
-        | NEW tipo_dato_general (CORCH_A expresion CORCH_C)+ ))?
+    (EQ ( 
+            LLAVE_A valores_iniciales? LLAVE_C 
+        |   NEW tipo_dato_general (CORCH_A expresion CORCH_C)+
+        |   expresion
+        )
+    )?
     ;
 
 valores_iniciales

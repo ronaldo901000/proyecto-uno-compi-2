@@ -83,7 +83,14 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
 
     @Override
     public Declaracion visitAtributo(LenguajeZParser.AtributoContext ctx) {
-        return visitDeclaracion(ctx.declaracion());
+
+        ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
+
+        Declaracion dec = visitDeclaracion(ctx.declaracion());
+        dec.setModAcceso(modAcceso);
+
+        return dec;
+
     }
 
     @Override
@@ -103,9 +110,7 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         Expresion valorInicial = (ctx.expresion() != null)
                 ? (Expresion) visit(ctx.expresion()) : null;
 
-        ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
-
-        return new DeclaracionVariable(valorInicial, modAcceso, tipoDato, nombre, fila, columna);
+        return new DeclaracionVariable(valorInicial, null, tipoDato, nombre, fila, columna);
     }
 
     @Override
@@ -125,9 +130,7 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
             }
         }
 
-        ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
-
-        return new DeclaracionArreglo(dimensiones, valoresIniciales, modAcceso, tipoDato, nombre, fila, columna);
+        return new DeclaracionArreglo(dimensiones, valoresIniciales, null, tipoDato, nombre, fila, columna);
     }
 
     private List<Expresion> extraerDimensionesArreglo(LenguajeZParser.Dec_arrayContext ctx) {
@@ -167,7 +170,6 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
         String nombre = ctx.ID().getText();
-        String acceso = ctx.mod_acceso().getText();
         List<Parametro> parametros = extraerParametros(ctx.parametros());
         List<Instruccion> cuerpo = visitarInstrucciones(ctx.instruccion());
         ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());

@@ -8,7 +8,6 @@ import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
-import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.List;
 
@@ -28,10 +27,18 @@ public class VerificadorCuerposClase {
         this.resolutorRetorno = resolutorRetorno;
     }
 
+    /**
+     * 
+     * @param contexto 
+     */
     public void verificar(Contexto contexto) {
-        if (clase.getSimboloClase() == null) {
+        SimboloClase simboloClase = clase.getSimboloClase();
+        if (simboloClase == null) {
             return;
         }
+
+        TablaSimbolos ambitoPrevio = contexto.getAmbito();
+        contexto.setAmbito(simboloClase.getAmbito());
 
         if (clase.getMetodos() != null) {
             for (FuncionDef metodo : clase.getMetodos()) {
@@ -46,8 +53,15 @@ public class VerificadorCuerposClase {
                 }
             }
         }
+
+        contexto.setAmbito(ambitoPrevio);
     }
 
+    /**
+     * 
+     * @param contexto
+     * @param metodo 
+     */
     private void verificarMetodo(Contexto contexto, FuncionDef metodo) {
         Tipo tipoRetorno = resolutorRetorno.resolver(contexto, metodo);
 
@@ -61,18 +75,30 @@ public class VerificadorCuerposClase {
         }
     }
 
+    /**
+     * 
+     * @param contexto
+     * @param constructor 
+     */
     private void verificarConstructor(Contexto contexto, ConstructorZ constructor) {
         verificarCuerpo(contexto, "constructor_" + constructor.getNombre(),
                 constructor.getParametros(), contexto.getTablaTipos().getVoid(),
                 constructor.getCuerpo());
     }
 
+    /**
+     * 
+     * @param contexto
+     * @param nombreMiembro
+     * @param parametros
+     * @param tipoRetorno
+     * @param cuerpo 
+     */
     private void verificarCuerpo(Contexto contexto, String nombreMiembro,
             List<Parametro> parametros, Tipo tipoRetorno, List<Instruccion> cuerpo) {
         SimboloClase simboloClase = clase.getSimboloClase();
 
         TablaSimbolos anterior = contexto.nuevoAmbito(nombreMiembro);
-        registrarAtributosEnAmbito(contexto, simboloClase);
 
         int posicion = 0;
         if (parametros != null) {
@@ -100,13 +126,4 @@ public class VerificadorCuerposClase {
         contexto.restaurarAmbito(anterior);
     }
 
-    private void registrarAtributosEnAmbito(Contexto contexto, SimboloClase simboloClase) {
-        if (simboloClase == null) {
-            return;
-        }
-        for (SimboloVariable atributo : simboloClase.getAtributos().values()) {
-            contexto.getAmbito().agregar(new SimboloVariable(
-                    atributo.getId(), atributo.getTipo(), atributo.getPosicion()));
-        }
-    }
 }

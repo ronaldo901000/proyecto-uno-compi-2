@@ -11,4 +11,8 @@ public class ErrorSemantico extends ErrorAnalisis {
         this.tipo = "Semantico";
     }
 
+    @Override
+    public int getColumna() {
+        return this.columna + 1;
+    }
 }

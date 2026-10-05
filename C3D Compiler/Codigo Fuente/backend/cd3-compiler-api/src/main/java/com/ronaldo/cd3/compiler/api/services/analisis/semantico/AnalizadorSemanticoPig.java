@@ -29,6 +29,7 @@ public class AnalizadorSemanticoPig {
         Contexto contexto = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
 
         contexto.setRuta(programa.getArchivo().getRuta());
+        contexto.setRutaPaquete(programa.getArchivo().getPaquete());
 
         VerificadorImportesPig verificador = new VerificadorImportesPig();
         verificador.verificar(contexto, programa, archivosImportables, programasY);

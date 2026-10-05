@@ -18,7 +18,7 @@ import java.util.List;
  * @author ronaldo
  */
 public class ConstructorZ extends Nodo implements Verificable, Generable {
-    
+
     protected ModificadoresAcceso modAcceso;
     private String nombre;
     private List<Parametro> parametros;
@@ -79,6 +79,10 @@ public class ConstructorZ extends Nodo implements Verificable, Generable {
         cuartetas.agregar(OperadorCuarteta.RETORNO, null,
                 null, null, fila, columna);
         return null;
+    }
+
+    public ModificadoresAcceso getModAcceso() {
+        return modAcceso;
     }
 
 }

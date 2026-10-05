@@ -20,6 +20,9 @@ public class SimboloClase extends Simbolo {
     private final List<SimboloFuncion> constructores;
     private SimboloFuncion constructor;
     private int tamañoHeap;
+    private TablaSimbolos ambito;
+    private SimboloClase clasePadre;
+    private String rutaPaquete;
 
     public SimboloClase(String id, int tamañoHeap) {
         super(id, new TipoStructura(id), RolSimbolo.CLASE);
@@ -27,6 +30,24 @@ public class SimboloClase extends Simbolo {
         this.metodos = new LinkedHashMap<>();
         this.constructores = new ArrayList<>();
         this.tamañoHeap = tamañoHeap;
+    }
+
+    public SimboloClase getClasePadre() {
+        return clasePadre;
+    }
+
+    public void setClasePadre(SimboloClase clasePadre) {
+        this.clasePadre = clasePadre;
+    }
+
+    public SimboloVariable buscarAtributo(String nombreAtributo) {
+        for (SimboloClase actual = this; actual != null; actual = actual.clasePadre) {
+            SimboloVariable atributo = actual.atributos.get(nombreAtributo);
+            if (atributo != null) {
+                return atributo;
+            }
+        }
+        return null;
     }
 
     public Map<String, SimboloVariable> getAtributos() {
@@ -38,6 +59,7 @@ public class SimboloClase extends Simbolo {
     }
 
     public void agregarAtributo(SimboloVariable atributo) {
+        atributo.setNombreClase(this.getId());
         this.atributos.put(atributo.getId(), atributo);
     }
 
@@ -110,4 +132,21 @@ public class SimboloClase extends Simbolo {
     public void setTamañoHeap(int tamañoHeap) {
         this.tamañoHeap = tamañoHeap;
     }
+
+    public TablaSimbolos getAmbito() {
+        return ambito;
+    }
+
+    public void setAmbito(TablaSimbolos ambito) {
+        this.ambito = ambito;
+    }
+
+    public String getRutaPaquete() {
+        return rutaPaquete;
+    }
+
+    public void setRutaPaquete(String rutaPaquete) {
+        this.rutaPaquete = rutaPaquete;
+    }
+
 }

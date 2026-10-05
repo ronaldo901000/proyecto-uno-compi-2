@@ -20,12 +20,12 @@ import java.util.Map;
 public class TablaSimbolos {
 
     private final String nombreAmbito;
-    private final TablaSimbolos padre;
+    private TablaSimbolos padre;
     private final Map<String, Simbolo> simbolos;
     private final List<TablaSimbolos> ambitos;
-
     private int siguientePosicion;
     private int tamañoAmbito;
+    private boolean esThis;
 
     public TablaSimbolos(String nombreAmbito, TablaSimbolos padre) {
         this.nombreAmbito = nombreAmbito;
@@ -157,7 +157,17 @@ public class TablaSimbolos {
         return simbolos.containsKey(id);
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Simbolo buscar(String id) {
+        //se debe buscar en la tabla de simbolos, despues a la tabla de simbolos del padre
+        if (esThis) {
+
+        }
+
         for (TablaSimbolos ambito = this; ambito != null; ambito = ambito.padre) {
             Simbolo simbolo = ambito.simbolos.get(id);
             if (simbolo != null) {
@@ -297,6 +307,18 @@ public class TablaSimbolos {
     @Override
     public String toString() {
         return "Ambito: " + nombreAmbito + " -> " + simbolos.keySet();
+    }
+
+    public boolean isEsThis() {
+        return esThis;
+    }
+
+    public void setEsThis(boolean esParaClase) {
+        this.esThis = esParaClase;
+    }
+
+    public void setPadre(TablaSimbolos padre) {
+        this.padre = padre;
     }
 
 }

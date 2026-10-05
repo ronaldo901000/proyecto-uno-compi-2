@@ -49,6 +49,7 @@ export class ArbolTrabajoService {
     public crearNuevoProyecto(nombreProyecto: string): void {
         const raizProyecto: NodoArchivo = {
             ruta: nombreProyecto.trim(),
+            paquete: nombreProyecto.trim(),
             nombre: nombreProyecto.trim(),
             tipo: 'carpeta',
             hijos: [],
@@ -93,6 +94,7 @@ export class ArbolTrabajoService {
 
         const nuevoNodo: NodoArchivo = {
             ruta: nuevaRuta,
+            paquete: tipo === 'carpeta' ? nuevaRuta : rutaPadre,
             nombre: nombre.trim(),
             tipo: tipo,
             extension: extension,
@@ -238,6 +240,7 @@ export class ArbolTrabajoService {
 
             nodoSeleccionado.nombre = nuevoNombreTrim;
             nodoSeleccionado.ruta = nuevoNombreTrim;
+            nodoSeleccionado.paquete = nuevoNombreTrim;
 
 
             const mapeoRutas = new Map<string, string>();
@@ -285,7 +288,9 @@ export class ArbolTrabajoService {
         nodoSeleccionado.nombre = nuevoNombreTrim;
         nodoSeleccionado.ruta = nuevaRuta;
 
+        // Un archivo sigue en la misma carpeta, solo cambia el paquete si es carpeta
         if (nodoSeleccionado.tipo === 'carpeta') {
+            nodoSeleccionado.paquete = nuevaRuta;
             this.actualizarRutasHijosRecursivo(nodoSeleccionado);
         }
 
@@ -337,6 +342,8 @@ export class ArbolTrabajoService {
         for (const hijo of nodoPadre.hijos) {
             const ext = hijo.tipo === 'archivo' && hijo.extension ? `.${hijo.extension}` : '';
             hijo.ruta = `${nodoPadre.ruta}/${hijo.nombre}${ext}`;
+            // Carpeta: su paquete es su propia ruta. Archivo: la carpeta que lo contiene
+            hijo.paquete = hijo.tipo === 'carpeta' ? hijo.ruta : nodoPadre.ruta;
             if (hijo.tipo === 'carpeta') {
                 this.actualizarRutasHijosRecursivo(hijo);
             }
@@ -374,6 +381,7 @@ export class ArbolTrabajoService {
 
         const raiz: NodoArchivo = {
             ruta: nombreRaiz,
+            paquete: nombreRaiz,
             nombre: nombreRaiz,
             tipo: 'carpeta',
             hijos: [],
@@ -447,6 +455,7 @@ export class ArbolTrabajoService {
             if (!carpeta) {
                 carpeta = {
                     ruta: `${actual.ruta}/${nombreCarpeta}`,
+                    paquete: `${actual.ruta}/${nombreCarpeta}`,
                     nombre: nombreCarpeta,
                     tipo: 'carpeta',
                     hijos: [],
@@ -464,6 +473,7 @@ export class ArbolTrabajoService {
         if (!actual.hijos) actual.hijos = [];
         actual.hijos.push({
             ruta: rutaArchivo,
+            paquete: actual.ruta,
             nombre: nombreBase,
             tipo: 'archivo',
             extension: extension,

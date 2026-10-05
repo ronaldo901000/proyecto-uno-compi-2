@@ -85,8 +85,10 @@ public class RegistradorConstructores {
                         parametro.getNombre(), parametro.getTipo(), 0));
             }
         }
-        return new SimboloFuncion(constructor.getNombre(),
+        SimboloFuncion simboloConstructor = new SimboloFuncion(constructor.getNombre(),
                 contexto.getTablaTipos().getVoid(), simbolosParametros, 0, etiqueta);
+        simboloConstructor.setModAcceso(constructor.getModAcceso());
+        return simboloConstructor;
     }
 
 }

@@ -5,6 +5,7 @@ import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.Reglas;
+import com.ronaldo.cd3.compiler.api.modelos.semantica.VerificadorAcceso;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
@@ -22,6 +23,7 @@ public class NewObjeto extends Expresion implements Verificable {
     private final Reglas reglas = new Reglas();
     private String nombreClase;
     private List<Expresion> argumentos;
+    private final VerificadorAcceso verificadorAcceso = new VerificadorAcceso();
 
     public NewObjeto(String nombreClase, List<Expresion> argumentos, int fila, int columna) {
         super(fila, columna);
@@ -91,6 +93,9 @@ public class NewObjeto extends Expresion implements Verificable {
             return;
 
         }
+
+        verificadorAcceso.verificar(contexto, fila, columna, nombreClase,
+                constructor.getModAcceso(), constructor.getNombreClase());
 
         List<SimboloParametro> parametros = constructor.getParametros();
 

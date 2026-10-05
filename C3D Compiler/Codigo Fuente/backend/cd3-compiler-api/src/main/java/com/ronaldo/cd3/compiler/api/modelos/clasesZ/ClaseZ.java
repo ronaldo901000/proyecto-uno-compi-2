@@ -50,18 +50,33 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
     }
 
     public void verificarHerencia(Contexto contexto) {
-        if (nombrePadre == null) {
+        
+        if (nombrePadre == null || simboloClase == null) {
             return;
         }
+        
         if (nombrePadre.equals(nombre)) {
             contexto.agregarError(fila, columna, nombrePadre,
                     "La clase '" + nombre + "' no puede heredar de sí misma.");
             return;
         }
-        if (contexto.getTablaSimbolos().buscarClase(nombrePadre) == null) {
+        SimboloClase simboloPadre = contexto.getTablaSimbolos().buscarClase(nombrePadre);
+        if (simboloPadre == null) {
             contexto.agregarError(fila, columna, nombrePadre,
                     "No existe la clase '" + nombrePadre + "'. No se puede usar extends.");
+            return;
         }
+
+        for (SimboloClase actual = simboloPadre; actual != null; actual = actual.getClasePadre()) {
+            if (actual == simboloClase) {
+                contexto.agregarError(fila, columna, nombrePadre,
+                        "Herencia circular entre '" + nombre + "' y '" + nombrePadre + "'.");
+                return;
+            }
+        }
+
+        simboloClase.setClasePadre(simboloPadre);
+        simboloClase.getAmbito().setPadre(simboloPadre.getAmbito());
     }
 
     public void registrarEstructuraYDeclaraciones(Contexto contexto) {

@@ -268,4 +268,8 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
         cuartetas.registrarTipoFuncion(simbolo.getEtiquetaInicio(), tipoActualizado);
     }
 
+    public ModificadoresAcceso getModAcceso() {
+        return modAcceso;
+    }
+
 }

@@ -82,8 +82,10 @@ public class RegistradorMetodos {
                         parametro.getNombre(), parametro.getTipo(), 0));
             }
         }
-        return new SimboloFuncion(metodo.getNombre(), tipoRetornoT,
+        SimboloFuncion simboloMetodo = new SimboloFuncion(metodo.getNombre(), tipoRetornoT,
                 simbolosParametros, 0, etiqueta);
+        simboloMetodo.setModAcceso(metodo.getModAcceso());
+        return simboloMetodo;
     }
 
     private String claveDeFirma(String nombreFuncion, SimboloFuncion funcion) {

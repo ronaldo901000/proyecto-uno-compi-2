@@ -52,8 +52,12 @@ public class RegistradorAtributos {
             }
 
             tipoClase.agregarAtributo(atributo.getId(), tipoAtributo);
-            atributosSimbolo.put(atributo.getId(),
-                    new SimboloVariable(atributo.getId(), tipoAtributo, posicion, true));
+            
+            SimboloVariable simboloAtributo = new SimboloVariable(
+                    atributo.getId(), tipoAtributo, posicion, true);
+            
+            simboloAtributo.setModAcceso(atributo.getModAcceso());
+            atributosSimbolo.put(atributo.getId(), simboloAtributo);
             posicion += tipoAtributo.tamañoBytes();
         }
         return atributosSimbolo;

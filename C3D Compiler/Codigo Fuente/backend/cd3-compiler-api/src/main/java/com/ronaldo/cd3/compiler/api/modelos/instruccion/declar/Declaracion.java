@@ -38,6 +38,10 @@ public abstract class Declaracion extends Nodo implements Instruccion {
     public ModificadoresAcceso getModAcceso() {
         return modAcceso;
     }
+
+    public void setModAcceso(ModificadoresAcceso modAcceso) {
+        this.modAcceso = modAcceso;
+    }
     
     
 
