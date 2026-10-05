@@ -5,9 +5,11 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -83,25 +85,23 @@ public class SimboloClase extends Simbolo {
 
     public List<SimboloFuncion> getMetodosPorNombre(String nombreMetodo) {
         List<SimboloFuncion> encontrados = new ArrayList<>();
+        Set<String> firmasVistas = new HashSet<>();
 
         for (SimboloClase actual = this; actual != null; actual = actual.clasePadre) {
-            for (SimboloFuncion metodo : actual.metodos.values()) {
-                if (metodo.getId().equals(nombreMetodo)) {
-                    
-                    
-                    metodo.imprimirDatosFuncion();
+            
+            for (Map.Entry<String, SimboloFuncion> entrada : actual.metodos.entrySet()) {
+                
+                SimboloFuncion metodo = entrada.getValue();
+                
+                if (!metodo.getId().equals(nombreMetodo)) {
+                    continue;
+                }
+
+                if (firmasVistas.add(entrada.getKey())) {
                     encontrados.add(metodo);
                 }
             }
         }
-
-        /*
-        for (SimboloFuncion metodo : metodos.values()) {
-            if (metodo.getId().equals(nombreMetodo)) {
-                encontrados.add(metodo);
-            }
-        }
-        */
         return encontrados;
     }
 

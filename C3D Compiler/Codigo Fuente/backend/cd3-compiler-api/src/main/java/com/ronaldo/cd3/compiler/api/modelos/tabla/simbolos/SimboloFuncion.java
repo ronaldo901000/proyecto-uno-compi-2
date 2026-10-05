@@ -17,6 +17,7 @@ public class SimboloFuncion extends Simbolo {
     private String nombreClase;
     private boolean esMetodo;
     private ModificadoresAcceso modAcceso = ModificadoresAcceso.DEFAULT;
+    private SimboloFuncion metodoSobreescrito;
 
     public SimboloFuncion(String id, Tipo tipoRetorno,
             List<SimboloParametro> parametros,
@@ -81,16 +82,5 @@ public class SimboloFuncion extends Simbolo {
         this.modAcceso = modAcceso;
     }
     
-    public void imprimirDatosFuncion(){
-        System.out.println("");
-        System.out.println("ACCESO: " + modAcceso.getTexto());
-        System.out.println("TIPO: " + getTipo().tipoC());
-        System.out.println("NOMBRE: " + getId());
-        System.out.println("PARAMETROS");
-        for (SimboloParametro p : parametros) {
-            System.out.println("    TIPO: "+ p.getTipo().tipoC() + "    ID: " + p.getId());
-            
-        }
-        System.out.println("");
-    }
+
 }

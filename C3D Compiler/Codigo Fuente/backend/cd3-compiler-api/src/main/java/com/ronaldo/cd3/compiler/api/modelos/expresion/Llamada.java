@@ -9,7 +9,6 @@ import com.ronaldo.cd3.compiler.api.modelos.semantica.VerificadorAcceso;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 import java.util.ArrayList;
@@ -21,11 +20,14 @@ import java.util.List;
  */
 public class Llamada extends Expresion implements Instruccion {
 
+    private static final String METODO = "del metodo";
+    private static final String FUNCION = "de la funcion";
+
     private final Reglas reglas = new Reglas();
+    private final VerificadorAcceso verificadorAcceso = new VerificadorAcceso();
     private Expresion objetivo;
     private String nombreFuncion;
     private List<Expresion> argumentos;
-    private final VerificadorAcceso verificadorAcceso = new VerificadorAcceso();
 
     public Llamada(Expresion objetivo, String nombreFuncion,
             List<Expresion> argumentos, int fila, int columna) {
@@ -49,147 +51,144 @@ public class Llamada extends Expresion implements Instruccion {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
-
-        TablaTipos tablaTipos = contexto.getTablaTipos();
-
         if (objetivo != null) {
-
-            objetivo.verificarSemantica(contexto);
-            List<Tipo> tiposArgumentos = verificarArgumentos(contexto);
-            Tipo tipoObjeto = objetivo.getTipo();
-
-            if (reglas.esError(tipoObjeto)) {
-                setTipo(tablaTipos.getError());
-                return;
-            }
-
-            if (!(tipoObjeto instanceof TipoStructura)) {
-                contexto.agregarError(fila, columna, nombreFuncion,
-                        "No se puede invocar al metodo '" + nombreFuncion
-                        + "' sobre un valor que no es un objeto");
-                setTipo(tablaTipos.getError());
-                return;
-            }
-
-            SimboloClase clase = contexto.getTablaSimbolos().buscarClase(
-                    ((TipoStructura) tipoObjeto).getNombreStruct());
-
-            if (clase == null) {
-                contexto.agregarError(fila, columna, nombreFuncion,
-                        "No se puede invocar un metodo sobre un valor de la estructura '"
-                        + ((TipoStructura) tipoObjeto).getNombreStruct() + "'");
-                setTipo(tablaTipos.getError());
-                return;
-            }
-
-            List<SimboloFuncion> candidatas = clase.getMetodosPorNombre(nombreFuncion);
-            SimboloFuncion metodo = reglas.resolverEntre(candidatas, tiposArgumentos);
-
-            if (metodo == null) {
-                if (candidatas.isEmpty()) {
-                    contexto.agregarError(fila, columna, nombreFuncion,
-                            "El objeto de clase '" + clase.getId()
-                            + "' no tiene un metodo '" + nombreFuncion + "'");
-                } else {
-                    contexto.agregarError(fila, columna, nombreFuncion,
-                            "No existe una sobrecarga del metodo '" + nombreFuncion
-                            + "' compatible con los argumentos proporcionados");
-                }
-                setTipo(tablaTipos.getError());
-                return;
-            }
-
-            verificadorAcceso.verificar(contexto, fila, columna, nombreFuncion,
-                    metodo.getModAcceso(), metodo.getNombreClase());
-            
-            List<SimboloParametro> parametros = metodo.getParametros();
-
-            if (argumentos != null) {
-                for (int i = 0; i < argumentos.size(); i++) {
-                    Expresion argumento = argumentos.get(i);
-                    SimboloParametro parametro = parametros.get(i);
-                    if (!reglas.esAsignable(parametro.getTipo(), argumento.getTipo())) {
-                        contexto.agregarError(argumento.getFila(), argumento.getColumna(),
-                                nombreFuncion, "El argumento " + (i + 1)
-                                + " del metodo '" + nombreFuncion
-                                + "' es incompatible con su parametro");
-                    }
-                }
-            }
-
-            setTipo(metodo.getTipoRetorno());
+            verificarMetodoDeObjeto(contexto);
             return;
         }
 
         List<Tipo> tiposArgumentos = verificarArgumentos(contexto);
 
-        if (contexto.getClaseActual() != null) {
+        if (verificarMetodoDeClaseActual(contexto, tiposArgumentos)) {  
+            return;
+        }
+        verificarFuncionLibre(contexto, tiposArgumentos);                
+    }
 
-            List<SimboloFuncion> metodosClase = contexto.getClaseActual()
-                    .getMetodosPorNombre(nombreFuncion);
+    
+    private void verificarMetodoDeObjeto(Contexto contexto) {
+        objetivo.verificarSemantica(contexto);
+        List<Tipo> tiposArgumentos = verificarArgumentos(contexto);
+        Tipo tipoObjeto = objetivo.getTipo();
 
-            if (!metodosClase.isEmpty()) {
-
-                SimboloFuncion metodo = reglas.resolverEntre(metodosClase, tiposArgumentos);
-
-                if (metodo == null) {
-                    contexto.agregarError(fila, columna, nombreFuncion,
-                            "No existe una sobrecarga del metodo '" + nombreFuncion
-                            + "' compatible con los argumentos proporcionados");
-                    setTipo(tablaTipos.getError());
-                    return;
-                }
-
-                List<SimboloParametro> parametros = metodo.getParametros();
-
-                if (argumentos != null) {
-                    for (int i = 0; i < argumentos.size(); i++) {
-                        Expresion argumento = argumentos.get(i);
-                        SimboloParametro parametro = parametros.get(i);
-                        if (!reglas.esAsignable(parametro.getTipo(), argumento.getTipo())) {
-                            contexto.agregarError(argumento.getFila(), argumento.getColumna(),
-                                    nombreFuncion, "El argumento " + (i + 1)
-                                    + " del metodo '" + nombreFuncion
-                                    + "' es incompatible con su parametro");
-                        }
-                    }
-                }
-
-                setTipo(metodo.getTipoRetorno());
-                return;
-            }
+        if (reglas.esError(tipoObjeto)) {
+            marcarError(contexto);
+            return;
         }
 
+        if (!(tipoObjeto instanceof TipoStructura)) {
+            contexto.agregarError(fila, columna, nombreFuncion,
+                    "No se puede invocar al metodo '" + nombreFuncion
+                    + "' sobre un valor que no es un objeto");
+            marcarError(contexto);
+            return;
+        }
+
+        String nombreClase = ((TipoStructura) tipoObjeto).getNombreStruct();
+        SimboloClase clase = contexto.getTablaSimbolos().buscarClase(nombreClase);
+
+        if (clase == null) {
+            contexto.agregarError(fila, columna, nombreFuncion,
+                    "No se puede invocar un metodo sobre un valor de la estructura '"
+                    + nombreClase + "'");
+            marcarError(contexto);
+            return;
+        }
+
+        List<SimboloFuncion> candidatas = clase.getMetodosPorNombre(nombreFuncion);
+        SimboloFuncion metodo = reglas.resolverEntre(candidatas, tiposArgumentos);
+
+        if (metodo == null) {
+            if (candidatas.isEmpty()) {
+                contexto.agregarError(fila, columna, nombreFuncion,
+                        "El objeto de clase '" + clase.getId()
+                        + "' no tiene un metodo '" + nombreFuncion + "'");
+            } else {
+                errorSobrecargaNoCompatible(contexto, "del metodo");
+            }
+            marcarError(contexto);
+            return;
+        }
+
+        aceptarLlamada(contexto, metodo, METODO);
+    }
+
+    /**
+     * retorna true solo si existe en la clase actual o en la clase padre recursivamente
+     */
+    private boolean verificarMetodoDeClaseActual(Contexto contexto, List<Tipo> tiposArgumentos) {
+        SimboloClase claseActual = contexto.getClaseActual();
+        if (claseActual == null) {
+            return false;
+        }
+
+        List<SimboloFuncion> candidatas = claseActual.getMetodosPorNombre(nombreFuncion);
+        if (candidatas.isEmpty()) {
+            return false;
+        }
+
+        SimboloFuncion metodo = reglas.resolverEntre(candidatas, tiposArgumentos);
+
+        if (metodo == null) {
+            errorSobrecargaNoCompatible(contexto, "del metodo");
+            marcarError(contexto);
+            return true;
+        }
+
+        aceptarLlamada(contexto, metodo, METODO);
+        return true;
+    }
+
+    /*funciones .y*/
+    private void verificarFuncionLibre(Contexto contexto, List<Tipo> tiposArgumentos) {
         SimboloFuncion funcion = reglas.resolverFuncion(contexto, nombreFuncion, tiposArgumentos);
+
         if (funcion == null) {
             if (contexto.getAmbito().buscarSobrecargas(nombreFuncion).isEmpty()) {
                 contexto.agregarError(fila, columna, nombreFuncion,
                         "La funcion '" + nombreFuncion + "' no esta definida");
             } else {
-                contexto.agregarError(fila, columna, nombreFuncion,
-                        "No existe una sobrecarga de la funcion '" + nombreFuncion
-                        + "' compatible con los argumentos proporcionados");
+                errorSobrecargaNoCompatible(contexto, "de la funcion");
             }
-            setTipo(tablaTipos.getError());
+            marcarError(contexto);
             return;
         }
 
-        List<SimboloParametro> parametros = funcion.getParametros();
+        aceptarLlamada(contexto, funcion, FUNCION);
+    }
 
-        if (argumentos != null) {
-            for (int i = 0; i < argumentos.size(); i++) {
-                Expresion argumento = argumentos.get(i);
-                SimboloParametro parametro = parametros.get(i);
-                if (!reglas.esAsignable(parametro.getTipo(), argumento.getTipo())) {
-                    contexto.agregarError(argumento.getFila(), argumento.getColumna(),
-                            nombreFuncion, "El argumento " + (i + 1)
-                            + " de la funcion '" + nombreFuncion
-                            + "' es incompatible con su parametro");
-                }
+
+    private void aceptarLlamada(Contexto contexto, SimboloFuncion destino, String descripcionDestino) {
+        verificadorAcceso.verificar(contexto, fila, columna, nombreFuncion,
+                destino.getModAcceso(), destino.getNombreClase());
+        verificarCompatibilidadArgumentos(contexto, destino, descripcionDestino);
+        setTipo(destino.getTipoRetorno());
+    }
+
+    private void verificarCompatibilidadArgumentos(Contexto contexto,
+            SimboloFuncion destino, String descripcionDestino) {
+        if (argumentos == null) {
+            return;
+        }
+        List<SimboloParametro> parametros = destino.getParametros();
+        for (int i = 0; i < argumentos.size(); i++) {
+            Expresion argumento = argumentos.get(i);
+            if (!reglas.esAsignable(parametros.get(i).getTipo(), argumento.getTipo())) {
+                contexto.agregarError(argumento.getFila(), argumento.getColumna(),
+                        nombreFuncion, "El argumento " + (i + 1)
+                        + " " + descripcionDestino + " '" + nombreFuncion
+                        + "' es incompatible con su parametro");
             }
         }
+    }
 
-        setTipo(funcion.getTipoRetorno());
+    private void errorSobrecargaNoCompatible(Contexto contexto, String descripcionDestino) {
+        contexto.agregarError(fila, columna, nombreFuncion,
+                "No existe una sobrecarga " + descripcionDestino + " '" + nombreFuncion
+                + "' compatible con los argumentos proporcionados");
+    }
+
+    private void marcarError(Contexto contexto) {
+        setTipo(contexto.getTablaTipos().getError());
     }
 
     private List<Tipo> verificarArgumentos(Contexto contexto) {
@@ -235,7 +234,6 @@ public class Llamada extends Expresion implements Instruccion {
                     null, null, fila, columna);
         }
 
-        //Llamada
         String temporal = cuartetas.nuevoTemporal();
         cuartetas.registrarTipoTemporal(temporal, getTipo());
         if (etiqueta != null) {
@@ -260,26 +258,23 @@ public class Llamada extends Expresion implements Instruccion {
             }
             return resolverMetodo(clase.getMetodosPorNombre(nombreFuncion));
         }
-        if (contexto.getClaseActual() != null
-                && contexto.getClaseActual().getMetodosPorNombre(nombreFuncion) != null
-                && !contexto.getClaseActual().getMetodosPorNombre(nombreFuncion).isEmpty()) {
-            return resolverMetodo(
-                    contexto.getClaseActual().getMetodosPorNombre(nombreFuncion));
+
+        SimboloClase claseActual = contexto.getClaseActual();
+        if (claseActual != null) {
+            List<SimboloFuncion> candidatas = claseActual.getMetodosPorNombre(nombreFuncion);
+            if (!candidatas.isEmpty()) {
+                return resolverMetodo(candidatas);
+            }
         }
         return resolverFuncionLibre(contexto);
     }
 
-    private SimboloFuncion resolverMetodo(
-            List<SimboloFuncion> candidatas) {
-
-        List<Tipo> tipos = tiposDeArgumentos();
-        return reglas.resolverEntre(candidatas, tipos);
-
+    private SimboloFuncion resolverMetodo(List<SimboloFuncion> candidatas) {
+        return reglas.resolverEntre(candidatas, tiposDeArgumentos());
     }
 
     private SimboloFuncion resolverFuncionLibre(Contexto contexto) {
-        List<Tipo> tipos = tiposDeArgumentos();
-        return reglas.resolverFuncion(contexto, nombreFuncion, tipos);
+        return reglas.resolverFuncion(contexto, nombreFuncion, tiposDeArgumentos());
     }
 
     private List<Tipo> tiposDeArgumentos() {
@@ -291,5 +286,4 @@ public class Llamada extends Expresion implements Instruccion {
         }
         return tipos;
     }
-
 }

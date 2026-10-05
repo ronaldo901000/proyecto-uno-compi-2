@@ -46,49 +46,77 @@ public class ReglasSimbolos {
 
     public SimboloFuncion resolverEntre(List<SimboloFuncion> sobrecargas,
             List<Tipo> tiposArgumentos) {
+
         if (sobrecargas == null || sobrecargas.isEmpty()) {
             return null;
         }
-        int numeroArgumentos = (tiposArgumentos != null) ? tiposArgumentos.size() : 0;
 
-        List<SimboloFuncion> mismaArity = new ArrayList<>();
+        List<SimboloFuncion> sobrecargasConMismaCantidad
+                = filtrarPorCantidadDeParametros(sobrecargas, tiposArgumentos);
+
+        SimboloFuncion coincidenciaExacta = null;
+        SimboloFuncion coincidenciaPorConversion = null;
+
+        for (SimboloFuncion sobrecarga : sobrecargasConMismaCantidad) {
+            if (coincideExactamente(sobrecarga, tiposArgumentos)) {
+                if (coincidenciaExacta != null) {
+                    return null;
+                }
+                coincidenciaExacta = sobrecarga;
+            } else if (coincideConConversion(sobrecarga, tiposArgumentos)) {
+                if (coincidenciaPorConversion != null) {
+                    return null;
+                }
+                coincidenciaPorConversion = sobrecarga;
+            }
+        }
+
+        // La exacta tiene prioridad sobre la que requiere conversion
+        return (coincidenciaExacta != null) ? coincidenciaExacta : coincidenciaPorConversion;
+    }
+
+    /**
+     * Deja solo las sobrecargas que reciben tantos parametros como argumentos
+     * se pasaron.
+     */
+    private List<SimboloFuncion> filtrarPorCantidadDeParametros(
+            List<SimboloFuncion> sobrecargas, List<Tipo> tiposArgumentos) {
+        int cantidadArgumentos = (tiposArgumentos != null) ? tiposArgumentos.size() : 0;
+
+        List<SimboloFuncion> resultado = new ArrayList<>();
         for (SimboloFuncion sobrecarga : sobrecargas) {
-            if (sobrecarga.getParametros().size() == numeroArgumentos) {
-                mismaArity.add(sobrecarga);
+            if (sobrecarga.getParametros().size() == cantidadArgumentos) {
+                resultado.add(sobrecarga);
             }
         }
-        if (mismaArity.isEmpty()) {
-            return null;
-        }
-        SimboloFuncion exacta = null;
-        SimboloFuncion candidata = null;
-        for (SimboloFuncion sobrecarga : mismaArity) {
-            boolean coincideExacto = true;
-            boolean coincideAsignable = true;
-            List<SimboloParametro> parametros = sobrecarga.getParametros();
-            for (int i = 0; i < parametros.size(); i++) {
-                Tipo tipoParametro = parametros.get(i).getTipo();
-                Tipo tipoArgumento = tiposArgumentos.get(i);
-                if (!tiposCoincidenExacto(tipoParametro, tipoArgumento)) {
-                    coincideExacto = false;
-                }
-                if (!tipos.esAsignable(tipoParametro, tipoArgumento)) {
-                    coincideAsignable = false;
-                }
-            }
-            if (coincideExacto) {
-                if (exacta != null) {
-                    return null;
-                }
-                exacta = sobrecarga;
-            } else if (coincideAsignable) {
-                if (candidata != null) {
-                    return null;
-                }
-                candidata = sobrecarga;
+        return resultado;
+    }
+
+    /**
+     * true si cada argumento tiene exactamente el mismo tipo que su parametro.
+     */
+    private boolean coincideExactamente(SimboloFuncion sobrecarga, List<Tipo> tiposArgumentos) {
+        List<SimboloParametro> parametros = sobrecarga.getParametros();
+        for (int i = 0; i < parametros.size(); i++) {
+            if (!tiposCoincidenExacto(parametros.get(i).getTipo(), tiposArgumentos.get(i))) {
+                return false;
             }
         }
-        return (exacta != null) ? exacta : candidata;
+        return true;
+    }
+
+    /**
+     * true si cada argumento se puede asignar a su parametro (ej. entero ->
+     * decimal).
+     */
+    private boolean coincideConConversion(SimboloFuncion sobrecarga, List<Tipo> tiposArgumentos) {
+        List<SimboloParametro> parametros = sobrecarga.getParametros();
+        for (int i = 0; i < parametros.size(); i++) {
+            if (!tipos.esAsignable(parametros.get(i).getTipo(), tiposArgumentos.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean tiposCoincidenExacto(Tipo parametro, Tipo argumento) {
