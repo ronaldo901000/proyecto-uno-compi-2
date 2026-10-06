@@ -2,8 +2,8 @@ package com.ronaldo.cd3.compiler.api.modelos.clasesZ.registradores;
 
 import com.ronaldo.cd3.compiler.api.modelos.clasesZ.ResolutorTipoRetorno;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.Parametro;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Parametro;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
@@ -22,10 +22,10 @@ import java.util.Set;
 public class RegistradorMetodos {
 
     private String nombreClase;
-    private List<FuncionDef> metodos;
+    private List<Funcion> metodos;
     private Reglas reglas;
 
-    public RegistradorMetodos(String nombreClase, List<FuncionDef> metodos, Reglas reglas) {
+    public RegistradorMetodos(String nombreClase, List<Funcion> metodos, Reglas reglas) {
         this.nombreClase = nombreClase;
         this.metodos = metodos;
         this.reglas = reglas;
@@ -42,7 +42,7 @@ public class RegistradorMetodos {
 
         int contador = 0;
         Set<String> firmas = new HashSet<>();
-        for (FuncionDef metodo : metodos) {
+        for (Funcion metodo : metodos) {
             contador++;
             SimboloFuncion simboloMetodo = simboloDeMetodo(contexto, metodo,
                     "metodo_" + nombreClase + "_" + metodo.getNombre() + "_" + contador);
@@ -63,7 +63,7 @@ public class RegistradorMetodos {
         }
     }
 
-    private SimboloFuncion simboloDeMetodo(Contexto contexto, FuncionDef metodo,
+    private SimboloFuncion simboloDeMetodo(Contexto contexto, Funcion metodo,
             String etiqueta) {
 
         ResolutorTipoRetorno resolutorRetorno = new ResolutorTipoRetorno(reglas);

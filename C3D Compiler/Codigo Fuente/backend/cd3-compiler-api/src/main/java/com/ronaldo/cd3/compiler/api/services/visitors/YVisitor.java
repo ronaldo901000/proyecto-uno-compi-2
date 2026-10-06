@@ -14,8 +14,8 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Literal;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Llamada;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Operacion;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Unario;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.Parametro;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Parametro;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Asignacion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Continuar;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Imprimir;
@@ -58,7 +58,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
             }
         }
 
-        List<FuncionDef> funciones = new ArrayList<>();
+        List<Funcion> funciones = new ArrayList<>();
         if (ctx.bloque_funciones() != null) {
             for (LenguajeYParser.FuncionContext f : ctx.bloque_funciones().funcion()) {
                 funciones.add(visitFuncion(f));
@@ -94,7 +94,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
     }
 
     @Override
-    public FuncionDef visitFuncion(LenguajeYParser.FuncionContext ctx) {
+    public Funcion visitFuncion(LenguajeYParser.FuncionContext ctx) {
         if (ctx.funcion_void() != null) {
             return visitFuncion_void(ctx.funcion_void());
         }
@@ -102,18 +102,18 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
     }
 
     @Override
-    public FuncionDef visitFuncion_void(LenguajeYParser.Funcion_voidContext ctx) {
+    public Funcion visitFuncion_void(LenguajeYParser.Funcion_voidContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
         String nombre = ctx.ID().getText();
         List<Parametro> parametros = extraerParametros(ctx.params());
         List<Instruccion> cuerpo = visitarBloque(ctx.bloque());
 
-        return new FuncionDef(nombre, parametros, null, cuerpo, fila, columna);
+        return new Funcion(nombre, parametros, null, cuerpo, fila, columna);
     }
 
     @Override
-    public FuncionDef visitFuncion_retorno(LenguajeYParser.Funcion_retornoContext ctx) {
+    public Funcion visitFuncion_retorno(LenguajeYParser.Funcion_retornoContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
         String nombre = ctx.ID().getText();
@@ -121,7 +121,7 @@ public class YVisitor extends LenguajeYBaseVisitor<Visitable> {
         String tipoRetorno = ctx.tipo_dato_general().getText();
         List<Instruccion> cuerpo = visitarBloque(ctx.bloque());
 
-        return new FuncionDef(nombre, parametros, tipoRetorno, cuerpo, fila, columna);
+        return new Funcion(nombre, parametros, tipoRetorno, cuerpo, fila, columna);
     }
 
     private List<Parametro> extraerParametros(LenguajeYParser.ParamsContext ctx) {

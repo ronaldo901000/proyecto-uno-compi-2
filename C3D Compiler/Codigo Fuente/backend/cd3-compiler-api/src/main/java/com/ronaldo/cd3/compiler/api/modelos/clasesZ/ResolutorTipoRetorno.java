@@ -1,7 +1,7 @@
 package com.ronaldo.cd3.compiler.api.modelos.clasesZ;
 
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class ResolutorTipoRetorno {
         this.reglas = reglas;
     }
 
-    public Tipo resolver(Contexto contexto, FuncionDef metodo) {
+    public Tipo resolver(Contexto contexto, Funcion metodo) {
         if (metodo.getTipoRetorno() == null) {
             return contexto.getTablaTipos().getVoid();
         }

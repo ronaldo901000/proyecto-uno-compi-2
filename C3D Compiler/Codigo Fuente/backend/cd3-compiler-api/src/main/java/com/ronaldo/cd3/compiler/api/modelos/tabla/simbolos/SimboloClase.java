@@ -88,11 +88,11 @@ public class SimboloClase extends Simbolo {
         Set<String> firmasVistas = new HashSet<>();
 
         for (SimboloClase actual = this; actual != null; actual = actual.clasePadre) {
-            
+
             for (Map.Entry<String, SimboloFuncion> entrada : actual.metodos.entrySet()) {
-                
+
                 SimboloFuncion metodo = entrada.getValue();
-                
+
                 if (!metodo.getId().equals(nombreMetodo)) {
                     continue;
                 }
@@ -147,6 +147,30 @@ public class SimboloClase extends Simbolo {
             tipos.add(parametro.getTipo());
         }
         return tipos;
+    }
+
+    public SimboloFuncion buscarMetodoEnPadre(String nombreMetodo,
+            List<SimboloParametro> params) {
+
+        for (SimboloClase padre = clasePadre; padre != null; padre = padre.getClasePadre()) {
+            for (SimboloFuncion metodo : padre.getMetodosLista()) {
+                if (!metodo.getId().equals(nombreMetodo)
+                        || metodo.getParametros().size() != params.size()) {
+                    continue;
+                }
+                boolean coinciden = true;
+                for (int i = 0; i < params.size(); i++) {
+                    if (!params.get(i).getTipo().esIgual(metodo.getParametros().get(i).getTipo())) {
+                        coinciden = false;
+                        break;
+                    }
+                }
+                if (coinciden) {
+                    return metodo;
+                }
+            }
+        }
+        return null;
     }
 
     public int getTamañoHeap() {

@@ -19,8 +19,8 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.NewArreglo;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Operacion;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Ternaria;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Unario;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.Parametro;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Parametro;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Asignacion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Continuar;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Imprimir;
@@ -73,7 +73,7 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
             constructores.add(visitConstructor(c));
         }
 
-        List<FuncionDef> metodos = new ArrayList<>();
+        List<Funcion> metodos = new ArrayList<>();
         for (LenguajeZParser.MetodoContext m : ctx.contenido().metodo()) {
             metodos.add(visitMetodo(m));
         }
@@ -417,7 +417,7 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
     }
 
     @Override
-    public FuncionDef visitMetodo(LenguajeZParser.MetodoContext ctx) {
+    public Funcion visitMetodo(LenguajeZParser.MetodoContext ctx) {
         if (ctx.funcion() != null) {
             return visitFuncion(ctx.funcion());
         }
@@ -425,21 +425,21 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
     }
 
     @Override
-    public FuncionDef visitProcedimiento(LenguajeZParser.ProcedimientoContext ctx) {
+    public Funcion visitProcedimiento(LenguajeZParser.ProcedimientoContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
         String nombre = ctx.ID().getText();
         List<Parametro> parametros = extraerParametros(ctx.parametros());
         List<Instruccion> cuerpo = visitarInstrucciones(ctx.instruccion());
 
-        boolean tieneOverride = true ? ctx.OVERRIDE() != null : false;
+        boolean tieneOverride = tieneOverride(ctx.OVERRIDE());
         ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
 
-        return new FuncionDef(tieneOverride, modAcceso, nombre, parametros, null, cuerpo, fila, columna);
+        return new Funcion(tieneOverride, modAcceso, nombre, parametros, null, cuerpo, fila, columna);
     }
 
     @Override
-    public FuncionDef visitFuncion(LenguajeZParser.FuncionContext ctx) {
+    public Funcion visitFuncion(LenguajeZParser.FuncionContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
         String nombre = ctx.ID().getText();
@@ -448,11 +448,15 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         List<Parametro> parametros = extraerParametros(ctx.parametros());
         List<Instruccion> cuerpo = visitarInstrucciones(ctx.instruccion());
 
-        boolean tieneOverride = true ? ctx.OVERRIDE() != null : false;
+        boolean tieneOverride = tieneOverride(ctx.OVERRIDE());
         ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
 
-        return new FuncionDef(tieneOverride, modAcceso, nombre, parametros, tipoRetorno, dimensionesRetorno,
+        return new Funcion(tieneOverride, modAcceso, nombre, parametros, tipoRetorno, dimensionesRetorno,
                 cuerpo, fila, columna);
+    }
+
+    private boolean tieneOverride(TerminalNode nodo) {
+        return nodo != null;
     }
 
     private List<Parametro> extraerParametros(LenguajeZParser.ParametrosContext ctx) {

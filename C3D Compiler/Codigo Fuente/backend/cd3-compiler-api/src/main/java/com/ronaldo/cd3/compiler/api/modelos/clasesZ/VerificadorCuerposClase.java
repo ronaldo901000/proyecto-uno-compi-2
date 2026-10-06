@@ -1,12 +1,13 @@
 package com.ronaldo.cd3.compiler.api.modelos.clasesZ;
 
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.Parametro;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Parametro;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import java.util.List;
@@ -28,8 +29,8 @@ public class VerificadorCuerposClase {
     }
 
     /**
-     * 
-     * @param contexto 
+     *
+     * @param contexto
      */
     public void verificar(Contexto contexto) {
         SimboloClase simboloClase = clase.getSimboloClase();
@@ -41,7 +42,7 @@ public class VerificadorCuerposClase {
         contexto.setAmbito(simboloClase.getAmbito());
 
         if (clase.getMetodos() != null) {
-            for (FuncionDef metodo : clase.getMetodos()) {
+            for (Funcion metodo : clase.getMetodos()) {
                 verificarMetodo(contexto, metodo);
             }
         }
@@ -58,12 +59,16 @@ public class VerificadorCuerposClase {
     }
 
     /**
-     * 
+     *
      * @param contexto
-     * @param metodo 
+     * @param metodo
      */
-    private void verificarMetodo(Contexto contexto, FuncionDef metodo) {
+    private void verificarMetodo(Contexto contexto, Funcion metodo) {
         Tipo tipoRetorno = resolutorRetorno.resolver(contexto, metodo);
+
+        if (metodo.tieneOverride()) {
+            verificarOverride(contexto, metodo, tipoRetorno);
+        }
 
         verificarCuerpo(contexto, metodo.getNombre(), metodo.getParametros(),
                 tipoRetorno, metodo.getCuerpo());
@@ -75,10 +80,35 @@ public class VerificadorCuerposClase {
         }
     }
 
+    private void verificarOverride(Contexto contexto, Funcion metodo, Tipo tipoRetorno) {
+        SimboloFuncion simbolo = metodo.getSimbolo();
+        if (simbolo == null || reglas.esError(tipoRetorno)) {
+            return;
+        }
+
+        SimboloFuncion sobreescrito = clase.getSimboloClase()
+                .buscarMetodoEnPadre(metodo.getNombre(), simbolo.getParametros());
+
+        if (sobreescrito == null) {
+            contexto.agregarError(metodo.getFila(), metodo.getColumna(), "@Override",
+                    "El método '" + metodo.getNombre()
+                    + "' no sobreescribe ningún método de la clase padre.");
+            return;
+        }
+
+        if (!tipoRetorno.esIgual(sobreescrito.getTipoRetorno())) {
+
+            contexto.agregarError(metodo.getFila(), metodo.getColumna(), "@Override",
+                    "El método '" + metodo.getNombre() + "' retorna " + tipoRetorno
+                    + " pero el método sobreescrito en '" + sobreescrito.getNombreClase()
+                    + "' retorna " + sobreescrito.getTipoRetorno() + ".");
+        }
+    }
+
     /**
-     * 
+     *
      * @param contexto
-     * @param constructor 
+     * @param constructor
      */
     private void verificarConstructor(Contexto contexto, ConstructorZ constructor) {
         verificarCuerpo(contexto, "constructor_" + constructor.getNombre(),
@@ -87,12 +117,12 @@ public class VerificadorCuerposClase {
     }
 
     /**
-     * 
+     *
      * @param contexto
      * @param nombreMiembro
      * @param parametros
      * @param tipoRetorno
-     * @param cuerpo 
+     * @param cuerpo
      */
     private void verificarCuerpo(Contexto contexto, String nombreMiembro,
             List<Parametro> parametros, Tipo tipoRetorno, List<Instruccion> cuerpo) {

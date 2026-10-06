@@ -1,4 +1,4 @@
-package com.ronaldo.cd3.compiler.api.modelos.funcionesY;
+package com.ronaldo.cd3.compiler.api.modelos.funciones;
 
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;

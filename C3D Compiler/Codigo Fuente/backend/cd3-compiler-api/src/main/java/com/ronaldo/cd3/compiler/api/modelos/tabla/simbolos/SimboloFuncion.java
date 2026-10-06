@@ -17,7 +17,6 @@ public class SimboloFuncion extends Simbolo {
     private String nombreClase;
     private boolean esMetodo;
     private ModificadoresAcceso modAcceso = ModificadoresAcceso.DEFAULT;
-    private SimboloFuncion metodoSobreescrito;
 
     public SimboloFuncion(String id, Tipo tipoRetorno,
             List<SimboloParametro> parametros,
@@ -81,6 +80,6 @@ public class SimboloFuncion extends Simbolo {
     public void setModAcceso(ModificadoresAcceso modAcceso) {
         this.modAcceso = modAcceso;
     }
-    
 
+    
 }

@@ -1,4 +1,4 @@
-package com.ronaldo.cd3.compiler.api.modelos.funcionesY;
+package com.ronaldo.cd3.compiler.api.modelos.funciones;
 
 import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
@@ -22,7 +22,7 @@ import java.util.Map;
  *
  * @author ronaldo
  */
-public class FuncionDef extends Nodo implements Verificable, Generable {
+public class Funcion extends Nodo implements Verificable, Generable {
 
     private final Reglas reglas = new Reglas();
     private String nombre;
@@ -34,12 +34,12 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
     private ModificadoresAcceso modAcceso;
     private boolean tieneOverride;
 
-    public FuncionDef(String nombre, List<Parametro> parametros,
+    public Funcion(String nombre, List<Parametro> parametros,
             String tipoRetorno, List<Instruccion> cuerpo, int fila, int columna) {
         this(nombre, parametros, tipoRetorno, 0, cuerpo, fila, columna);
     }
 
-    public FuncionDef(String nombre, List<Parametro> parametros,
+    public Funcion(String nombre, List<Parametro> parametros,
             String tipoRetorno, int dimensionesRetorno,
             List<Instruccion> cuerpo, int fila, int columna) {
 
@@ -54,14 +54,14 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
     /**
      * CONSTRUCTORES PARA EL LENGUAJE Z*
      */
-    public FuncionDef(boolean tieneOverride, ModificadoresAcceso modAcceso, String nombre, List<Parametro> parametros,
+    public Funcion(boolean tieneOverride, ModificadoresAcceso modAcceso, String nombre, List<Parametro> parametros,
             String tipoRetorno, List<Instruccion> cuerpo, int fila, int columna) {
         this(nombre, parametros, tipoRetorno, 0, cuerpo, fila, columna);
         this.modAcceso = modAcceso;
         this.tieneOverride = tieneOverride;
     }
 
-    public FuncionDef(boolean tieneOverride, ModificadoresAcceso modAcceso, String nombre, List<Parametro> parametros,
+    public Funcion(boolean tieneOverride, ModificadoresAcceso modAcceso, String nombre, List<Parametro> parametros,
             String tipoRetorno, int dimensionesRetorno,
             List<Instruccion> cuerpo, int fila, int columna) {
 
@@ -106,6 +106,7 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
     public void declararFuncion(Contexto contexto) {
         List<Tipo> tiposParametros = new ArrayList<>();
         List<SimboloParametro> simbolosParametros = new ArrayList<>();
+
         if (parametros != null) {
 
             for (Parametro parametro : parametros) {
@@ -116,6 +117,7 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
                         parametro.getNombre(), parametro.getTipo(), 0));
             }
         }
+
         if (contexto.getTablaSimbolos().existeOtroSimbolo(nombre)
                 || contexto.getTablaSimbolos().existeFuncion(nombre, tiposParametros)) {
 
@@ -270,6 +272,10 @@ public class FuncionDef extends Nodo implements Verificable, Generable {
 
     public ModificadoresAcceso getModAcceso() {
         return modAcceso;
+    }
+
+    public boolean tieneOverride() {
+        return tieneOverride;
     }
 
 }

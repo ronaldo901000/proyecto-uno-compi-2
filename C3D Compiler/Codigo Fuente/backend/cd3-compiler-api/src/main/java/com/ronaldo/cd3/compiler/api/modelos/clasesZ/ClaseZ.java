@@ -6,7 +6,7 @@ import com.ronaldo.cd3.compiler.api.interfaces.Generable;
 import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.Declaracion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
@@ -28,12 +28,12 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
     private final String nombrePadre;
     private final List<Declaracion> atributos;
     private final List<ConstructorZ> constructores;
-    private final List<FuncionDef> metodos;
+    private final List<Funcion> metodos;
     private SimboloClase simboloClase;
     private ArchivoDTO archivo;
 
     public ClaseZ(String nombre, String nombrePadre, List<Declaracion> atributos,
-            List<ConstructorZ> constructores, List<FuncionDef> metodos,
+            List<ConstructorZ> constructores, List<Funcion> metodos,
             int fila, int columna) {
         super(fila, columna);
         this.nombre = nombre;
@@ -114,7 +114,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         }
 
         if (metodos != null) {
-            for (FuncionDef metodo : metodos) {
+            for (Funcion metodo : metodos) {
                 metodo.generarCuartetas(contexto, cuartetas);
             }
         }
@@ -147,7 +147,7 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
         return constructores;
     }
 
-    public List<FuncionDef> getMetodos() {
+    public List<Funcion> getMetodos() {
         return metodos;
     }
 

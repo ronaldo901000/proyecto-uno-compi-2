@@ -2,7 +2,7 @@ package com.ronaldo.cd3.compiler.api.modelos.clasesZ.registradores;
 
 import com.ronaldo.cd3.compiler.api.modelos.clasesZ.ConstructorZ;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.Parametro;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Parametro;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;

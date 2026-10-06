@@ -14,7 +14,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Operacion;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Ternaria;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Unario;
 import com.ronaldo.cd3.compiler.api.modelos.estructurasY.EstructuraDef;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Asignacion;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Imprimir;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
@@ -399,7 +399,7 @@ public class VerificadorImportesPig {
                     }
                 }
                 if (programa.getFunciones() != null) {
-                    for (FuncionDef funcion : programa.getFunciones()) {
+                    for (Funcion funcion : programa.getFunciones()) {
                         if (funcion.getNombre() != null) {
                             simbolos.add(funcion.getNombre().toLowerCase());
                         }

@@ -6,7 +6,7 @@ import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.estructurasY.EstructuraDef;
-import com.ronaldo.cd3.compiler.api.modelos.funcionesY.FuncionDef;
+import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import java.util.List;
 
@@ -17,10 +17,10 @@ import java.util.List;
 public class ProgramaY extends Nodo implements Verificable, Generable {
 
     private List<EstructuraDef> estructuras;
-    private List<FuncionDef> funciones;
+    private List<Funcion> funciones;
     private ArchivoDTO archivo;
 
-    public ProgramaY(List<EstructuraDef> estructuras, List<FuncionDef> funciones, int fila, int columna) {
+    public ProgramaY(List<EstructuraDef> estructuras, List<Funcion> funciones, int fila, int columna) {
         super(fila, columna);
         this.estructuras = estructuras;
         this.funciones = funciones;
@@ -30,7 +30,7 @@ public class ProgramaY extends Nodo implements Verificable, Generable {
         return estructuras;
     }
 
-    public List<FuncionDef> getFunciones() {
+    public List<Funcion> getFunciones() {
         return funciones;
     }
 
@@ -47,7 +47,7 @@ public class ProgramaY extends Nodo implements Verificable, Generable {
             }
         }
         if (funciones != null) {
-            for (FuncionDef funcion : funciones) {
+            for (Funcion funcion : funciones) {
                 funcion.declararFuncion(contexto);
             }
         }
@@ -55,7 +55,7 @@ public class ProgramaY extends Nodo implements Verificable, Generable {
 
     public void verificarCuerpos(Contexto contexto) {
         if (funciones != null) {
-            for (FuncionDef funcion : funciones) {
+            for (Funcion funcion : funciones) {
                 funcion.verificarSemantica(contexto);
             }
         }
@@ -64,7 +64,7 @@ public class ProgramaY extends Nodo implements Verificable, Generable {
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         if (funciones != null) {
-            for (FuncionDef funcion : funciones) {
+            for (Funcion funcion : funciones) {
                 funcion.generarCuartetas(contexto, cuartetas);
             }
         }
