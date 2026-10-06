@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.clasesZ;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
 import com.ronaldo.cd3.compiler.api.modelos.funciones.Parametro;
@@ -10,6 +11,7 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 import java.util.List;
 
 /*
@@ -66,9 +68,7 @@ public class VerificadorCuerposClase {
     private void verificarMetodo(Contexto contexto, Funcion metodo) {
         Tipo tipoRetorno = resolutorRetorno.resolver(contexto, metodo);
 
-        if (metodo.tieneOverride()) {
-            verificarOverride(contexto, metodo, tipoRetorno);
-        }
+        verificarOverride(contexto, metodo, tipoRetorno);
 
         verificarCuerpo(contexto, metodo.getNombre(), metodo.getParametros(),
                 tipoRetorno, metodo.getCuerpo());
@@ -86,23 +86,43 @@ public class VerificadorCuerposClase {
             return;
         }
 
-        SimboloFuncion sobreescrito = clase.getSimboloClase()
-                .buscarMetodoEnPadre(metodo.getNombre(), simbolo.getParametros());
+        SimboloClase simboloClase = clase.getSimboloClase();
 
-        if (sobreescrito == null) {
-            contexto.agregarError(metodo.getFila(), metodo.getColumna(), "@Override",
-                    "El método '" + metodo.getNombre()
-                    + "' no sobreescribe ningún método de la clase padre.");
+        if (clase.getNombrePadre() != null && simboloClase.getClasePadre() == null) {
             return;
         }
 
-        if (!tipoRetorno.esIgual(sobreescrito.getTipoRetorno())) {
+        SimboloFuncion sobreescrito = simboloClase
+                .buscarMetodoEnPadre(metodo.getNombre(), simbolo.getParametros());
 
-            contexto.agregarError(metodo.getFila(), metodo.getColumna(), "@Override",
-                    "El método '" + metodo.getNombre() + "' retorna " + tipoRetorno
-                    + " pero el método sobreescrito en '" + sobreescrito.getNombreClase()
-                    + "' retorna " + sobreescrito.getTipoRetorno() + ".");
+        if (metodo.tieneOverride()) {
+            
+            if (sobreescrito == null) {
+                contexto.agregarError(metodo.getFila(), metodo.getColumna(), "@Override",
+                        "El método '" + metodo.getNombre()
+                        + "' no sobreescribe ningún método de la clase padre.");
+            } else if (!retornoCompatible(tipoRetorno, sobreescrito.getTipoRetorno())) {
+                contexto.agregarError(metodo.getFila(), metodo.getColumna(), "@Override",
+                        "El método '" + metodo.getNombre() + "' retorna " + tipoRetorno
+                        + " pero el método sobreescrito en '" + sobreescrito.getNombreClase()
+                        + "' retorna " + sobreescrito.getTipoRetorno() + ".");
+            } else if (nivelAcceso(simbolo.getModAcceso()) < nivelAcceso(sobreescrito.getModAcceso())) {
+                contexto.agregarError(metodo.getFila(), metodo.getColumna(), "@Override",
+                        "El método '" + metodo.getNombre() + "' no puede reducir la visibilidad del "
+                        + "método sobreescrito en '" + sobreescrito.getNombreClase() + "'.");
+            }
+        } else if (sobreescrito != null) {
+            contexto.agregarError(metodo.getFila(), metodo.getColumna(), metodo.getNombre(),
+                    "El método '" + metodo.getNombre() + "' sobreescribe el método de la clase '"
+                    + sobreescrito.getNombreClase() + "' y debe llevar @Override.");
         }
+    }
+
+    private boolean retornoCompatible(Tipo retornoHijo, Tipo retornoPadre) {
+        if (retornoHijo instanceof TipoStructura && retornoPadre instanceof TipoStructura) {
+            return ((TipoStructura) retornoHijo).esSubtipoDe(retornoPadre);
+        }
+        return retornoHijo.esIgual(retornoPadre);
     }
 
     /**
@@ -154,6 +174,22 @@ public class VerificadorCuerposClase {
         contexto.setClaseActual(claseAnterior);
         contexto.setTipoRetornoActual(retornoAnterior);
         contexto.restaurarAmbito(anterior);
+    }
+
+    private int nivelAcceso(ModificadoresAcceso mod) {
+        if (mod == null) {
+            return 1;
+        }
+        switch (mod) {
+            case PRIVATE:
+                return 0;
+            case PROTECTED:
+                return 2;
+            case PUBLIC:
+                return 3;
+            default:
+                return 1;
+        }
     }
 
 }

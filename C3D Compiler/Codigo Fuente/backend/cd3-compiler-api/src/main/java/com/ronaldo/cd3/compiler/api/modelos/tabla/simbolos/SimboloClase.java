@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.RolSimbolo;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
@@ -149,15 +150,29 @@ public class SimboloClase extends Simbolo {
         return tipos;
     }
 
+    /**
+     * METODO ENCARGADO DE RETORNAR EL METODO DEL PADRE QUE EL HIJO INTENTA SOBREESCRIBIR
+     * @param nombreMetodo
+     * @param params
+     * @return 
+     */
     public SimboloFuncion buscarMetodoEnPadre(String nombreMetodo,
             List<SimboloParametro> params) {
 
         for (SimboloClase padre = clasePadre; padre != null; padre = padre.getClasePadre()) {
+
             for (SimboloFuncion metodo : padre.getMetodosLista()) {
+
+                // los metodos privados no se pueden sobreescribir
+                if (metodo.getModAcceso() == ModificadoresAcceso.PRIVATE) {
+                    continue;
+                }
+
                 if (!metodo.getId().equals(nombreMetodo)
                         || metodo.getParametros().size() != params.size()) {
                     continue;
                 }
+
                 boolean coinciden = true;
                 for (int i = 0; i < params.size(); i++) {
                     if (!params.get(i).getTipo().esIgual(metodo.getParametros().get(i).getTipo())) {

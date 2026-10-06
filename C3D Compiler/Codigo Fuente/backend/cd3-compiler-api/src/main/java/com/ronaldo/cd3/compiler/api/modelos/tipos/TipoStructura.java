@@ -15,12 +15,27 @@ public class TipoStructura extends Tipo {
     private String nombreStruct;
     private String ambito;
     private Map<String, Tipo> atributos;
+    private TipoStructura tipoPadre;
 
     public TipoStructura(String nombreStruct, String ambito) {
         super(TipoDato.ESTRUCTURA);
         this.nombreStruct = nombreStruct;
         this.ambito = ambito;
         this.atributos = new LinkedHashMap<>();
+    }
+
+    /**
+     * METODO ENCARGADO DE VERIFICAR SI UNA CLASE ES SUBTIPO DE OTRA
+     * @param otro
+     * @return 
+     */
+    public boolean esSubtipoDe(Tipo otro) {
+        for (TipoStructura actual = this; actual != null; actual = actual.tipoPadre) {
+            if (actual.esIgual(otro)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public TipoStructura(String nombreStruct) {
@@ -102,4 +117,9 @@ public class TipoStructura extends Tipo {
     public String toString() {
         return this.nombreStruct;
     }
+
+    public void setTipoPadre(TipoStructura tipoPadre) {
+        this.tipoPadre = tipoPadre;
+    }
+
 }

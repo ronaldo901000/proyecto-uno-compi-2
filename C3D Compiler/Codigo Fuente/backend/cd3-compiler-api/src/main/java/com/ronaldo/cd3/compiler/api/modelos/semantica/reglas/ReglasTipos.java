@@ -5,6 +5,7 @@ import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 import java.util.List;
 
 /**
@@ -70,6 +71,10 @@ public class ReglasTipos {
         }
         if (destino instanceof TipoArreglo && fuente instanceof TipoArreglo) {
             return arreglosCompatibles((TipoArreglo) destino, (TipoArreglo) fuente);
+        }
+        if (destino instanceof TipoStructura && fuente instanceof TipoStructura
+                && ((TipoStructura) fuente).esSubtipoDe(destino)) {
+            return true;
         }
         if (destino.esIgual(fuente)) {
             return true;

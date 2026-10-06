@@ -26,7 +26,7 @@ public class Acceso extends Expresion implements Verificable {
         this.objeto = objeto;
         this.atributo = atributo;
     }
-
+    
     public Expresion getObjeto() {
         return objeto;
     }
@@ -71,10 +71,7 @@ public class Acceso extends Expresion implements Verificable {
                 setTipo(contexto.getTablaTipos().getError());
                 return;
             }
-            
-            System.out.println("DEBUG " + atributo + " mod=" + atributoSimbolo.getModAcceso()
-                    + " dueña=" + atributoSimbolo.getNombreClase());
-            
+
             verificadorAcceso.verificar(contexto, fila, columna, atributo,
                     atributoSimbolo.getModAcceso(), atributoSimbolo.getNombreClase());
             setTipo(atributoSimbolo.getTipo());

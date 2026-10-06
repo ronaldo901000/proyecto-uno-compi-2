@@ -13,6 +13,7 @@ import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
 import java.util.List;
 
 /**
@@ -50,11 +51,11 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
     }
 
     public void verificarHerencia(Contexto contexto) {
-        
+
         if (nombrePadre == null || simboloClase == null) {
             return;
         }
-        
+
         if (nombrePadre.equals(nombre)) {
             contexto.agregarError(fila, columna, nombrePadre,
                     "La clase '" + nombre + "' no puede heredar de sí misma.");
@@ -75,6 +76,11 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
             }
         }
 
+        if (simboloClase.getTipo() instanceof TipoStructura
+                && simboloPadre.getTipo() instanceof TipoStructura) {
+            
+            ((TipoStructura) simboloClase.getTipo()).setTipoPadre((TipoStructura) simboloPadre.getTipo());
+        }
         simboloClase.setClasePadre(simboloPadre);
         simboloClase.getAmbito().setPadre(simboloPadre.getAmbito());
     }
