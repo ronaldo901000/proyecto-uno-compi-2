@@ -26,10 +26,10 @@ import com.ronaldo.cd3.compiler.api.modelos.instruccion.ciclo.CicloPara;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.ciclo.DeclaracionIterador;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.condicional.InstSi;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.condicional.RamaSino;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.Declaracion;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.DeclaracionArreglo;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.DeclaracionEstructura;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.DeclaracionVariable;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion.Declaracion;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion.DeclaracionArreglo;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion.DeclaracionEstructura;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion.DeclaracionVariable;
 import com.ronaldo.cd3.compiler.api.modelos.programaPig.ImportacionPig;
 import com.ronaldo.cd3.compiler.api.modelos.programaPig.ProgramaPig;
 import com.ronaldo.cd3.compiler.api.pig.LenguajePigBaseVisitor;
@@ -137,6 +137,7 @@ public class PigVisitor extends LenguajePigBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
 
+        //ARREGLOS
         if (ctx.SERIES() != null) {
             String tipoDato = extraerTipoDato(ctx);
             String nombre = ctx.ID(0).getText();
@@ -160,12 +161,13 @@ public class PigVisitor extends LenguajePigBaseVisitor<Visitable> {
                 ? null : ctx.expresion(0);
 
         if (ctx.ID().size() > 1) {
-            List<Expresion> valoresIniciales = (inicialCtx != null)
-                    ? extraerValoresIniciales(inicialCtx) : null;
-            Expresion valorExpresion = (valoresIniciales == null && inicialCtx != null)
-                    ? (Expresion) visit(inicialCtx) : null;
-            return new DeclaracionEstructura(valoresIniciales, valorExpresion, tipoDato,
-                    nombre, fila, columna);
+            if (inicialCtx instanceof LenguajePigParser.ExpArgStructContext) {
+                return new DeclaracionEstructura(extraerValoresIniciales(inicialCtx), null,
+                        tipoDato, nombre, fila, columna);
+            }
+            Expresion valorExpresion = (inicialCtx != null) ? (Expresion) visit(inicialCtx) : null;
+            return new DeclaracionEstructura(null, valorExpresion,
+                    tipoDato, nombre, fila, columna);
         }
 
         Expresion valorInicial = (inicialCtx != null) ? (Expresion) visit(inicialCtx) : null;
@@ -369,7 +371,6 @@ public class PigVisitor extends LenguajePigBaseVisitor<Visitable> {
         }
         return new Imprimir(valores, true, fila, columna);
     }
-
 
     @Override
     public NewObjeto visitInstanciacion(LenguajePigParser.InstanciacionContext ctx) {
@@ -592,5 +593,12 @@ public class PigVisitor extends LenguajePigBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
         return new AccesoVariable(ctx.ID().getText(), fila, columna);
+    }
+
+    @Override
+    public Literal visitExpNull(LenguajePigParser.ExpNullContext ctx) {
+        int fila = ctx.start.getLine();
+        int columna = ctx.start.getCharPositionInLine();
+        return new Literal(ctx.NULL().getText(), TipoDato.NULO, fila, columna);
     }
 }

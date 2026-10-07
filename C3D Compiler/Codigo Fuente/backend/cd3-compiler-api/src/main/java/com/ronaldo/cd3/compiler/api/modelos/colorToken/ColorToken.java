@@ -18,7 +18,7 @@ public class ColorToken {
         this.inicio = inicio;
         this.fin = fin;
         this.id = id;
-        
+
         if (opcion.equals(ExtensionArchivos.Y.getTexto())) {
             definirColorY();
         } else if (opcion.equals(ExtensionArchivos.Z.getTexto())) {
@@ -137,8 +137,7 @@ public class ColorToken {
     }
 
     public void definirColorZ() {
-        
-        
+
         switch (this.id) {
 
             // MODIFICADORES DE ACCESO (Morado)
@@ -147,101 +146,102 @@ public class ColorToken {
             case 3:  // PROTECTED
                 this.color = "#9577f4";
                 break;
-                
-            // Rosa
-            case 5:// OVERRIDE
-            case 14:// RETURN
+
+            // ROSA
+            case 5:  // OVERRIDE
+            case 15: // RETURN
                 this.color = "#FF79C6";
                 break;
 
             // PALABRAS RESERVADAS DEL LENGUAJE Z (Magenta)
             case 4:  // EXTENDS
-            case 6:  // CLASS
-            case 7:  // VOID
-            case 13: // NEW
-            case 15: // IF
-            case 16: // ELSE
-            case 19: // SWITCH
-            case 20: // CASE
-            case 21: // BREAK
-            case 22: // CONTINUE
-            case 23: // DEFAULT
-            case 24: // PRINTLN
-            case 25: // PRINT
-            case 26: // READLN
-            case 27: // FOR
-            case 28: // WHILE
-            case 29: // DO
-            case 30: // NULL
+            case 6:  // THIS
+            case 7:  // CLASS
+            case 8:  // VOID
+            case 14: // NEW
+            case 16: // IF
+            case 17: // ELSE
+            case 20: // SWITCH
+            case 21: // CASE
+            case 22: // BREAK
+            case 23: // CONTINUE
+            case 24: // DEFAULT
+            case 25: // PRINTLN
+            case 26: // PRINT
+            case 27: // READLN
+            case 28: // FOR
+            case 29: // WHILE
+            case 30: // DO
+            case 31: // NULL
                 this.color = "#C678DD";
                 break;
 
             // TIPOS DE DATOS PRIMITIVOS (Cyan brillante)
-            case 8:  // INT
-            case 9:  // DOUBLE
-            case 10: // STRING
-            case 11: // CHAR
-            case 12: // BOOLEAN
+            case 9:  // INT
+            case 10: // DOUBLE
+            case 11: // STRING
+            case 12: // CHAR
+            case 13: // BOOLEAN
                 this.color = "#56B6C2";
                 break;
 
             // VALORES LITERALES Y CONSTANTES (Naranja)
-            case 17: // TRUE
-            case 18: // FALSE
-            case 63: // ENTERO
-            case 64: // DECIMAL
+            case 18: // TRUE
+            case 19: // FALSE
+            case 64: // ENTERO
+            case 65: // DECIMAL
                 this.color = "#D19A66";
                 break;
 
             // CADENAS Y CARACTERES (Verde suave)
-            case 65: // CADENA
-            case 66: // LIT_CHAR
+            case 66: // CADENA
+            case 67: // LIT_CHAR
                 this.color = "#98C379";
                 break;
 
             // IDENTIFICADORES (Azul claro)
-            case 62: // ID
+            case 63: // ID
                 this.color = "#61AFEF";
                 break;
 
             // COMENTARIOS (Gris oscuro)
-            case 68: // COMENTARIO_LINEA
-            case 69: // COMENTARIO_BLOQUE
+            case 69: // COMENTARIO_LINEA
+            case 70: // COMENTARIO_BLOQUE
                 this.color = "#5C6370";
                 break;
 
             // OPERADORES Y SÍMBOLOS DE PUNTUACIÓN (Amarillo suave)
-            case 31: // MAS_EQ
-            case 32: // MENOS_EQ
-            case 33: // MULTI_EQ
-            case 34: // MAS
-            case 35: // MENOS
-            case 36: // MULTI
-            case 37: // DIV
-            case 38: // MODULO
-            case 39: // EQ
-            case 40: // EQ_EQ
-            case 41: // NO_EQ
-            case 42: // MAYOR_Q
-            case 43: // MAYOR_EQ_Q
-            case 44: // MENOR_Q
-            case 45: // MENOR_EQ_Q
-            case 46: // AND
-            case 47: // OR
-            case 48: // NOT
-            case 49: // MAS_MAS
-            case 50: // MENOS_MENOS
-            case 51: // PUNTO
-            case 52: // COMA
-            case 53: // DOS_P
-            case 54: // P_COMA
-            case 55: // LLAVE_A
-            case 56: // LLAVE_C
-            case 57: // CORCH_A
-            case 58: // CORCH_C
-            case 59: // PAR_A
-            case 60: // PAR_C
-            case 61: // INTERROGACION
+            case 32: // MAS_EQ
+            case 33: // MENOS_EQ
+            case 34: // MULTI_EQ
+            case 35: // MAS
+            case 36: // MENOS
+            case 37: // MULTI
+            case 38: // DIV
+            case 39: // MODULO
+            case 40: // EQ
+            case 41: // EQ_EQ
+            case 42: // NO_EQ
+            case 43: // MAYOR_Q
+            case 44: // MAYOR_EQ_Q
+            case 45: // MENOR_Q
+            case 46: // MENOR_EQ_Q
+            case 47: // AND
+            case 48: // OR
+            case 49: // NOT
+            case 50: // MAS_MAS
+            case 51: // MENOS_MENOS
+            case 52: // PUNTO
+            case 53: // COMA
+            case 54: // DOS_P
+            case 55: // P_COMA
+            case 56: // LLAVE_A
+            case 57: // LLAVE_C
+            case 58: // CORCH_A
+            case 59: // CORCH_C
+            case 60: // PAR_A
+            case 61: // PAR_C
+            case 62: // INTERROGACION
                 this.color = "#E5C07B";
                 break;
 
@@ -255,7 +255,7 @@ public class ColorToken {
     public void definirColorPig() {
         switch (this.id) {
 
-            // PALABRAS RESERVADAS Y ESTRUCTURA DE CONTROL
+            // PALABRAS RESERVADAS Y ESTRUCTURA DE CONTROL (Magenta)
             case 1:  // VARIABILES
             case 2:  // MAIOR
             case 3:  // IMPORT
@@ -269,10 +269,11 @@ public class ColorToken {
             case 21: // PERGE
             case 22: // INTERRUMPE
             case 23: // NON
+            case 24: // NULL
                 this.color = "#C678DD";
                 break;
 
-            // DECLARACION Y TIPOS DE DATOS
+            // DECLARACION Y TIPOS DE DATOS (Cyan brillante)
             case 4:  // ESTO
             case 5:  // SERIES
             case 6:  // NOVUS
@@ -284,61 +285,61 @@ public class ColorToken {
                 this.color = "#56B6C2";
                 break;
 
-            // LITERALES NUMÉRICOS Y BOOLEANOS
+            // LITERALES NUMÉRICOS Y BOOLEANOS (Naranja)
             case 12: // VERUM
             case 13: // FALSUS
-            case 50: // ENTERO
-            case 51: // DECIMAL
+            case 51: // ENTERO
+            case 52: // DECIMAL
                 this.color = "#D19A66";
                 break;
 
-            // CADENAS Y CARACTERES
-            case 52: // CADENA
-            case 53: // CHAR
+            // CADENAS Y CARACTERES (Verde suave)
+            case 53: // CADENA
+            case 54: // CHAR
                 this.color = "#98C379";
                 break;
 
-            // IDENTIFICADORES
-            case 49:
+            // IDENTIFICADORES (Azul claro)
+            case 50: // ID
                 this.color = "#61AFEF";
                 break;
 
-            // COMENTARIOS
-            case 54:
-            case 55:
+            // COMENTARIOS (Gris oscuro)
+            case 55: // COMENTARIO_LINEA
+            case 56: // COMENTARIO_BLOQUE
                 this.color = "#5C6370";
                 break;
 
-            // SÍMBOLOS Y OPERADORES 
-            case 24:
-            case 25:
-            case 26:
-            case 27:
-            case 28:
-            case 29:
-            case 30:
-            case 31:
-            case 32:
-            case 33:
-            case 34:
-            case 35:
-            case 36:
-            case 37:
-            case 38:
-            case 39:
-            case 40:
-            case 41:
-            case 42:
-            case 43:
-            case 44:
-            case 45:
-            case 46:
-            case 47:
-            case 48:
+            // SÍMBOLOS Y OPERADORES (Amarillo suave)
+            case 25: // MAS
+            case 26: // MENOS
+            case 27: // MULTI
+            case 28: // DIV
+            case 29: // EQ
+            case 30: // EQ_EQ
+            case 31: // NO_EQ
+            case 32: // MAYOR_Q
+            case 33: // MAYOR_EQ_Q
+            case 34: // MENOR_Q
+            case 35: // MENOR_EQ_Q
+            case 36: // AND
+            case 37: // OR
+            case 38: // MAS_MAS
+            case 39: // MENOS_MENOS
+            case 40: // PUNTO
+            case 41: // COMA
+            case 42: // DOS_P
+            case 43: // P_COMA
+            case 44: // LLAVE_A
+            case 45: // LLAVE_C
+            case 46: // CORCH_A
+            case 47: // CORCH_C
+            case 48: // PAR_A
+            case 49: // PAR_C
                 this.color = "#E5C07B";
                 break;
 
-            // ESPACIOS EN BLANCO (WS), ERRORES O TOKEN DESCONOCIDO
+            //ERRORES O TOKEN DESCONOCIDO (Rojo)
             default:
                 this.color = "#E06C75";
                 break;

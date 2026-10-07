@@ -2,9 +2,9 @@ package com.ronaldo.cd3.compiler.api.modelos.clasesZ.registradores;
 
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.Declaracion;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.DeclaracionArreglo;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.DeclaracionVariable;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion.Declaracion;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion.DeclaracionArreglo;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion.DeclaracionVariable;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;

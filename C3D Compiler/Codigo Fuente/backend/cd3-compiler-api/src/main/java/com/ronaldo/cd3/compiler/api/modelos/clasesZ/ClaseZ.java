@@ -7,7 +7,7 @@ import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.funciones.Funcion;
-import com.ronaldo.cd3.compiler.api.modelos.instruccion.declar.Declaracion;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion.Declaracion;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;

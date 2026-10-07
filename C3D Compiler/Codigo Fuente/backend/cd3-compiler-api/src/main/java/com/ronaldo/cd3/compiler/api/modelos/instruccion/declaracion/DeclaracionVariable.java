@@ -1,7 +1,8 @@
-package com.ronaldo.cd3.compiler.api.modelos.instruccion.declar;
+package com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion;
 
 import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
+import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
@@ -42,9 +43,10 @@ public class DeclaracionVariable extends Declaracion {
             tipo = reglas.resolverTipo(contexto, tipoDato, fila, columna);
         } else {
             tipo = (valorInicial != null) ? valorInicial.getTipo() : null;
-            if (tipo == null) {
+            if (tipo == null || tipo.getTipoDato() == TipoDato.NULO) {
                 contexto.agregarError(fila, columna, id,
-                        "No se puede inferir el tipo de '" + id + "'");
+                        "No se puede inferir el tipo de '" + id + "'. "
+                        + "Si es null, indique la clase: esto " + id + " : null : MiClase");
                 return;
             }
         }

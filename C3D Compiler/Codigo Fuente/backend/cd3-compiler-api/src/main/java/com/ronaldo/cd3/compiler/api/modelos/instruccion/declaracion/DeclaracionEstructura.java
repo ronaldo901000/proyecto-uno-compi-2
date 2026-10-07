@@ -1,4 +1,4 @@
-package com.ronaldo.cd3.compiler.api.modelos.instruccion.declar;
+package com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
@@ -44,28 +44,36 @@ public class DeclaracionEstructura extends Declaracion {
         }
         if (!(tipo instanceof TipoStructura)) {
             contexto.agregarError(fila, columna, tipoDato,
-                    "El tipo '" + tipoDato + "' de la declaración '" + id + "' no es una estructura");
+                    "El tipo '" + tipoDato + "' de la declaración '" + id + "' no es una estructura ni una clase");
             return;
         }
         TipoStructura estructura = (TipoStructura) tipo;
+
+        if (valorExpresion != null) {
+            valorExpresion.verificarSemantica(contexto);
+        }
+        if (valoresIniciales != null) {
+            for (Expresion valor : valoresIniciales) {
+                valor.verificarSemantica(contexto);
+            }
+        }
+
         SimboloVariable variable = reglas.registrarVariable(contexto, id, tipo, fila, columna);
         if (variable == null) {
             return;
         }
-        if (valorExpresion != null) {
-            valorExpresion.verificarSemantica(contexto);
-            if (!reglas.esAsignable(tipo, valorExpresion.getTipo())) {
-                contexto.agregarError(fila, columna, id,
-                        "La asignación a '" + id + "' es incompatible con el tipo " + tipoDato);
-            }
+
+        if (valorExpresion != null && !reglas.esAsignable(tipo, valorExpresion.getTipo())) {
+            contexto.agregarError(valorExpresion.getFila(), valorExpresion.getColumna(), id,
+                    "No se puede asignar un valor de tipo '" + valorExpresion.getTipo()
+                    + "' a '" + id + "' de tipo '" + tipoDato + "'");
         }
+
         if (valoresIniciales != null) {
-            int contador = 0;
-            for (Expresion valor : valoresIniciales) {
-                valor.verificarSemantica(contexto);
-                contador++;
-            }
-            if (contador > estructura.getAtributos().size()) {
+            if (estructura.esClase()) {
+                contexto.agregarError(fila, columna, id,
+                        "La clase '" + tipoDato + "' se inicializa con 'novus' o 'null', no con { }");
+            } else if (valoresIniciales.size() > estructura.getAtributos().size()) {
                 contexto.agregarError(fila, columna, id,
                         "Demasiados valores iniciales para la estructura '" + id + "'");
             }

@@ -26,8 +26,9 @@ public class TipoStructura extends Tipo {
 
     /**
      * METODO ENCARGADO DE VERIFICAR SI UNA CLASE ES SUBTIPO DE OTRA
+     *
      * @param otro
-     * @return 
+     * @return
      */
     public boolean esSubtipoDe(Tipo otro) {
         for (TipoStructura actual = this; actual != null; actual = actual.tipoPadre) {
@@ -122,4 +123,7 @@ public class TipoStructura extends Tipo {
         this.tipoPadre = tipoPadre;
     }
 
+    public boolean esClase() {
+        return "clase_z".equals(ambito);
+    }
 }

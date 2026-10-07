@@ -1,4 +1,4 @@
-package com.ronaldo.cd3.compiler.api.modelos.instruccion.declar;
+package com.ronaldo.cd3.compiler.api.modelos.instruccion.declaracion;
 
 import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;

@@ -163,7 +163,8 @@ expresion
     | CHAR                                          # expChar
     | VERUM                                         # expVerdadero
     | FALSUS                                        # expFalso
-    | ID                                             # expId
+    | ID                                            # expId
+    | NULL                                          #expNull
     ;
 
 /** ANALISIS LEXICO **/
