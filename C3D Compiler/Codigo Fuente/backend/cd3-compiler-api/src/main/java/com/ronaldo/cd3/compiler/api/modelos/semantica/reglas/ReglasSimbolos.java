@@ -41,38 +41,80 @@ public class ReglasSimbolos {
         if (sobrecargas.isEmpty()) {
             return null;
         }
-        return resolverEntre(sobrecargas, tiposArgumentos);
+        return resolverSobrecarga(sobrecargas, tiposArgumentos);
     }
 
-    public SimboloFuncion resolverEntre(List<SimboloFuncion> sobrecargas,
+    /**
+     * METODO QUE SE ENCARGA DE VERIFICAR LA LISTA DE FUNCIONES CANDIDATAS, CON
+     * LOS PARAMETROS DADOS
+     *
+     * @param candidatas
+     * @param tiposArgumentos
+     * @return
+     */
+    public SimboloFuncion resolverSobrecarga(List<SimboloFuncion> candidatas,
             List<Tipo> tiposArgumentos) {
 
-        if (sobrecargas == null || sobrecargas.isEmpty()) {
+        if (candidatas == null || candidatas.isEmpty()) {
             return null;
         }
 
-        List<SimboloFuncion> sobrecargasConMismaCantidad
-                = filtrarPorCantidadDeParametros(sobrecargas, tiposArgumentos);
+        List<SimboloFuncion> conMismaCantidad
+                = filtrarPorCantidadDeParametros(candidatas, tiposArgumentos);
 
         SimboloFuncion coincidenciaExacta = null;
-        SimboloFuncion coincidenciaPorConversion = null;
+        List<SimboloFuncion> porConversion = new ArrayList<>();
 
-        for (SimboloFuncion sobrecarga : sobrecargasConMismaCantidad) {
+        for (SimboloFuncion sobrecarga : conMismaCantidad) {
             if (coincideExactamente(sobrecarga, tiposArgumentos)) {
                 if (coincidenciaExacta != null) {
                     return null;
                 }
                 coincidenciaExacta = sobrecarga;
             } else if (coincideConConversion(sobrecarga, tiposArgumentos)) {
-                if (coincidenciaPorConversion != null) {
-                    return null;
-                }
-                coincidenciaPorConversion = sobrecarga;
+                porConversion.add(sobrecarga);
             }
         }
 
-        // La exacta tiene prioridad sobre la que requiere conversion
-        return (coincidenciaExacta != null) ? coincidenciaExacta : coincidenciaPorConversion;
+        if (coincidenciaExacta != null) {
+            return coincidenciaExacta;
+        }
+        return elegirMasEspecifica(porConversion);
+    }
+
+    /**
+     * COMPARA UNA CANDIDATA CON LAS DEMAS CANDIDATAS
+     * @param candidatas
+     * @return 
+     */
+    private SimboloFuncion elegirMasEspecifica(List<SimboloFuncion> candidatas) {
+        for (SimboloFuncion candidata : candidatas) {
+            boolean ganaATodas = true;
+            for (SimboloFuncion otra : candidatas) {
+                if (candidata != otra && !esMasEspecifica(candidata, otra)) {
+                    ganaATodas = false;
+                    break;
+                }
+            }
+            if (ganaATodas) {
+                return candidata;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * RETORNA VERDADERO SOLO SI LA CANDIDATA ES MAS ESPECIFICA QUE OTRA CANDIDATA
+     */
+    private boolean esMasEspecifica(SimboloFuncion candidata, SimboloFuncion otra) {
+        for (int i = 0; i < candidata.getParametros().size(); i++) {
+            Tipo tipoCandidata = candidata.getParametros().get(i).getTipo();
+            Tipo tipoOtra = otra.getParametros().get(i).getTipo();
+            if (!tipos.esAsignable(tipoOtra, tipoCandidata)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

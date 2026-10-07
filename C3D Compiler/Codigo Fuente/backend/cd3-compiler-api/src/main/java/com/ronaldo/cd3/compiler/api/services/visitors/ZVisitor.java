@@ -129,8 +129,40 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
                 valoresIniciales.add((Expresion) visit(e));
             }
         }
+        DeclaracionArreglo declaracion = new DeclaracionArreglo(dimensiones, valoresIniciales,
+                null, tipoDato, nombre, fila, columna);
+        declaracion.setValorExpresion(extraerInicializadorArreglo(ctx));
+        return declaracion;
+    }
 
-        return new DeclaracionArreglo(dimensiones, valoresIniciales, null, tipoDato, nombre, fila, columna);
+    private Expresion extraerInicializadorArreglo(LenguajeZParser.Dec_arrayContext ctx) {
+        if (ctx.EQ() == null || ctx.LLAVE_A() != null) {
+            return null;
+        }
+        boolean trasIgual = false;
+        List<Expresion> dimensionesNew = new ArrayList<>();
+        for (Object hijo : ctx.children) {
+            if (hijo instanceof TerminalNode) {
+                if (((TerminalNode) hijo).getSymbol().getType() == LenguajeZParser.EQ) {
+                    trasIgual = true;
+                }
+                continue;
+            }
+            if (trasIgual && hijo instanceof ExpresionContext) {
+                Expresion valor = (Expresion) visit((ExpresionContext) hijo);
+                if (ctx.NEW() == null) {
+                    return valor;
+                }
+                dimensionesNew.add(valor);
+            }
+        }
+        if (ctx.NEW() == null) {
+            return null;
+        }
+        String tipoBase = ctx.tipo_dato_general(1).getText();
+        return new NewArreglo(tipoBase, dimensionesNew,
+                ctx.NEW().getSymbol().getLine(),
+                ctx.NEW().getSymbol().getCharPositionInLine());
     }
 
     private List<Expresion> extraerDimensionesArreglo(LenguajeZParser.Dec_arrayContext ctx) {

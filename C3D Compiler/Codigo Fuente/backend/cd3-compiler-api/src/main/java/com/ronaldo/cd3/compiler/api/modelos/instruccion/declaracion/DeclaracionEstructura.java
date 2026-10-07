@@ -10,6 +10,7 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoStructura;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,13 +20,14 @@ import java.util.List;
 public class DeclaracionEstructura extends Declaracion {
 
     private final Reglas reglas = new Reglas();
-    private List<Expresion> valoresIniciales;
-    private Expresion valorExpresion;
+    private final List<Expresion> valoresIniciales;
+    private final Expresion valorExpresion;
 
     public DeclaracionEstructura(List<Expresion> valoresIniciales, Expresion valorExpresion, String tipoDato, String id, int fila, int columna) {
         super(tipoDato, id, fila, columna);
         this.valoresIniciales = valoresIniciales;
         this.valorExpresion = valorExpresion;
+
     }
 
     public List<Expresion> getValoresIniciales() {
@@ -162,9 +164,14 @@ public class DeclaracionEstructura extends Declaracion {
     private List<Expresion> listaValores(Expresion valor) {
         if (valor instanceof LiteralStructura) {
             List<Expresion> valores = ((LiteralStructura) valor).getValores();
-            return (valores != null) ? valores : List.of();
+            if (valores != null) {
+                return valores;
+            }
+            return new ArrayList<>();
         }
-        return List.of(valor);
+        List<Expresion> resultado = new ArrayList<>();
+        resultado.add(valor);
+        return resultado;
     }
 
 }

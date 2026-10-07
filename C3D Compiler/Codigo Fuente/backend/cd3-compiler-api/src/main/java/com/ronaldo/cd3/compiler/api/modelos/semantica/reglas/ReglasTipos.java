@@ -86,7 +86,7 @@ public class ReglasTipos {
     }
 
     private boolean arreglosCompatibles(TipoArreglo destino, TipoArreglo fuente) {
-        if (!destino.getTipoBase().esIgual(fuente.getTipoBase())) {
+        if (!basesCompatibles(destino.getTipoBase(), fuente.getTipoBase())) {
             return false;
         }
         int numDimensiones = destino.getNumeroDimensiones();
@@ -103,6 +103,16 @@ public class ReglasTipos {
             }
         }
         return true;
+    }
+
+    /**
+     * Solo las clases aceptan subclases
+     */
+    private boolean basesCompatibles(Tipo destino, Tipo fuente) {
+        if (destino instanceof TipoStructura && fuente instanceof TipoStructura) {
+            return ((TipoStructura) fuente).esSubtipoDe(destino);
+        }
+        return destino.esIgual(fuente);
     }
 
     public boolean comparables(Tipo a, Tipo b) {

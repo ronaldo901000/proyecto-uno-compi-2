@@ -107,6 +107,6 @@ public class Reglas {
     }
 
     public SimboloFuncion resolverEntre(List<SimboloFuncion> sobrecargas, List<Tipo> args) {
-        return simbolos.resolverEntre(sobrecargas, args);
+        return simbolos.resolverSobrecarga(sobrecargas, args);
     }
 }

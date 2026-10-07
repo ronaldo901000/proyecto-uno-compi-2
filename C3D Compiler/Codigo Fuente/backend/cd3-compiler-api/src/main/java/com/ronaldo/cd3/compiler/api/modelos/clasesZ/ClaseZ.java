@@ -1,5 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.clasesZ;
 
+import com.ronaldo.cd3.compiler.api.modelos.clasesZ.verificadores.VerificadorClase;
 import com.ronaldo.cd3.compiler.api.modelos.clasesZ.registradores.RegistradorClase;
 import com.ronaldo.cd3.compiler.api.dtos.archivo.ArchivoDTO;
 import com.ronaldo.cd3.compiler.api.interfaces.Generable;
@@ -91,8 +92,8 @@ public class ClaseZ extends Nodo implements Verificable, Generable {
     }
 
     public void verificarCuerpos(Contexto contexto) {
-        VerificadorCuerposClase verificador
-                = new VerificadorCuerposClase(this, reglas, resolutorRetorno);
+        VerificadorClase verificador
+                = new VerificadorClase(this, reglas, resolutorRetorno);
         verificador.verificar(contexto);
     }
 

@@ -88,8 +88,6 @@ public class TipoArreglo extends Tipo {
     public String toString() {
         return "["
                 + this.tipoBase
-                + " x"
-                + this.dimensiones.size()
                 + "]";
     }
 }
