@@ -423,7 +423,7 @@ public class ContextoTraduccion {
         if (estructura == null) {
             return null;
         }
-        return estructura.getAtributos().keySet();
+        return estructura.getAtributosCompletos().keySet();
     }
 
     public TipoOperando categoriaDe(String operando) {

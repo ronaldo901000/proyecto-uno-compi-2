@@ -349,7 +349,7 @@ public class AnalisisAmbitos {
                     estructura.getNombreStruct())) {
                 contexto.getEstructuras().put(
                         estructura.getNombreStruct(), estructura);
-                for (Tipo atributo : estructura.getAtributos().values()) {
+                for (Tipo atributo : estructura.getAtributosCompletos().values()) {
                     recolectarEstructuras(atributo);
                 }
             }
@@ -362,7 +362,7 @@ public class AnalisisAmbitos {
 
     private boolean dependenciasListas(TipoStructura estructura,
             Set<String> emitidas) {
-        for (Tipo atributo : estructura.getAtributos().values()) {
+        for (Tipo atributo : estructura.getAtributosCompletos().values()) {
             if (atributo instanceof TipoStructura) {
                 String nombre = ((TipoStructura) atributo).getNombreStruct();
                 if (!nombre.equals(estructura.getNombreStruct())

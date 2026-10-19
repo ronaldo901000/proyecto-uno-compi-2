@@ -151,10 +151,12 @@ public class SimboloClase extends Simbolo {
     }
 
     /**
-     * METODO ENCARGADO DE RETORNAR EL METODO DEL PADRE QUE EL HIJO INTENTA SOBREESCRIBIR
+     * METODO ENCARGADO DE RETORNAR EL METODO DEL PADRE QUE EL HIJO INTENTA
+     * SOBREESCRIBIR
+     *
      * @param nombreMetodo
      * @param params
-     * @return 
+     * @return
      */
     public SimboloFuncion buscarMetodoEnPadre(String nombreMetodo,
             List<SimboloParametro> params) {
@@ -188,7 +190,25 @@ public class SimboloClase extends Simbolo {
         return null;
     }
 
+    public String claveMetodo(SimboloFuncion metodo) {
+        return TablaSimbolos.claveFuncion(metodo.getId(), tiposDe(metodo));
+    }
+
+    public SimboloFuncion buscarMetodoPorClave(String clave) {
+        for (SimboloClase actual = this; actual != null; actual = actual.clasePadre) {
+            SimboloFuncion m = actual.metodos.get(clave);
+            if (m != null) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    
     public int getTamañoHeap() {
+        if (getTipo() instanceof TipoStructura) {
+            return ((TipoStructura) getTipo()).getTamañoHeap();
+        }
         return tamañoHeap;
     }
 

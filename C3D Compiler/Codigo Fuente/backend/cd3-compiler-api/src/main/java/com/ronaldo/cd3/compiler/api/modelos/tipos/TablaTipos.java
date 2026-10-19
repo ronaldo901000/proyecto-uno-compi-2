@@ -138,6 +138,8 @@ public class TablaTipos {
         }
         TipoStructura nueva = new TipoStructura(nombreClase, "clase_z");
         clasesZ.put(nombreClase.toLowerCase(), nueva);
+        //asigna un id, para identificar la clase en el heap
+        nueva.setIdClase(clasesZ.size());
         this.tipos.add(nueva);
         return nueva;
     }

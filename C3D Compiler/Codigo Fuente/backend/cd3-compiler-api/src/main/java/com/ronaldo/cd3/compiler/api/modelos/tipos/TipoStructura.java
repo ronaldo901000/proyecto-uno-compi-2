@@ -11,6 +11,8 @@ import java.util.Map;
 public class TipoStructura extends Tipo {
 
     private static final int TAMAÑO_REFERENCIA = 8;
+    private static final int ENCABEZADO_CLASE = 8;
+    private int idClase;
 
     private String nombreStruct;
     private String ambito;
@@ -55,29 +57,76 @@ public class TipoStructura extends Tipo {
         this.atributos.put(nombreAtributo, tipoAtributo);
     }
 
+    /**
+     * Busca el atributo en esta clase, si no esta busca en sus ancestros
+     */
     public boolean existeAtributo(String nombreAtributo) {
-        return this.atributos.containsKey(nombreAtributo);
+        return getTipoAtributo(nombreAtributo) != null;
     }
 
+    /**
+     * Busca el tipo del atributo en esta clase, si no esta, en sus ancestros
+     */
     public Tipo getTipoAtributo(String nombreAtributo) {
-        return this.atributos.get(nombreAtributo);
+        for (TipoStructura actual = this; actual != null; actual = actual.tipoPadre) {
+            Tipo tipo = actual.atributos.get(nombreAtributo);
+            if (tipo != null) {
+                return tipo;
+            }
+        }
+        return null;
     }
 
     public Map<String, Tipo> getAtributos() {
         return atributos;
     }
 
+    /**
+     * todos los atributos en el orden en que se ubican en el heap, primero los
+     * del ancestro mas lejano, luego los de cada clase hija, y al final los
+     * propios
+     */
+    public Map<String, Tipo> getAtributosCompletos() {
+        Map<String, Tipo> completos = new LinkedHashMap<>();
+        if (tipoPadre != null) {
+            completos.putAll(tipoPadre.getAtributosCompletos());
+        }
+        for (Map.Entry<String, Tipo> atributo : atributos.entrySet()) {
+            // si el hijo redeclara un nombre, se conserva la posicion del padre
+            completos.putIfAbsent(atributo.getKey(), atributo.getValue());
+        }
+        return completos;
+    }
+
+    public int getOffsetAtributo(String nombreAtributo) {
+        int offset = 0;
+        for (Map.Entry<String, Tipo> atributo : getAtributosCompletos().entrySet()) {
+            if (atributo.getKey().equals(nombreAtributo)) {
+                return offset;
+            }
+            offset += tamañoEnObjeto(atributo.getValue());
+        }
+        return -1;
+    }
+
     public int getTamañoHeap() {
         int tamaño = 0;
-        for (Tipo tipoAtributo : atributos.values()) {
-            if (tipoAtributo instanceof TipoStructura
-                    || esArregloDeStructuras(tipoAtributo)) {
-                tamaño += TAMAÑO_REFERENCIA;
-            } else {
-                tamaño += tipoAtributo.tamañoBytes();
-            }
+        for (Tipo tipoAtributo : getAtributosCompletos().values()) {
+            tamaño += tamañoEnObjeto(tipoAtributo);
         }
         return tamaño;
+    }
+
+    private int tamañoEnObjeto(Tipo tipoAtributo) {
+        if (tipoAtributo instanceof TipoStructura
+                || esArregloDeStructuras(tipoAtributo)) {
+            return TAMAÑO_REFERENCIA;
+        }
+        return tipoAtributo.tamañoBytes();
+    }
+
+    public TipoStructura getTipoPadre() {
+        return tipoPadre;
     }
 
     private boolean esArregloDeStructuras(Tipo tipo) {
@@ -125,5 +174,17 @@ public class TipoStructura extends Tipo {
 
     public boolean esClase() {
         return "clase_z".equals(ambito);
+    }
+
+    public int getIdClase() {
+        return idClase;
+    }
+
+    public void setIdClase(int idClase) {
+        this.idClase = idClase;
+    }
+
+    private int tamañoEncabezado() {
+        return esClase() ? ENCABEZADO_CLASE : 0; 
     }
 }
