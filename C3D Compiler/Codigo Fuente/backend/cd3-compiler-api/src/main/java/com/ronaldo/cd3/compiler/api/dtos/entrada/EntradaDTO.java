@@ -10,6 +10,7 @@ import java.util.List;
 public class EntradaDTO {
 
     private List<ArchivoDTO> archivos;
+    private String entradaEstandar;
 
     public List<ArchivoDTO> getArchivos() {
         return archivos;
@@ -17,6 +18,14 @@ public class EntradaDTO {
 
     public void setArchivos(List<ArchivoDTO> archivos) {
         this.archivos = archivos;
+    }
+
+    public String getEntradaEstandar() {
+        return entradaEstandar;
+    }
+
+    public void setEntradaEstandar(String entradaEstandar) {
+        this.entradaEstandar = entradaEstandar;
     }
 
 }

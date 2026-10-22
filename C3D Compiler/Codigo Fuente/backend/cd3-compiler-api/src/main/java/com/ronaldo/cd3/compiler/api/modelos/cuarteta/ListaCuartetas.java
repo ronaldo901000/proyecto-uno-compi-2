@@ -28,6 +28,7 @@ public class ListaCuartetas {
     private final Map<String, Map<String, Tipo>> arreglosDeclaradosPorUnidad;
     private final Map<String, String> dimensionesArreglo;
     private final Map<String, Tipo> tiposEstructuras;
+    private com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables;
     private String unidadActual;
     private int contadorTemporales;
     private int contadorEtiquetas;
@@ -44,9 +45,19 @@ public class ListaCuartetas {
         this.arreglosDeclaradosPorUnidad = new HashMap<>();
         this.dimensionesArreglo = new HashMap<>();
         this.tiposEstructuras = new HashMap<>();
+        this.vTables = null;
         this.unidadActual = null;
         this.contadorTemporales = 0;
         this.contadorEtiquetas = 0;
+    }
+
+    public com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables getVTables() {
+        return vTables;
+    }
+
+    public void setVTables(
+            com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables) {
+        this.vTables = vTables;
     }
 
     public String nuevoTemporal() {
@@ -120,7 +131,7 @@ public class ListaCuartetas {
                 cuarteta = new CuartetaSalto(arg1, arg2, resultado,
                         fila, columna);
                 break;
-            case IF_FALSO: case IF_VERDADERO:
+            case IF_VERDADERO:
                 cuarteta = new CuartetaCondicional(operador, arg1, arg2,
                         resultado, fila, columna);
                 break;
@@ -136,20 +147,8 @@ public class ListaCuartetas {
                 cuarteta = new CuartetaPunteroInicio(arg1, arg2, resultado,
                         fila, columna);
                 break;
-            case PUNTERO_FINAL:
-                cuarteta = new CuartetaPunteroFinal(arg1, arg2, resultado,
-                        fila, columna);
-                break;
-            case COPIAR:
-                cuarteta = new CuartetaCopiar(arg1, arg2, resultado,
-                        fila, columna);
-                break;
             case ACCESO_INDICE:
                 cuarteta = new CuartetaAccesoIndice(arg1, arg2, resultado,
-                        fila, columna);
-                break;
-            case ACCESO_ATRIBUTO:
-                cuarteta = new CuartetaAccesoAtributo(arg1, arg2, resultado,
                         fila, columna);
                 break;
             case PARAMETRO:
@@ -158,6 +157,14 @@ public class ListaCuartetas {
                 break;
             case LLAMADA:
                 cuarteta = new CuartetaLlamada(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case LLAMADA_VIRTUAL:
+                cuarteta = new CuartetaLlamadaVirtual(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case FIJAR_VTABLE:
+                cuarteta = new CuartetaFijarVtable(arg1, arg2, resultado,
                         fila, columna);
                 break;
             case RETORNO:

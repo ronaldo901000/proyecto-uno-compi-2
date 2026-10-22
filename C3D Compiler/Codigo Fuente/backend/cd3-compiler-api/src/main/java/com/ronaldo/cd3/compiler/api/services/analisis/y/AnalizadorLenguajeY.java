@@ -72,8 +72,24 @@ public class AnalizadorLenguajeY implements Analizable{
             YVisitor visitor = new YVisitor();
             ProgramaY ast = (ProgramaY) visitor.visit(arbol);
             ast.setArchivo(archivo);
+            registrarEstructuras(ast, tablaTipos);
             programas.add(ast);
 
+        }
+    }
+
+    /**
+     * Registra las estructuras de Y en la tabla de tipos de inmediato, para
+     * que el analisis de Pig (que corre antes que el semantico de Y) pueda
+     * reconocer un tipo definido por el usuario en "esto id : Tipo".
+     */
+    private void registrarEstructuras(ProgramaY programa, TablaTipos tablaTipos) {
+        if (programa.getEstructuras() == null) {
+            return;
+        }
+        for (com.ronaldo.cd3.compiler.api.modelos.estructurasY.EstructuraDef estructura
+                : programa.getEstructuras()) {
+            tablaTipos.registrarEstructura(estructura.getNombre(), "global");
         }
     }
 }

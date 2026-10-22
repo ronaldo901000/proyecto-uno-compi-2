@@ -1,6 +1,7 @@
 package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
+import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
 
 public class CuartetaEtiqueta extends Cuarteta {
 
@@ -11,7 +12,7 @@ public class CuartetaEtiqueta extends Cuarteta {
     }
 
     @Override
-    public void aCodigoC(StringBuilder sb, ContextoTraduccion ctx) {
-        ctx.linea(sb, getArg1() + ":;");
+    public void aceptar(EmisorIR emisor) {
+        emisor.emitirEtiqueta(etiqueta(emisor, getArg1()));
     }
 }

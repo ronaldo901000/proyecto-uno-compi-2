@@ -1,8 +1,7 @@
 package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
-import com.ronaldo.cd3.compiler.api.enums.TipoDato;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
 
 public class CuartetaLeer extends Cuarteta {
 
@@ -13,22 +12,7 @@ public class CuartetaLeer extends Cuarteta {
     }
 
     @Override
-    public void aCodigoC(StringBuilder sb, ContextoTraduccion ctx) {
-        String res = ctx.formatearOperando(getResultado());
-        if (res == null) {
-            ctx.linea(sb, ";");
-            return;
-        }
-        Tipo tipo = ctx.tipoDeVariableDe(res);
-        if (ctx.esDeTipo(tipo, TipoDato.DECIMAL)) {
-            ctx.linea(sb, "scanf(\"%lf\", &" + res + ");");
-        } else if (ctx.esDeTipo(tipo, TipoDato.CHAR)) {
-            ctx.linea(sb, "scanf(\" %c\", &" + res + ");");
-        } else if (ctx.esDeTipo(tipo, TipoDato.CADENA)) {
-            ctx.linea(sb, res + " = (char*)malloc(256 * sizeof(char));");
-            ctx.linea(sb, "scanf(\"%s\", " + res + ");");
-        } else {
-            ctx.linea(sb, "scanf(\"%d\", &" + res + ");");
-        }
+    public void aceptar(EmisorIR emisor) {
+        emisor.emitirLeer(direccion(emisor, getResultado()));
     }
 }

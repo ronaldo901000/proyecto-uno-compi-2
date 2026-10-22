@@ -1,0 +1,32 @@
+// Segunda subclase de Persona: permite demostrar polimorfismo
+public class Docente extends Persona {
+    private String especialidad;
+
+    public Docente(String nombre, int edad, String especialidad) {
+        this.nombre = nombre;
+        this.setEdad(edad);
+        this.especialidad = especialidad;
+    }
+
+    public Docente() {
+        this.nombre = "Sin docente";
+        this.setEdad(0);
+        this.especialidad = "Sin especialidad";
+    }
+
+    public String getEspecialidad() {
+        return this.especialidad;
+    }
+
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
+    }
+
+    @Override
+    public void mostrarDatos() {
+        println("[Docente]");
+        println("Nombre: " + this.nombre);
+        println("Edad: " + this.getEdad());
+        println("Especialidad: " + this.especialidad);
+    }
+}

@@ -1,6 +1,9 @@
 package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
+import com.ronaldo.cd3.compiler.api.enums.RolOperando;
+import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
+import com.ronaldo.cd3.compiler.api.modelos.ir.operando.Operando;
 
 /**
  * @author ronaldo
@@ -23,8 +26,6 @@ public abstract class Cuarteta {
         this.fila = fila;
         this.columna = columna;
     }
-
-    public abstract void aCodigoC(StringBuilder sb, ContextoTraduccion ctx);
 
     public OperadorCuarteta getOperador() {
         return operador;
@@ -64,6 +65,24 @@ public abstract class Cuarteta {
 
     public int getColumna() {
         return columna;
+    }
+
+    public abstract void aceptar(EmisorIR emisor);
+
+    protected Operando valor(EmisorIR emisor, String texto) {
+        return emisor.getAmbiente().resolver(texto, RolOperando.VALOR);
+    }
+
+    protected Operando direccion(EmisorIR emisor, String texto) {
+        return emisor.getAmbiente().resolver(texto, RolOperando.DIRECCION);
+    }
+
+    protected Operando etiqueta(EmisorIR emisor, String texto) {
+        return emisor.getAmbiente().resolverEtiqueta(texto);
+    }
+
+    protected Operando funcion(EmisorIR emisor, String texto) {
+        return emisor.getAmbiente().resolverFuncion(texto);
     }
 
     @Override

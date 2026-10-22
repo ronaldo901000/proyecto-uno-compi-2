@@ -37,7 +37,6 @@ public class RegistradorAtributos {
             return atributosSimbolo;
         }
 
-        int posicion = 0;
         for (Declaracion atributo : atributos) {
             Tipo tipoAtributo = tipoDeAtributo(contexto, atributo);
             if (reglas.esError(tipoAtributo)) {
@@ -52,13 +51,13 @@ public class RegistradorAtributos {
             }
 
             tipoClase.agregarAtributo(atributo.getId(), tipoAtributo);
-            
+
+            int posicion = tipoClase.getOffsetAtributo(atributo.getId());
             SimboloVariable simboloAtributo = new SimboloVariable(
                     atributo.getId(), tipoAtributo, posicion, true);
-            
+
             simboloAtributo.setModAcceso(atributo.getModAcceso());
             atributosSimbolo.put(atributo.getId(), simboloAtributo);
-            posicion += tipoAtributo.tamañoBytes();
         }
         return atributosSimbolo;
     }

@@ -1,7 +1,7 @@
 package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
-import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
 
 public class CuartetaPunteroInicio extends Cuarteta {
 
@@ -12,17 +12,8 @@ public class CuartetaPunteroInicio extends Cuarteta {
     }
 
     @Override
-    public void aCodigoC(StringBuilder sb, ContextoTraduccion ctx) {
-        String res = ctx.formatearOperando(getResultado());
-        if (res != null && ctx.contieneArregloNuevo(getResultado())) {
-            return;
-        }
-        Tipo tipoObjeto = ctx.tipoDeOperando(getResultado());
-        String tipoBaseC = (tipoObjeto != null && ctx.tipoCValido(tipoObjeto))
-                ? tipoObjeto.tipoC() : "void";
-        String asignacion = ctx.esObjetoPorReferencia(tipoObjeto)
-                ? "calloc(1, sizeof(" + tipoBaseC + "))"
-                : "malloc(sizeof(" + tipoBaseC + "))";
-        ctx.linea(sb, res + " = (" + tipoBaseC + "*)" + asignacion + ";");
+    public void aceptar(EmisorIR emisor) {
+        emisor.emitirPunteroInicio(direccion(emisor, getResultado()),
+                valor(emisor, getArg2()));
     }
 }

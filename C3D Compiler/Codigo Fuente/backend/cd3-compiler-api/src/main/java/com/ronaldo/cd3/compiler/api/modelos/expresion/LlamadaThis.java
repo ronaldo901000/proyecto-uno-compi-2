@@ -23,6 +23,18 @@ public class LlamadaThis extends Expresion implements Instruccion {
         this.llamada = llamada;
     }
 
+    public AccesoVariable getVariable() {
+        return this.variable;
+    }
+
+    public Llamada getLlamada() {
+        return this.llamada;
+    }
+
+    public boolean esMetodo() {
+        return llamada != null;
+    }
+
     @Override
     public void verificarSemantica(Contexto contexto) {
         if (esMetodo()) {
@@ -49,10 +61,6 @@ public class LlamadaThis extends Expresion implements Instruccion {
 
         return variable.generarCuartetas(contexto, cuartetas);
 
-    }
-
-    private boolean esMetodo() {
-        return llamada != null;
     }
 
 }

@@ -43,7 +43,7 @@ public class RegistradorClase {
                 tipoClase
         );
         
-        SimboloClase nuevaClase = new SimboloClase(nombre, calcularTamañoHeap(atributosSimbolo));
+        SimboloClase nuevaClase = new SimboloClase(nombre, tipoClase.getTamañoHeap());
         nuevaClase.setRutaPaquete(clase.getArchivo().getPaquete());
         nuevaClase.setTipo(tipoClase);
         
@@ -88,14 +88,6 @@ public class RegistradorClase {
                 : "Ya existe un identificador llamado '" + nombre + "'";
         contexto.agregarError(clase.getFila(), clase.getColumna(), nombre, mensaje);
         return true;
-    }
-    
-    private int calcularTamañoHeap(Map<String, SimboloVariable> atributosSimbolo) {
-        int total = 0;
-        for (SimboloVariable atributo : atributosSimbolo.values()) {
-            total += atributo.getTipo().tamañoBytes();
-        }
-        return total;
     }
     
 }

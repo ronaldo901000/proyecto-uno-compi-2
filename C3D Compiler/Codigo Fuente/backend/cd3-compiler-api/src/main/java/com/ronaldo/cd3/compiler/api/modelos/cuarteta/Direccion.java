@@ -6,6 +6,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Acceso;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.AccesoVariable;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.ExpIndice;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
+import com.ronaldo.cd3.compiler.api.modelos.expresion.LlamadaThis;
 
 /**
  *
@@ -19,6 +20,16 @@ public class Direccion {
 
         if (expresion instanceof AccesoVariable) {
             return ((AccesoVariable) expresion).getId();
+        }
+
+        // "this.atributo" se parsea como LlamadaThis(AccesoVariable). Se
+        // conserva el prefijo "this." para no confundir el atributo con un
+        // parametro/local homonimo al resolver operandos.
+        if (expresion instanceof LlamadaThis) {
+            LlamadaThis llamadaThis = (LlamadaThis) expresion;
+            if (!llamadaThis.esMetodo() && llamadaThis.getVariable() != null) {
+                return "this." + llamadaThis.getVariable().getId();
+            }
         }
 
         if (expresion instanceof Acceso) {

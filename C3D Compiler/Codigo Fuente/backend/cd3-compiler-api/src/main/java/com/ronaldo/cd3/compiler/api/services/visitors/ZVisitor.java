@@ -14,6 +14,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Literal;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Llamada;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.LlamadaThis;
+import com.ronaldo.cd3.compiler.api.modelos.expresion.LlamadaSuper;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.NewObjeto;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.NewArreglo;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Operacion;
@@ -26,6 +27,7 @@ import com.ronaldo.cd3.compiler.api.modelos.instruccion.Continuar;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Imprimir;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.IncrementoDecremento;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
+import com.ronaldo.cd3.compiler.api.modelos.instruccion.LlamadaSuperConstructor;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Retorno;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Romper;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.ciclo.CicloHacerMientras;
@@ -203,7 +205,11 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int columna = ctx.start.getCharPositionInLine();
         String nombre = ctx.ID().getText();
         List<Parametro> parametros = extraerParametros(ctx.parametros());
-        List<Instruccion> cuerpo = visitarInstrucciones(ctx.instruccion());
+        List<Instruccion> cuerpo = new ArrayList<>();
+        if (ctx.llamada_super_constructor() != null) {
+            cuerpo.add(visitLlamada_super_constructor(ctx.llamada_super_constructor()));
+        }
+        cuerpo.addAll(visitarInstrucciones(ctx.instruccion()));
         ModificadoresAcceso modAcceso = generarModAcceso(ctx.mod_acceso());
 
         return new ConstructorZ(modAcceso, nombre, parametros, cuerpo, fila, columna);
@@ -271,6 +277,9 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         if (ctx.llamada_this() != null) {
             return visitLlamada_this(ctx.llamada_this());
         }
+        if (ctx.llamada_super() != null) {
+            return visitLlamada_super(ctx.llamada_super());
+        }
         return null;
     }
 
@@ -304,6 +313,9 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         }
         if (ctx.llamada_this() != null) {
             return visitLlamada_this(ctx.llamada_this());
+        }
+        if (ctx.llamada_super() != null) {
+            return visitLlamada_super(ctx.llamada_super());
         }
         if (ctx.CORCH_A() != null) {
             Expresion arreglo = visitarLvalue(ctx.lvalue());
@@ -658,6 +670,11 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
     }
 
     @Override
+    public LlamadaSuper visitExpSuper(LenguajeZParser.ExpSuperContext ctx) {
+        return visitLlamada_super(ctx.llamada_super());
+    }
+
+    @Override
     public Llamada visitExpLlamadaEncadenada(LenguajeZParser.ExpLlamadaEncadenadaContext ctx) {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
@@ -871,6 +888,47 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
 
         return null;
 
+    }
+
+    @Override
+    public LlamadaSuper visitLlamada_super(LenguajeZParser.Llamada_superContext ctx) {
+        int fila = ctx.start.getLine();
+        int columna = ctx.start.getCharPositionInLine();
+
+        if (ctx.ID() != null) {
+
+            AccesoVariable variable = new AccesoVariable(ctx.ID().getText(), fila, columna);
+
+            return new LlamadaSuper(variable, null, fila, columna);
+
+        } else if (ctx.llamada_metodo() != null) {
+            Llamada llamada = visitLlamada_metodo(ctx.llamada_metodo());
+
+        } else if (ctx.llamada_metodo() != null) {
+            Llamada llamada = visitLlamada_metodo(ctx.llamada_metodo());
+
+            return new LlamadaSuper(null, llamada, fila, columna);
+
+        }
+
+        return null;
+
+    }
+
+    @Override
+    public LlamadaSuperConstructor visitLlamada_super_constructor(
+            LenguajeZParser.Llamada_super_constructorContext ctx) {
+        int fila = ctx.start.getLine();
+        int columna = ctx.start.getCharPositionInLine();
+
+        List<Expresion> argumentos = new ArrayList<>();
+        if (ctx.argumentos() != null) {
+            for (LenguajeZParser.ExpresionContext e : ctx.argumentos().expresion()) {
+                argumentos.add((Expresion) visit(e));
+            }
+        }
+
+        return new LlamadaSuperConstructor(argumentos, fila, columna);
     }
 
 }

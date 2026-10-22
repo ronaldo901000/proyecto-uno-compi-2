@@ -47,7 +47,7 @@ valores_iniciales
 
 /**CONSTRUCTOR**/
 constructor
-    : (mod_acceso)? ID PAR_A parametros? PAR_C LLAVE_A instruccion* LLAVE_C
+    : (mod_acceso)? ID PAR_A parametros? PAR_C LLAVE_A llamada_super_constructor? instruccion* LLAVE_C
     ;
 
 
@@ -58,6 +58,7 @@ instruccion
     | suma_resta_abrev
     | llamada_metodo
     | llamada_this
+    | llamada_super
     | llamada_metodo_objeto
     | funcion_especial
     | BREAK
@@ -78,6 +79,7 @@ asignacion
 lvalue
     : ID
     | llamada_this
+    | llamada_super
     | lvalue CORCH_A expresion CORCH_C
     | lvalue PUNTO ID
     ;
@@ -208,6 +210,7 @@ expresion
 expr_base
     : PAR_A expresion PAR_C                                 # expParentesis
     | llamada_this                                          # expThis
+    | llamada_super                                         # expSuper
     | llamada_metodo                                        # expLlamada
     | expr_base PUNTO ID                                    # expAcceso
     | expr_base PUNTO llamada_metodo                        # expLlamadaEncadenada
@@ -261,6 +264,16 @@ llamada_this
     : THIS PUNTO ( ID | llamada_metodo)
     ;
 
+//llamada a atributos o metodos super.atributo super.metodo(), super.metodo(argumento)
+llamada_super
+    : SUPER PUNTO ( ID | llamada_metodo)
+    ;
+
+//llamada al constructor de la superclase, solo puede ser la primera instruccion del constructor
+llamada_super_constructor
+    : SUPER PAR_A argumentos? PAR_C P_COMA+
+    ;
+
 /**ANALISIS LEXICO**/
 
 /**Palabras Reservadas**/
@@ -270,6 +283,7 @@ PROTECTED:  'protected';
 EXTENDS:    'extends';
 OVERRIDE:   '@Override';
 THIS:       'this';
+SUPER:      'super';
 CLASS:      'class';
 VOID:       'void';
 INT:        'int';

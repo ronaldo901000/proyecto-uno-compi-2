@@ -1,9 +1,8 @@
 package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
+import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
 
-/*
- */
 public class CuartetaRetorno extends Cuarteta {
 
     public CuartetaRetorno(String arg1, String arg2, String resultado,
@@ -12,18 +11,7 @@ public class CuartetaRetorno extends Cuarteta {
     }
 
     @Override
-    public void aCodigoC(StringBuilder sb, ContextoTraduccion ctx) {
-        if (ctx.terminoConRetorno()) {
-            return;
-        }
-        String dir = ctx.formatearOperando(getArg1());
-        if (dir != null) {
-            ctx.linea(sb, "return " + dir + ";");
-        } else if (ctx.esVoidUnidad()) {
-            ctx.linea(sb, "return;");
-        } else {
-            ctx.linea(sb, "return 0;");
-        }
-        ctx.setTerminoConRetorno(true);
+    public void aceptar(EmisorIR emisor) {
+        emisor.emitirRetorno(valor(emisor, getArg1()));
     }
 }

@@ -68,7 +68,7 @@ public class AnalizadorLenguajePig implements Analizable {
                 continue;
             }
 
-            PigVisitor visitor = new PigVisitor();
+            PigVisitor visitor = new PigVisitor(tablaTipos);
             ProgramaPig ast = (ProgramaPig) visitor.visit(arbol);
             ast.setArchivo(archivo);
             programas.add(ast);

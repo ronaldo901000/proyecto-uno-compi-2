@@ -180,6 +180,18 @@ public class DeclaracionArreglo extends Declaracion {
         Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamaños);
         cuartetas.registrarTipoVariableDeclarada(id, tipoArreglo);
 
+        // Reserva memoria en el heap para el arreglo local. Sin esto, escribir
+        // notas[i] usaria una direccion basura. Se omite si el arreglo se
+        // inicializa con una expresion externa (p.ej. x = objeto.obtenerNotas())
+        // que ya entrega un puntero valido.
+        if (tipoArreglo instanceof com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo
+                && ((com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) tipoArreglo)
+                        .getTotalElementos() > 0
+                && !tieneValorExpresionExterno()) {
+            cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, null,
+                    null, id, fila, columna);
+        }
+
         if (tieneDimension) {
             StringBuilder expr = new StringBuilder();
             for (int i = 0; i < dimensiones.size(); i++) {
@@ -208,6 +220,10 @@ public class DeclaracionArreglo extends Declaracion {
             }
         }
         return null;
+    }
+
+    private boolean tieneValorExpresionExterno() {
+        return valorExpresion != null;
     }
 
     public Expresion getValorExpresion() {

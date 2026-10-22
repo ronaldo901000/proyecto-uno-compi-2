@@ -1,6 +1,7 @@
 package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
+import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
 
 public class CuartetaCondicional extends Cuarteta {
 
@@ -10,12 +11,8 @@ public class CuartetaCondicional extends Cuarteta {
     }
 
     @Override
-    public void aCodigoC(StringBuilder sb, ContextoTraduccion ctx) {
-        String a1 = ctx.formatearOperando(getArg1());
-        if (getOperador() == OperadorCuarteta.IF_FALSO) {
-            ctx.linea(sb, "if (!(" + a1 + ")) goto " + getArg2() + ";");
-        } else {
-            ctx.linea(sb, "if (" + a1 + ") goto " + getArg2() + ";");
-        }
+    public void aceptar(EmisorIR emisor) {
+        emisor.emitirCondicional(getOperador(), valor(emisor, getArg1()),
+                etiqueta(emisor, getArg2()));
     }
 }

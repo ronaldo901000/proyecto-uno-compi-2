@@ -47,6 +47,7 @@ public class AnalizadorSemanticoPig {
         if (!contexto.hayErrores() && !respuesta.isHayErrores()) {
             
             Contexto contextoGeneracion = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
+            contextoGeneracion.setVTables(cuartetas.getVTables());
             
             cuartetas.agregarEtiqueta("main", programa.getFila(), programa.getColumna());
             programa.generarCuartetas(contextoGeneracion, cuartetas);

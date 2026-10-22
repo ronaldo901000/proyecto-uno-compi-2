@@ -105,6 +105,8 @@ public class Asignacion extends Nodo implements Instruccion {
 
         String temporal = cuartetas.nuevoTemporal();
 
+        cuartetas.registrarTipoTemporal(temporal, objetivo.getTipo());
+
         cuartetas.agregar(operadorC, dirObjetivo, dirValor,
                 temporal, fila, columna);
 

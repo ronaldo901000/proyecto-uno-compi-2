@@ -1,6 +1,7 @@
 package com.ronaldo.cd3.compiler.api.modelos.cuarteta;
 
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
+import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
 
 /**
  * Cuarteta que acumula un argumento de una llamada a funcion. Los argumentos
@@ -15,7 +16,7 @@ public class CuartetaParametro extends Cuarteta {
     }
 
     @Override
-    public void aCodigoC(StringBuilder sb, ContextoTraduccion ctx) {
-        ctx.agregarArgumentoPendiente(getArg1());
+    public void aceptar(EmisorIR emisor) {
+        emisor.emitirParametro(valor(emisor, getArg1()));
     }
 }

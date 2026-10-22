@@ -99,8 +99,9 @@ public class TipoStructura extends Tipo {
     }
 
     public int getOffsetAtributo(String nombreAtributo) {
-        int offset = 0;
+        int offset = tamañoEncabezado();
         for (Map.Entry<String, Tipo> atributo : getAtributosCompletos().entrySet()) {
+            offset = alinear(offset, atributo.getValue().alineacion());
             if (atributo.getKey().equals(nombreAtributo)) {
                 return offset;
             }
@@ -110,28 +111,32 @@ public class TipoStructura extends Tipo {
     }
 
     public int getTamañoHeap() {
-        int tamaño = 0;
+        int offset = tamañoEncabezado();
         for (Tipo tipoAtributo : getAtributosCompletos().values()) {
-            tamaño += tamañoEnObjeto(tipoAtributo);
+            offset = alinear(offset, tipoAtributo.alineacion());
+            offset += tamañoEnObjeto(tipoAtributo);
         }
-        return tamaño;
+        return alinear(offset, alineacion());
     }
 
     private int tamañoEnObjeto(Tipo tipoAtributo) {
         if (tipoAtributo instanceof TipoStructura
-                || esArregloDeStructuras(tipoAtributo)) {
+                || tipoAtributo instanceof TipoArreglo) {
             return TAMAÑO_REFERENCIA;
         }
         return tipoAtributo.tamañoBytes();
     }
 
-    public TipoStructura getTipoPadre() {
-        return tipoPadre;
+    private int alinear(int offset, int alineacion) {
+        if (alineacion <= 1) {
+            return offset;
+        }
+        int resto = offset % alineacion;
+        return (resto == 0) ? offset : offset + (alineacion - resto);
     }
 
-    private boolean esArregloDeStructuras(Tipo tipo) {
-        return tipo instanceof TipoArreglo
-                && ((TipoArreglo) tipo).getTipoBase() instanceof TipoStructura;
+    public TipoStructura getTipoPadre() {
+        return tipoPadre;
     }
 
     @Override
@@ -145,7 +150,9 @@ public class TipoStructura extends Tipo {
 
     @Override
     public boolean esPorReferencia() {
-        return true;
+        // Las clases Z son por referencia (viven en el heap). Las estructuras
+        // de Y son por valor: residen directamente en el frame.
+        return esClase();
     }
 
     @Override
@@ -156,6 +163,15 @@ public class TipoStructura extends Tipo {
     @Override
     public int tamañoBytes() {
         return getTamañoHeap();
+    }
+
+    @Override
+    public int alineacion() {
+        int alineacion = (tamañoEncabezado() > 0) ? TAMAÑO_REFERENCIA : 1;
+        for (Tipo tipoAtributo : getAtributosCompletos().values()) {
+            alineacion = Math.max(alineacion, tipoAtributo.alineacion());
+        }
+        return alineacion;
     }
 
     @Override

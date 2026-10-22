@@ -27,7 +27,7 @@ public class VerificadorContenidoMiembro {
         this.reglas = reglas;
     }
 
-    public void verificar(Contexto contexto, String nombreMiembro,
+    public int verificar(Contexto contexto, String nombreMiembro,
             List<Parametro> parametros, Tipo tipoRetorno, List<Instruccion> cuerpo) {
 
         SimboloClase simboloClase = clase.getSimboloClase();
@@ -45,9 +45,13 @@ public class VerificadorContenidoMiembro {
 
         reglas.verificarInstrucciones(contexto, cuerpo);
 
+        int tamañoFrame = contexto.getAmbito().getSiguientePosicion();
+
         contexto.setClaseActual(claseAnterior);
         contexto.setTipoRetornoActual(retornoAnterior);
         contexto.restaurarAmbito(anterior);
+
+        return tamañoFrame;
     }
 
     private void registrarParametros(Contexto contexto, List<Parametro> parametros) {

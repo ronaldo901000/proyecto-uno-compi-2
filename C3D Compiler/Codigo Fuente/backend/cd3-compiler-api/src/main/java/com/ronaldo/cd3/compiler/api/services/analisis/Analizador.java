@@ -18,9 +18,8 @@ import com.ronaldo.cd3.compiler.api.services.analisis.semantico.AnalizadorSemant
 import com.ronaldo.cd3.compiler.api.services.analisis.semantico.VerificadorImportesPig;
 import com.ronaldo.cd3.compiler.api.services.analisis.y.AnalizadorLenguajeY;
 import com.ronaldo.cd3.compiler.api.services.analisis.z.AnalizadorLenguajeZ;
-import com.ronaldo.cd3.compiler.api.services.generador.archivo.GeneradorArchivos;
+import com.ronaldo.cd3.compiler.api.services.generador.riscv.GeneradorRiscV;
 import com.ronaldo.cd3.compiler.api.services.separador.archivos.SeparadorArchivos;
-import com.ronaldo.cd3.compiler.api.services.traduccion.TraductorC;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -32,6 +31,12 @@ import java.util.Set;
  * @author ronaldo
  */
 public class Analizador {
+
+    private ListaCuartetas cuartetas;
+
+    public ListaCuartetas getCuartetas() {
+        return cuartetas;
+    }
 
     public RespuestaDTO iniciar(EntradaDTO entrada) throws EntradaException {
         RespuestaDTO respuestaDTO = new RespuestaDTO();
@@ -46,6 +51,7 @@ public class Analizador {
         TablaTipos tablaTipos = new TablaTipos();
         TablaSimbolos tablaSimbolos = TablaSimbolos.nuevoGlobal();
         ListaCuartetas cuartetas = new ListaCuartetas();
+        this.cuartetas = cuartetas;
 
         AnalizadorLenguajeY analizadorY = new AnalizadorLenguajeY();
         analizadorY.analizar(archivosY, respuestaDTO, tablaTipos, tablaSimbolos, cuartetas);
@@ -76,7 +82,7 @@ public class Analizador {
                 tablaTipos, tablaSimbolos, cuartetas, Collections.emptySet());
 
         Set<String> rutasImportadas = new LinkedHashSet<>();
-        
+
         for (ProgramaPig programa : analizadorPig.getProgramas()) {
             VerificadorImportesPig verificador = new VerificadorImportesPig();
             Contexto contextoTmp = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
@@ -86,20 +92,26 @@ public class Analizador {
         }
 
         Contexto contextoGen = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
+        com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables
+                = com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables
+                        .construir(tablaSimbolos);
+        contextoGen.setVTables(vTables);
+        cuartetas.setVTables(vTables);
+
         for (ProgramaY programa : analizadorY.getProgramas()) {
             if (rutasImportadas.contains(programa.getArchivo().getRuta())) {
                 contextoGen.setRuta(programa.getArchivo().getRuta());
                 programa.generarCuartetas(contextoGen, cuartetas);
             }
         }
-        
+
         for (ClaseZ clase : analizadorZ.getClases()) {
-            
+
             if (rutasImportadas.contains(clase.getArchivo().getRuta())) {
                 contextoGen.setRuta(clase.getArchivo().getRuta());
                 clase.generarCuartetas(contextoGen, cuartetas);
             }
-            
+
         }
 
         AnalizadorSemanticoPig analizadorSemPig = new AnalizadorSemanticoPig();
@@ -109,18 +121,9 @@ public class Analizador {
                     archivosImportables, analizadorY.getProgramas());
         }
 
-        if (!respuestaDTO.isHayErrores()
-                && cuartetas != null
-                && !cuartetas.getCuartetas().isEmpty()) {
-
-            TraductorC traductorC = new TraductorC();
-            String codigoC = traductorC.traducir(cuartetas);
-            respuestaDTO.setCodigoCGenerado(true);
-            
-            //generar el archivo .c y el ejecutable
-            GeneradorArchivos generador = new GeneradorArchivos();
-            generador.generarArchivo(codigoC);
-
+        if (!respuestaDTO.isHayErrores()) {
+            respuestaDTO.setCodigoRiscV(new GeneradorRiscV().generar(cuartetas));
+            System.out.println(respuestaDTO.getCodigoRiscV());
         }
 
         return respuestaDTO;

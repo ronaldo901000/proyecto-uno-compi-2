@@ -65,8 +65,14 @@ public class AnalizadorSemanticoZ {
 
         //Generacion de cuartetas solo para archivos importados
         if (!contexto.hayErrores() && !respuesta.isHayErrores()) {
+            com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables
+                    = com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables
+                            .construir(tablaSimbolos);
+            cuartetas.setVTables(vTables);
+
             Contexto contextoGeneracion = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);
             contextoGeneracion.setEsLenguajeZ(true);
+            contextoGeneracion.setVTables(vTables);
             for (ClaseZ clase : clases) {
                 if (rutasImportadas != null
                         && !rutasImportadas.contains(

@@ -14,10 +14,9 @@ public class RespuestaDTO {
     private boolean hayErrores;
     private List<ErrorAnalisis> errores;
     private List<Cuarteta> cuartetas;
-    private boolean codigoCGenerado;
+    private String codigoRiscV;
 
     public RespuestaDTO() {
-        codigoCGenerado = false;
         this.errores = new ArrayList<>();
         this.cuartetas = new ArrayList<>();
     }
@@ -56,12 +55,12 @@ public class RespuestaDTO {
         this.cuartetas = cuartetas;
     }
 
-    public boolean isCodigoCGenerado() {
-        return codigoCGenerado;
+    public String getCodigoRiscV() {
+        return codigoRiscV;
     }
 
-    public void setCodigoCGenerado(boolean codigoCGenerado) {
-        this.codigoCGenerado = codigoCGenerado;
+    public void setCodigoRiscV(String codigoRiscV) {
+        this.codigoRiscV = codigoRiscV;
     }
 
 }

@@ -87,6 +87,8 @@ public class InstElegir extends Nodo implements Instruccion {
                             .generarCuartetas(contexto, cuartetas);
                     
                     String temporalIgual = cuartetas.nuevoTemporal();
+                    cuartetas.registrarTipoTemporal(temporalIgual,
+                            contexto.getTablaTipos().getBooleano());
                     
                     cuartetas.agregar(OperadorCuarteta.IGUAL, dirValor,
                             dirCaso, temporalIgual, fila, columna);

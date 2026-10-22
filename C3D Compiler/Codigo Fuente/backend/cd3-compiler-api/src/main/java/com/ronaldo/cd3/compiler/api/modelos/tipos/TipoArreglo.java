@@ -80,6 +80,11 @@ public class TipoArreglo extends Tipo {
     }
 
     @Override
+    public int alineacion() {
+        return 8;
+    }
+
+    @Override
     public String tipoC() {
         return this.tipoBase.tipoC() + "*";
     }

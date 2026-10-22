@@ -43,6 +43,36 @@ import java.util.List;
  */
 public class PigVisitor extends LenguajePigBaseVisitor<Visitable> {
 
+    private final com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos tablaTipos;
+
+    public PigVisitor() {
+        this(null);
+    }
+
+    public PigVisitor(com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos tablaTipos) {
+        this.tablaTipos = tablaTipos;
+    }
+
+    /**
+     * La gramatica trata el tipo definido por el usuario en
+     * {@code esto id : Tipo} como una expresion. Si el texto del ID simple
+     * corresponde a una estructura o clase registrada, se interpreta como el
+     * tipo de la declaracion.
+     */
+    private String tipoDefinidoPorUsuario(LenguajePigParser.ExpresionContext ctx) {
+        if (tablaTipos == null || ctx == null) {
+            return null;
+        }
+        if (!(ctx instanceof LenguajePigParser.ExpIdContext)) {
+            return null;
+        }
+        String texto = ctx.getText();
+        if (tablaTipos.resolver(texto) != null) {
+            return texto;
+        }
+        return null;
+    }
+
     @Override
     public ProgramaPig visitPig(LenguajePigParser.PigContext ctx) {
         int fila = ctx.start.getLine();
@@ -171,6 +201,18 @@ public class PigVisitor extends LenguajePigBaseVisitor<Visitable> {
         }
 
         Expresion valorInicial = (inicialCtx != null) ? (Expresion) visit(inicialCtx) : null;
+
+        // Caso: "esto id : Tipo" donde Tipo es una estructura/clase definida por
+        // el usuario. La gramatica lo entrega como expresion; se reinterpreta
+        // como el tipo de una declaracion de estructura por valor.
+        if (tipoDato == null && ctx.ID().size() == 1 && inicialCtx != null) {
+            String tipoUsuario = tipoDefinidoPorUsuario(inicialCtx);
+            if (tipoUsuario != null) {
+                return new DeclaracionEstructura(null, null,
+                        tipoUsuario, nombre, fila, columna);
+            }
+        }
+
         return new DeclaracionVariable(valorInicial, tipoDato, nombre, fila, columna);
     }
 

@@ -22,5 +22,13 @@ public abstract class Tipo {
 
     public abstract int tamañoBytes();
 
+    public int alineacion() {
+        int tamaño = tamañoBytes();
+        if (tamaño <= 1) {
+            return 1;
+        }
+        return Math.min(tamaño, 8);
+    }
+
     public abstract String tipoC();
 }

@@ -45,8 +45,11 @@ public class VerificadorMetodos {
 
         verificarOverride(contexto, metodo, tipoRetorno);
 
-        verificadorCuerpo.verificar(contexto, metodo.getNombre(), metodo.getParametros(),
-                tipoRetorno, metodo.getCuerpo());
+        int tamañoFrame = verificadorCuerpo.verificar(contexto, metodo.getNombre(),
+                metodo.getParametros(), tipoRetorno, metodo.getCuerpo());
+        if (metodo.getSimbolo() != null) {
+            metodo.getSimbolo().setTamañoFrame(tamañoFrame);
+        }
 
         if (!reglas.esVoid(tipoRetorno) && !reglas.siempreRetorna(metodo.getCuerpo())) {
             contexto.agregarError(metodo.getFila(), metodo.getColumna(), metodo.getNombre(),

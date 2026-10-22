@@ -31,11 +31,15 @@ public class VerificadorConstructores {
     }
 
     private void verificarConstructor(Contexto contexto, ConstructorZ constructor) {
-        
-        verificadorCuerpo.verificar(contexto, "constructor_" + constructor.getNombre(),
+
+        int tamañoFrame = verificadorCuerpo.verificar(contexto,
+                "constructor_" + constructor.getNombre(),
                 constructor.getParametros(), contexto.getTablaTipos().getVoid(),
                 constructor.getCuerpo());
-        
+
+        if (constructor.getSimbolo() != null) {
+            constructor.getSimbolo().setTamañoFrame(tamañoFrame);
+        }
     }
 
 }

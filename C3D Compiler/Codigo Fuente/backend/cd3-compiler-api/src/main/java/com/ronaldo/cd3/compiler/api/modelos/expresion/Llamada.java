@@ -223,8 +223,8 @@ public class Llamada extends Expresion implements Instruccion {
                 ? funcion.getEtiquetaInicio() : nombreFuncion;
 
         boolean esMetodo = funcion != null && funcion.getNombreClase() != null;
+        String receptor = (dirObjetivo != null) ? dirObjetivo : "this";
         if (esMetodo) {
-            String receptor = (dirObjetivo != null) ? dirObjetivo : "this";
             cuartetas.agregar(OperadorCuarteta.PARAMETRO, receptor,
                     null, null, fila, columna);
         }
@@ -239,10 +239,53 @@ public class Llamada extends Expresion implements Instruccion {
         if (etiqueta != null) {
             cuartetas.registrarTipoFuncion(etiqueta, getTipo());
         }
-        cuartetas.agregar(OperadorCuarteta.LLAMADA, etiqueta,
-                null, temporal, fila, columna);
+
+        int slot = slotVirtual(contexto, funcion);
+        if (esMetodo && slot >= 0) {
+            // despacho dinamico: el slot decide la implementacion en runtime
+            cuartetas.agregar(OperadorCuarteta.LLAMADA_VIRTUAL, receptor,
+                    String.valueOf(slot), temporal, fila, columna);
+        } else {
+            cuartetas.agregar(OperadorCuarteta.LLAMADA, etiqueta,
+                    null, temporal, fila, columna);
+        }
 
         return temporal;
+    }
+
+    /**
+     * Posicion (slot) del metodo en la vtable de su clase. Solo aplica a
+     * metodos publicos/protegidos (virtuales). Devuelve -1 si la llamada no es
+     * virtual o no hay tabla de vtables disponible.
+     */
+    private int slotVirtual(Contexto contexto, SimboloFuncion funcion) {
+        if (funcion == null || contexto.getVTables() == null
+                || funcion.getModAcceso()
+                        == com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso.PRIVATE) {
+            return -1;
+        }
+        String clase = funcion.getNombreClase();
+        if (clase == null) {
+            return -1;
+        }
+        String firma = firmaDe(funcion);
+        return contexto.getVTables().slotDe(clase, firma);
+    }
+
+    private String firmaDe(SimboloFuncion funcion) {
+        return com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos
+                .claveFuncion(funcion.getId(), tiposDe(funcion));
+    }
+
+    private List<Tipo> tiposDe(SimboloFuncion funcion) {
+        List<Tipo> tipos = new ArrayList<>();
+        if (funcion.getParametros() != null) {
+            for (com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro p
+                    : funcion.getParametros()) {
+                tipos.add(p.getTipo());
+            }
+        }
+        return tipos;
     }
 
     private SimboloFuncion resolverFuncion(Contexto contexto) {
