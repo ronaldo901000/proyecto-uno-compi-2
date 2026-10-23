@@ -51,4 +51,6 @@ public interface EmisorIR {
     void emitirFijarVtable(Operando objeto, String nombreClase);
 
     void emitirRetorno(Operando valor);
+
+    void emitirNuevoArreglo2D(Operando destino, Operando filas, Operando columnas);
 }

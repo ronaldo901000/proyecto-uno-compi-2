@@ -34,5 +34,6 @@ public enum OperadorCuarteta {
     IMPRIMIR,
     LEER,
     PUNTERO_INICIO,
+    PUNTERO_INICIO_2D,
     ACCESO_INDICE
 }

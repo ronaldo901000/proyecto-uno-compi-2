@@ -168,4 +168,10 @@ public class EmisorDepuracion implements EmisorIR {
         sb.append('}');
         return sb.toString();
     }
+
+    @Override
+    public void emitirNuevoArreglo2D(Operando destino, Operando filas,
+            Operando columnas) {
+        registrar("PUNTERO_INICIO_2D", destino, filas, columnas);
+    }
 }

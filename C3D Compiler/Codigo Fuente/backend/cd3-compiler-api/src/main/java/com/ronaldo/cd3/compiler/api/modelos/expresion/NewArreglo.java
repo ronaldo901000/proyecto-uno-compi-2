@@ -45,26 +45,26 @@ public class NewArreglo extends Expresion implements Verificable {
             return;
         }
         List<Integer> tamaños = new ArrayList<>();
-        
+
         for (int i = 0; i < numDimensiones; i++) {
-            
+
             Expresion dimension = dimensiones.get(i);
-            
+
             dimension.verificarSemantica(contexto);
-            
+
             if (dimension.getTipo() == null
                     || dimension.getTipo().getTipoDato() != TipoDato.ENTERO) {
-                
+
                 contexto.agregarError(dimension.getFila(), dimension.getColumna(),
                         tipoBase, "La dimensión " + (i + 1) + " del arreglo "
                         + "creado con 'new' debe ser un valor entero");
                 tamaños.add(0);
                 continue;
-                
+
             }
-            
+
             Integer tamaño = reglas.constanteEntera(dimension);
-            
+
             if (tamaño != null && tamaño <= 0) {
                 contexto.agregarError(dimension.getFila(), dimension.getColumna(),
                         tipoBase, "La dimensión " + (i + 1) + " del arreglo "
@@ -72,35 +72,38 @@ public class NewArreglo extends Expresion implements Verificable {
                 tamaños.add(0);
                 continue;
             }
-            
+
             tamaños.add((tamaño != null) ? tamaño : 0);
-            
+
         }
-        
+
         Tipo base = reglas.resolverTipo(contexto, tipoBase, fila, columna);
-        
+
         if (reglas.esError(base)) {
             setTipo(contexto.getTablaTipos().getError());
             return;
         }
-        
+
         setTipo(contexto.getTablaTipos().getArreglo(base, tamaños));
     }
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         String temporalPtr = cuartetas.nuevoTemporal();
-        String dirDimension = null;
-        
-        if (dimensiones != null && !dimensiones.isEmpty()) {
-            dirDimension = dimensiones.get(0).generarCuartetas(contexto, cuartetas);
+        List<String> dirs = new ArrayList<>();
+        if (dimensiones != null) {
+            for (Expresion d : dimensiones) {
+                dirs.add(d.generarCuartetas(contexto, cuartetas));
+            }
         }
-        
-        cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, tipoBase,
-                dirDimension, temporalPtr, fila, columna);
+        if (dirs.size() == 2) {
+            cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO_2D,
+                    dirs.get(0), dirs.get(1), temporalPtr, fila, columna);
+        } else {
+            cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, tipoBase,
+                    dirs.isEmpty() ? null : dirs.get(0), temporalPtr, fila, columna);
+        }
         cuartetas.registrarTipoTemporal(temporalPtr, getTipo());
-        
         return temporalPtr;
     }
-
 }

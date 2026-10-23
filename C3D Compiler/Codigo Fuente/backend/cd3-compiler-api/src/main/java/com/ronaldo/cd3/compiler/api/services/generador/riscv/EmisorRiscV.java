@@ -26,10 +26,10 @@ import java.util.Map;
 /**
  * Emisor de ensamblador RISC-V (RV32) para el IR de Z. Traduce el modelo de
  * cuartetas a un texto .s usando una maquina de pila: cada operando nombrado
- * vive en una ranura del frame y cada operacion materializa su resultado en
- * una ranura temporal. Registros de 32 bits, punteros de 4 bytes, alineacion
- * a 4 y aritmetica entera de punto fijo (sin instrucciones flotantes) para
- * ser compatible con RARS.
+ * vive en una ranura del frame y cada operacion materializa su resultado en una
+ * ranura temporal. Registros de 32 bits, punteros de 4 bytes, alineacion a 4 y
+ * aritmetica entera de punto fijo (sin instrucciones flotantes) para ser
+ * compatible con RARS.
  */
 public class EmisorRiscV implements EmisorIR {
 
@@ -50,6 +50,7 @@ public class EmisorRiscV implements EmisorIR {
     private final Map<String, Integer> tamañosRanura = new LinkedHashMap<>();
     private final List<String> parametros = new ArrayList<>();
     private int siguienteOffset;
+    private int etiquetaNew = 0;
 
     private final List<Operando> parametrosPendientes = new ArrayList<>();
 
@@ -69,7 +70,6 @@ public class EmisorRiscV implements EmisorIR {
     // ------------------------------------------------------------------
     // Estructura de unidades
     // ------------------------------------------------------------------
-
     private void abrirUnidad(String nombre) {
         unidadEnCurso = nombre;
         unidad.setLength(0);
@@ -141,7 +141,6 @@ public class EmisorRiscV implements EmisorIR {
     // ------------------------------------------------------------------
     // Manejo de ranuras
     // ------------------------------------------------------------------
-
     private int alinear4(int valor) {
         return (valor + 3) & ~3;
     }
@@ -202,7 +201,6 @@ public class EmisorRiscV implements EmisorIR {
     // ------------------------------------------------------------------
     // Operaciones del contrato EmisorIR
     // ------------------------------------------------------------------
-
     @Override
     public AmbienteIR getAmbiente() {
         return ambiente;
@@ -318,16 +316,27 @@ public class EmisorRiscV implements EmisorIR {
         guardarValor(resultado, "t3");
     }
 
+    private boolean esCaracter(Operando operando) {
+        return operando != null && operando.getTipo() != null
+                && operando.getTipo().getTipoDato() == TipoDato.CHAR;
+    }
+
+// Convierte el valor que ya esta en a0 a cadena (deja el puntero en a0)
+    private void convertirACadena(Operando operando) {
+        if (esCadena(operando)) {
+            return;
+        }
+        if (esDecimal(operando)) {
+            linea("call z_ftoa");
+        } else if (esCaracter(operando)) {
+            linea("call z_chr");
+        } else {
+            linea("call z_itoa");
+        }
+    }
+
     private void emitirConcatena(OperadorCuarteta operador, Operando izquierda,
             Operando derecha, Operando resultado) {
-        boolean izqEsCadena = esCadena(izquierda);
-        boolean derEsCadena = esCadena(derecha);
-        boolean izqEsDecimal = esDecimal(izquierda);
-        boolean derEsDecimal = esDecimal(derecha);
-
-        // Guardar ambos operandos en la pila antes de cualquier call.
-        // Los registros t* no sobreviven a un call (z_itoa, z_concat, z_strlen).
-        // Se reservan 3 palabras: 0(sp)=izq, 4(sp)=der, 8(sp)=cadena temporal.
         cargarValor(izquierda, "t1");
         cargarValor(derecha, "t2");
         linea("addi sp, sp, -12");
@@ -335,65 +344,16 @@ public class EmisorRiscV implements EmisorIR {
         linea("sw t2, 4(sp)");
         linea("sw zero, 8(sp)");
 
-        if (izqEsCadena && derEsCadena) {
-            linea("lw t1, 0(sp)");
-            linea("lw t2, 4(sp)");
-            linea("mv a0, t1");
-            linea("mv a1, t2");
-            linea("call z_concat");
-        } else if (izqEsCadena && !derEsCadena) {
-            // Convertir der a string, luego concatenar con izq.
-            linea("lw t2, 4(sp)");
-            if (derEsDecimal) {
-                linea("mv a0, t2");
-                linea("call z_ftoa");
-            } else {
-                linea("mv a0, t2");
-                linea("call z_itoa");
-            }
-            linea("sw a0, 4(sp)");     // guardar str(der)
-            linea("lw t1, 0(sp)");
-            linea("lw a1, 4(sp)");     // a1 = str(der)
-            linea("mv a0, t1");        // a0 = izq
-            linea("call z_concat");
-        } else if (!izqEsCadena && derEsCadena) {
-            // Convertir izq a string, luego concatenar con der.
-            linea("lw t1, 0(sp)");
-            if (izqEsDecimal) {
-                linea("mv a0, t1");
-                linea("call z_ftoa");
-            } else {
-                linea("mv a0, t1");
-                linea("call z_itoa");
-            }
-            linea("sw a0, 8(sp)");     // guardar str(izq) en la tercera palabra
-            linea("lw t2, 4(sp)");
-            linea("lw a0, 8(sp)");     // a0 = str(izq)
-            linea("mv a1, t2");        // a1 = der
-            linea("call z_concat");
-        } else {
-            // Ninguno es string: convertir ambos a string y concatenar.
-            linea("lw t1, 0(sp)");
-            if (izqEsDecimal) {
-                linea("mv a0, t1");
-                linea("call z_ftoa");
-            } else {
-                linea("mv a0, t1");
-                linea("call z_itoa");
-            }
-            linea("sw a0, 8(sp)");     // guardar str(izq)
-            linea("lw t2, 4(sp)");
-            if (derEsDecimal) {
-                linea("mv a0, t2");
-                linea("call z_ftoa");
-            } else {
-                linea("mv a0, t2");
-                linea("call z_itoa");
-            }
-            linea("mv a1, a0");        // a1 = str(der)
-            linea("lw a0, 8(sp)");     // a0 = str(izq)
-            linea("call z_concat");
-        }
+        linea("lw a0, 0(sp)");
+        convertirACadena(izquierda);
+        linea("sw a0, 8(sp)");        // str(izq)
+
+        linea("lw a0, 4(sp)");
+        convertirACadena(derecha);
+        linea("mv a1, a0");           // a1 = str(der)
+        linea("lw a0, 8(sp)");        // a0 = str(izq)
+        linea("call z_concat");
+
         linea("addi sp, sp, 12");
         guardarValor(resultado, "a0");
     }
@@ -590,8 +550,25 @@ public class EmisorRiscV implements EmisorIR {
     @Override
     public void emitirPunteroInicio(Operando destino, Operando cantidad) {
         asegurarUnidad();
+
+        // Arreglo 1D con tamaño NO constante: calcular bytes en tiempo de ejecución
+        if (destino != null && destino.getTipo() instanceof TipoArreglo
+                && cantidad != null && !(cantidad instanceof OperandoLiteral)) {
+            Tipo base = ((TipoArreglo) destino.getTipo()).getTipoBase();
+            int tamañoBase = (base instanceof TipoStructura || base instanceof TipoArreglo)
+                    ? 4
+                    : Math.max(1, base.tamañoBytes());
+            cargarValor(cantidad, "t1");
+            linea("li t2, " + tamañoBase);
+            linea("mul a0, t1, t2");
+            linea("addi a0, a0, 3");      // alinear a 4
+            linea("andi a0, a0, -4");
+            linea("call z_alloc");
+            guardarValor(destino, "a0");
+            return;
+        }
+
         int bytes = bytesDeObjeto(destino, cantidad);
-        // z_alloc de RARS: a0 = tamaño, retorna a0 = puntero.
         linea("li a0, " + bytes);
         linea("call z_alloc");
         guardarValor(destino, "a0");
@@ -630,13 +607,17 @@ public class EmisorRiscV implements EmisorIR {
         for (int i = 0; i < total; i++) {
             Operando argumento = parametrosPendientes.get(i);
             if (esStructPorValor(argumento)) {
-                linea("addi a" + i + ", fp, " + offset(argumento));
+                if (argumento instanceof OperandoParametro) {
+                    cargarValor(argumento, "a" + i);
+                } else {
+                    linea("addi a" + i + ", fp, " + offset(argumento));
+                }
             } else {
-                // Coerción: si el parámetro es flotante y el argumento es entero, promover.
+
                 boolean promover = false;
                 if (funcion != null && funcion.getTexto() != null) {
-                    List<SimboloParametro> params =
-                            cuartetas.parametrosDeFuncion(funcion.getTexto());
+                    List<SimboloParametro> params
+                            = cuartetas.parametrosDeFuncion(funcion.getTexto());
                     if (params != null && i < params.size()) {
                         SimboloParametro param = params.get(i);
                         if (param.getTipo() != null
@@ -788,7 +769,6 @@ public class EmisorRiscV implements EmisorIR {
     // ------------------------------------------------------------------
     // Carga y almacenamiento de operandos
     // ------------------------------------------------------------------
-
     private void cargarValor(Operando operando, String registro) {
         if (operando == null) {
             return;
@@ -831,8 +811,17 @@ public class EmisorRiscV implements EmisorIR {
         }
         if (operando instanceof OperandoIndice) {
             OperandoIndice indice = (OperandoIndice) operando;
+            Operando base = indice.getBase();
+            if (base instanceof OperandoIndice) {
+                cargarPunteroDeFila((OperandoIndice) base, registro);
+            } else {
+                cargarValor(base, registro);
+            }
+            linea("addi sp, sp, -4");
+            linea("sw " + registro + ", 0(sp)");
             cargarValor(indice.getIndice(), "t2");
-            cargarValor(indice.getBase(), registro);
+            linea("lw " + registro + ", 0(sp)");
+            linea("addi sp, sp, 4");
             int tamaño = tamañoElementoIndice(indice);
             linea("li t4, " + tamaño);
             linea("mul t2, t2, t4");
@@ -902,7 +891,6 @@ public class EmisorRiscV implements EmisorIR {
     // ------------------------------------------------------------------
     // Utilidades
     // ------------------------------------------------------------------
-
     private void linea(String instruccion) {
         unidad.append("    ").append(instruccion).append("\n");
     }
@@ -1063,5 +1051,70 @@ public class EmisorRiscV implements EmisorIR {
                 return 0;
             }
         }
+    }
+
+    @Override
+    public void emitirNuevoArreglo2D(Operando destino, Operando filas, Operando columnas) {
+        asegurarUnidad();
+        int tam = tamañoBaseHoja(destino.getTipo());
+        int n = etiquetaNew++;
+        cargarValor(filas, "t1");
+        cargarValor(columnas, "t2");
+        linea("addi sp, sp, -16");
+        linea("sw t1, 0(sp)");
+        linea("sw t2, 4(sp)");
+        linea("slli a0, t1, 2");
+        linea("call z_alloc");
+        linea("sw a0, 8(sp)");
+        linea("sw zero, 12(sp)");
+        unidad.append("Lnew_" + n + "_loop:\n");
+        linea("lw t0, 12(sp)");
+        linea("lw t1, 0(sp)");
+        linea("bge t0, t1, Lnew_" + n + "_fin");
+        linea("lw a0, 4(sp)");
+        linea("li t2, " + tam);
+        linea("mul a0, a0, t2");
+        linea("addi a0, a0, 3");
+        linea("andi a0, a0, -4");
+        linea("call z_alloc");
+        linea("lw t3, 8(sp)");
+        linea("lw t0, 12(sp)");
+        linea("slli t4, t0, 2");
+        linea("add t3, t3, t4");
+        linea("sw a0, 0(t3)");
+        linea("addi t0, t0, 1");
+        linea("sw t0, 12(sp)");
+        linea("j Lnew_" + n + "_loop");
+        unidad.append("Lnew_" + n + "_fin:\n");
+        linea("lw a0, 8(sp)");
+        linea("addi sp, sp, 16");
+        guardarValor(destino, "a0");
+    }
+
+    private int tamañoBaseHoja(Tipo t) {
+        while (t instanceof TipoArreglo) {
+            t = ((TipoArreglo) t).getTipoBase();
+        }
+        if (t instanceof TipoStructura) {
+            return 4;
+        }
+        return (t != null && t.tamañoBytes() <= 1) ? 1 : 4;
+    }
+
+    private void cargarPunteroDeFila(OperandoIndice fila, String registro) {
+        Operando base = fila.getBase();
+        if (base instanceof OperandoIndice) {
+            cargarPunteroDeFila((OperandoIndice) base, registro);
+        } else {
+            cargarValor(base, registro);
+        }
+        linea("addi sp, sp, -4");
+        linea("sw " + registro + ", 0(sp)");
+        cargarValor(fila.getIndice(), "t2");
+        linea("lw " + registro + ", 0(sp)");
+        linea("addi sp, sp, 4");
+        linea("slli t2, t2, 2");
+        linea("add " + registro + ", " + registro + ", t2");
+        linea("lw " + registro + ", 0(" + registro + ")");
     }
 }

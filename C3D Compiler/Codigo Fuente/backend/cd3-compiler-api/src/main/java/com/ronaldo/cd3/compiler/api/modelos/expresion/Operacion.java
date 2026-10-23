@@ -55,28 +55,32 @@ public class Operacion extends Expresion implements Verificable {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
-        
+
         if (izquierda != null) {
             izquierda.verificarSemantica(contexto);
         }
-        
+
         if (derecha != null) {
             derecha.verificarSemantica(contexto);
         }
-        
+
         TablaTipos tablaTipos = contexto.getTablaTipos();
-        
+
         Tipo iz = (izquierda != null) ? izquierda.getTipo() : null;
         Tipo der = (derecha != null) ? derecha.getTipo() : null;
-        
+
         if (reglas.esError(iz) || reglas.esError(der)) {
             setTipo(tablaTipos.getError());
             return;
         }
-        
+
         switch (operador) {
             case SUMA:
                 if (reglas.esCadena(iz) && reglas.esCompatibleConString(der)) {
+                    setTipo(tablaTipos.getCadena());
+                    return;
+                }
+                if (reglas.esCompatibleConString(iz) && reglas.esCadena(der)) {
                     setTipo(tablaTipos.getCadena());
                     return;
                 }
@@ -85,7 +89,7 @@ public class Operacion extends Expresion implements Verificable {
                     return;
                 }
                 break;
-                
+
             case RESTA:
             case MULTIPLICACION:
             case DIVISION:
@@ -93,10 +97,9 @@ public class Operacion extends Expresion implements Verificable {
                     setTipo(reglas.numeroResultado(tablaTipos, iz, der));
                     return;
                 }
-                //verificar divisiones entre cero
-                
+
                 break;
-                
+
             case MODULO:
                 if (iz != null && iz.getTipoDato() == TipoDato.ENTERO
                         && der != null && der.getTipoDato() == TipoDato.ENTERO) {
@@ -104,17 +107,21 @@ public class Operacion extends Expresion implements Verificable {
                     return;
                 }
                 break;
-                
+
             case MENOR:
             case MENOR_IGUAL:
             case MAYOR:
             case MAYOR_IGUAL:
-                if (reglas.esNumerico(iz) && reglas.esNumerico(der)) {
+                boolean izOrdenable = reglas.esNumerico(iz) || esCaracter(iz);
+                boolean derOrdenable = reglas.esNumerico(der) || esCaracter(der);
+                boolean ambosChar = esCaracter(iz) && esCaracter(der);
+                boolean ambosNumericos = reglas.esNumerico(iz) && reglas.esNumerico(der);
+                if (izOrdenable && derOrdenable && (ambosChar || ambosNumericos)) {
                     setTipo(tablaTipos.getBooleano());
                     return;
                 }
                 break;
-                
+
             case IGUAL:
             case DISTINTO:
                 if (reglas.comparables(iz, der)) {
@@ -122,7 +129,7 @@ public class Operacion extends Expresion implements Verificable {
                     return;
                 }
                 break;
-                
+
             case AND:
             case OR:
                 if (reglas.esBooleano(iz) && reglas.esBooleano(der)) {
@@ -136,41 +143,40 @@ public class Operacion extends Expresion implements Verificable {
         //agregar error a la lista de errores semanticos
         contexto.agregarError(fila, columna, String.valueOf(operador),
                 "Tipos incompatibles en la operación '" + operador + "'");
-        
+
         setTipo(tablaTipos.getError());
     }
 
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
-        
+
         //generar operando izquierdo 
         String dirIzquierda = (izquierda != null)
                 ? izquierda.generarCuartetas(contexto, cuartetas)
                 : null;
-        
+
         //generar operando derecho
         String dirDerecha = (derecha != null)
                 ? derecha.generarCuartetas(contexto, cuartetas)
                 : null;
-        
+
         //generar operador
         OperadorCuarteta operadorC = operadorDeCuarteta(operador);
-        
+
         //pedir el nombre del temporal
         String idTemporal = cuartetas.nuevoTemporal();
-        
+
         //agregar la nueva cuarteta a la lista
         cuartetas.agregar(operadorC, dirIzquierda, dirDerecha,
                 idTemporal, fila, columna);
-        
+
         //registrar el tipo del temporal
         cuartetas.registrarTipoTemporal(idTemporal, getTipo());
-        
+
         //retornar el id del temporal
         return idTemporal;
     }
 
-    
     private OperadorCuarteta operadorDeCuarteta(Operador operador) {
         switch (operador) {
             case SUMA:
@@ -204,4 +210,7 @@ public class Operacion extends Expresion implements Verificable {
         }
     }
 
+    private boolean esCaracter(Tipo tipo) {
+        return tipo != null && tipo.getTipoDato() == TipoDato.CHAR;
+    }
 }

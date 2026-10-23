@@ -97,29 +97,38 @@ public class ListaCuartetas {
                 cuarteta = new CuartetaAsignacion(arg1, arg2, resultado,
                         fila, columna);
                 break;
-            case SUMA: case RESTA: case MULTIPLICACION:
-            case DIVISION: case MODULO:
+            case SUMA:
+            case RESTA:
+            case MULTIPLICACION:
+            case DIVISION:
+            case MODULO:
                 cuarteta = new CuartetaAritmetica(operador, arg1, arg2,
                         resultado, fila, columna);
                 break;
-            case MENOR_Q: case MENOR_EQ_Q:
-            case MAYOR_Q: case MAYOR_EQ_Q:
+            case MENOR_Q:
+            case MENOR_EQ_Q:
+            case MAYOR_Q:
+            case MAYOR_EQ_Q:
                 cuarteta = new CuartetaComparacion(operador, arg1, arg2,
                         resultado, fila, columna);
                 break;
-            case IGUAL: case DISTINTO:
+            case IGUAL:
+            case DISTINTO:
                 cuarteta = new CuartetaIgualdad(operador, arg1, arg2,
                         resultado, fila, columna);
                 break;
-            case AND: case OR:
+            case AND:
+            case OR:
                 cuarteta = new CuartetaLogicaBinaria(operador, arg1, arg2,
                         resultado, fila, columna);
                 break;
-            case NEGATIVO_UNARIO: case NOT:
+            case NEGATIVO_UNARIO:
+            case NOT:
                 cuarteta = new CuartetaNegacion(operador, arg1, arg2,
                         resultado, fila, columna);
                 break;
-            case INCREMENTO: case DECREMENTO:
+            case INCREMENTO:
+            case DECREMENTO:
                 cuarteta = new CuartetaIncrementoDecremento(operador, arg1,
                         arg2, resultado, fila, columna);
                 break;
@@ -145,6 +154,10 @@ public class ListaCuartetas {
                 break;
             case PUNTERO_INICIO:
                 cuarteta = new CuartetaPunteroInicio(arg1, arg2, resultado,
+                        fila, columna);
+                break;
+            case PUNTERO_INICIO_2D:
+                cuarteta = new CuartetaPunteroInicio2D(arg1, arg2, resultado,
                         fila, columna);
                 break;
             case ACCESO_INDICE:
@@ -188,7 +201,6 @@ public class ListaCuartetas {
         this.agregar(OperadorCuarteta.ETIQUETA, etiqueta, null, null, fila, columna);
         this.actualizarUnidadActual(etiqueta);
     }
-
 
     private void actualizarUnidadActual(String etiqueta) {
         if (etiqueta != null
@@ -236,7 +248,6 @@ public class ListaCuartetas {
             this.tiposVariables.put(nombre, tipo);
         }
     }
-
 
     public void registrarTipoVariableDeclarada(String nombre, Tipo tipo) {
         this.registrarTipoVariable(nombre, tipo);

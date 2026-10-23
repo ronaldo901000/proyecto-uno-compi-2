@@ -115,17 +115,34 @@ public class ResolutorOperandos {
     }
 
     private Operando resolverIndice(String texto, RolOperando rol) {
-        int corchete = texto.indexOf('[');
-        String textoBase = texto.substring(0, corchete);
-        String textoIndice = primerIndice(texto, corchete);
+        int fin = texto.length() - 1;        
+        int prof = 0, ini = -1;
+        for (int i = fin; i >= 0; i--) {
+            char c = texto.charAt(i);
+            if (c == ']') {
+                prof++;
+            } else if (c == '[') {
+                prof--;
+                if (prof == 0) {
+                    ini = i;
+                    break;
+                }
+            }
+        }
+        String textoBase = texto.substring(0, ini);
+        String textoIndice = texto.substring(ini + 1, fin);
         Operando base = resolver(textoBase, RolOperando.VALOR);
-        Operando indice = (textoIndice != null)
-                ? resolver(textoIndice, RolOperando.VALOR)
-                : null;
-        Tipo tipoElemento = tipoElemento(textoBase);
+        Operando indice = resolver(textoIndice, RolOperando.VALOR);
+
+        Tipo tipoElemento;
+        if (textoBase.indexOf('[') >= 0) {         
+            Tipo t = base.getTipo();
+            tipoElemento = (t instanceof TipoArreglo) ? ((TipoArreglo) t).getTipoBase() : t;
+        } else {
+            tipoElemento = tipoElemento(textoBase);
+        }
         int tamañoElemento = (tipoElemento != null) ? tipoElemento.tamañoBytes() : 0;
-        return new OperandoIndice(texto, tipoElemento, rol, base, indice,
-                tamañoElemento);
+        return new OperandoIndice(texto, tipoElemento, rol, base, indice, tamañoElemento);
     }
 
     private Operando resolverAtributo(String texto, RolOperando rol, int corte) {
@@ -176,6 +193,7 @@ public class ResolutorOperandos {
 
     private int posicionCorte(String texto) {
         int profundidad = 0;
+        int ultimo = -1;
         for (int i = 0; i < texto.length(); i++) {
             char c = texto.charAt(i);
             if (c == '[') {
@@ -184,15 +202,14 @@ public class ResolutorOperandos {
                 profundidad--;
             } else if (profundidad == 0) {
                 if (c == '.') {
-                    return i;
-                }
-                if (c == '-' && i + 1 < texto.length()
+                    ultimo = i;
+                } else if (c == '-' && i + 1 < texto.length()
                         && texto.charAt(i + 1) == '>') {
-                    return i;
+                    ultimo = i;
                 }
             }
         }
-        return -1;
+        return ultimo;
     }
 
     private String primerIndice(String texto, int corchete) {
