@@ -10,8 +10,8 @@ import java.util.Map;
  */
 public class TipoStructura extends Tipo {
 
-    private static final int TAMAÑO_REFERENCIA = 8;
-    private static final int ENCABEZADO_CLASE = 8;
+    private static final int TAMAÑO_REFERENCIA = 4;
+    private static final int ENCABEZADO_CLASE = 4;
     private int idClase;
 
     private String nombreStruct;
@@ -101,7 +101,7 @@ public class TipoStructura extends Tipo {
     public int getOffsetAtributo(String nombreAtributo) {
         int offset = tamañoEncabezado();
         for (Map.Entry<String, Tipo> atributo : getAtributosCompletos().entrySet()) {
-            offset = alinear(offset, atributo.getValue().alineacion());
+            offset = alinear(offset, alineacionEnObjeto(atributo.getValue()));
             if (atributo.getKey().equals(nombreAtributo)) {
                 return offset;
             }
@@ -113,7 +113,7 @@ public class TipoStructura extends Tipo {
     public int getTamañoHeap() {
         int offset = tamañoEncabezado();
         for (Tipo tipoAtributo : getAtributosCompletos().values()) {
-            offset = alinear(offset, tipoAtributo.alineacion());
+            offset = alinear(offset, alineacionEnObjeto(tipoAtributo));
             offset += tamañoEnObjeto(tipoAtributo);
         }
         return alinear(offset, alineacion());
@@ -169,9 +169,17 @@ public class TipoStructura extends Tipo {
     public int alineacion() {
         int alineacion = (tamañoEncabezado() > 0) ? TAMAÑO_REFERENCIA : 1;
         for (Tipo tipoAtributo : getAtributosCompletos().values()) {
-            alineacion = Math.max(alineacion, tipoAtributo.alineacion());
+            alineacion = Math.max(alineacion, alineacionEnObjeto(tipoAtributo));
         }
         return alineacion;
+    }
+
+    private int alineacionEnObjeto(Tipo tipoAtributo) {
+        if (tipoAtributo instanceof TipoStructura
+                || tipoAtributo instanceof TipoArreglo) {
+            return TAMAÑO_REFERENCIA;
+        }
+        return tipoAtributo.alineacion();
     }
 
     @Override
@@ -201,6 +209,6 @@ public class TipoStructura extends Tipo {
     }
 
     private int tamañoEncabezado() {
-        return esClase() ? ENCABEZADO_CLASE : 0; 
+        return esClase() ? ENCABEZADO_CLASE : 0;
     }
 }

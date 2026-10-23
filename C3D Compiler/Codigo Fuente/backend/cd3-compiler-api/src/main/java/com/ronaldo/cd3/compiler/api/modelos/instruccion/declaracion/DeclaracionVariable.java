@@ -35,6 +35,17 @@ public class DeclaracionVariable extends Declaracion {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
+        if (valorInicial instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
+            // leer() polimorfico: el tipo se toma del tipo declarado
+            Tipo tipoDecl = null;
+            if (tipoDato != null) {
+                tipoDecl = reglas.resolverTipo(contexto, tipoDato, fila, columna);
+            }
+            if (tipoDecl != null && !reglas.esError(tipoDecl)) {
+                ((com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) valorInicial)
+                        .setTipoEsperado(tipoDecl);
+            }
+        }
         if (valorInicial != null) {
             valorInicial.verificarSemantica(contexto);
         }
@@ -71,7 +82,11 @@ public class DeclaracionVariable extends Declaracion {
             cuartetas.registrarTipoArregloDeclarado(id,
                     ((com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) tipo).getTipoBase());
         }
-        if (valorInicial != null) {
+        if (valorInicial instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
+            // leer() es polimorfico: emitir LEER con la variable destino directamente
+            cuartetas.agregar(OperadorCuarteta.LEER, null, null,
+                    id, fila, columna);
+        } else if (valorInicial != null) {
             String dirValor = valorInicial.generarCuartetas(contexto, cuartetas);
             cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirValor,
                     null, id, fila, columna);

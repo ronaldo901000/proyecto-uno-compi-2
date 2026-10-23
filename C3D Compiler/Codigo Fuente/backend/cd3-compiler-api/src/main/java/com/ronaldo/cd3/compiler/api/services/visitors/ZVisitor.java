@@ -308,24 +308,22 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int fila = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
 
+        // alternativas recursivas: lvalue [expr]  |  lvalue . ID
+        if (ctx.lvalue() != null) {
+            Expresion base = visitarLvalue(ctx.lvalue());
+            if (ctx.CORCH_A() != null) {
+                Expresion indice = (Expresion) visit(ctx.expresion());
+                return new ExpIndice(base, indice, fila, columna);
+            }
+            return new Acceso(base, ctx.ID().getText(), fila, columna);
+        }
         if (ctx.ID() != null) {
             return new AccesoVariable(ctx.ID().getText(), fila, columna);
         }
         if (ctx.llamada_this() != null) {
             return visitLlamada_this(ctx.llamada_this());
         }
-        if (ctx.llamada_super() != null) {
-            return visitLlamada_super(ctx.llamada_super());
-        }
-        if (ctx.CORCH_A() != null) {
-            Expresion arreglo = visitarLvalue(ctx.lvalue());
-            Expresion indice = (Expresion) visit(ctx.expresion());
-            return new ExpIndice(arreglo, indice, fila, columna);
-        }
-
-        Expresion objeto = visitarLvalue(ctx.lvalue());
-        String atributo = ctx.ID().getText();
-        return new Acceso(objeto, atributo, fila, columna);
+        return visitLlamada_super(ctx.llamada_super());
     }
 
     @Override
@@ -896,23 +894,16 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int columna = ctx.start.getCharPositionInLine();
 
         if (ctx.ID() != null) {
-
             AccesoVariable variable = new AccesoVariable(ctx.ID().getText(), fila, columna);
-
             return new LlamadaSuper(variable, null, fila, columna);
+        }
 
-        } else if (ctx.llamada_metodo() != null) {
+        if (ctx.llamada_metodo() != null) {
             Llamada llamada = visitLlamada_metodo(ctx.llamada_metodo());
-
-        } else if (ctx.llamada_metodo() != null) {
-            Llamada llamada = visitLlamada_metodo(ctx.llamada_metodo());
-
             return new LlamadaSuper(null, llamada, fila, columna);
-
         }
 
         return null;
-
     }
 
     @Override

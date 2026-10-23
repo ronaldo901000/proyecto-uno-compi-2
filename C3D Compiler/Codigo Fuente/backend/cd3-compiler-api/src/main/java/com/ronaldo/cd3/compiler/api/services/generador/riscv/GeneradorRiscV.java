@@ -8,11 +8,10 @@ import com.ronaldo.cd3.compiler.api.modelos.ir.MotorIR;
 import com.ronaldo.cd3.compiler.api.modelos.ir.PoolLiterales;
 import com.ronaldo.cd3.compiler.api.modelos.vtable.EntradaVTable;
 import com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -21,9 +20,8 @@ import java.util.regex.Pattern;
  * pool), .text (con un punto de entrada main) y las rutinas de soporte de
  * {@link RuntimeRiscV}.
  *
- * <p>Las vTables se generan con direcciones numericas (no nombres de etiqueta)
- * para ser compatibles con ensambladores como Venus que no resuelven
- * etiquetas en directivas {@code .word}.
+ * <p>Las vTables se generan con etiquetas de métodos (no direcciones numéricas)
+ * solo para las clases cuyos métodos se generan en el cuerpo.
  */
 public class GeneradorRiscV {
 
@@ -41,22 +39,17 @@ public class GeneradorRiscV {
         motor.recorrer(emisor);
         emisor.finalizar();
 
-        // Seccion .data con strings y literales del pool (sin vTables todavia).
+        // Sección .data con strings y literales del pool (sin vTables todavía).
         String seccionDatos = seccionDatos(motor.getAmbiente().getPoolLiterales());
-        int tamanioDatos = tamanioEnBytes(seccionDatos);
 
         // Cuerpo .text (sin vTables, que van en .data).
         String cuerpo = generarCuerpo(emisor, cuartetas);
 
-        // Escanear etiquetas del cuerpo para calcular sus direcciones.
-        // .text empieza despues de .data (strings + vTables). El tamaño de
-        // vTables se conoce de antemano (entrada x 4 bytes + alineacion).
-        int tamanioVTables = tamanioVTables(cuartetas);
-        int direccionInicioTexto = BASE_MEMORIA + tamanioDatos + tamanioVTables;
-        Map<String, Integer> direccionesEtiquetas = escanearEtiquetas(cuerpo, direccionInicioTexto);
+        // Extraer nombres de clase cuyos métodos se generan en el cuerpo.
+        Set<String> clasesConMetodos = extraerClasesConMetodos(cuerpo);
 
-        // Seccion .data con vTables usando direcciones numericas.
-        String seccionVTables = seccionVTables(cuartetas, direccionesEtiquetas);
+        // Sección .data con vTables usando etiquetas de métodos, solo para clases con métodos.
+        String seccionVTables = seccionVTables(cuartetas, clasesConMetodos);
 
         // Ensamblar salida final.
         StringBuilder codigo = new StringBuilder();
@@ -75,14 +68,13 @@ public class GeneradorRiscV {
         }
         codigo.append("    call z_exit\n\n");
         codigo.append(cuerpo);
-        codigo.append("    j z_exit\n\n");
         RuntimeRiscV runtime = new RuntimeRiscV();
         codigo.append(runtime.codigo());
         return codigo.toString();
     }
 
     /**
-     * Genera el cuerpo .text (sin seccion .data ni vTables).
+     * Genera el cuerpo .text (sin sección .data ni vTables).
      */
     private String generarCuerpo(EmisorRiscV emisor, ListaCuartetas cuartetas) {
         StringBuilder sb = new StringBuilder();
@@ -148,51 +140,6 @@ public class GeneradorRiscV {
         return tamanio;
     }
 
-    /**
-     * Calcula el tamaño en bytes que ocuparán las vTables en .data.
-     */
-    private int tamanioVTables(ListaCuartetas cuartetas) {
-        TablaVTables vTables = (cuartetas != null) ? cuartetas.getVTables() : null;
-        if (vTables == null || vTables.getVTables().isEmpty()) {
-            return 0;
-        }
-        int total = 0;
-        for (List<EntradaVTable> tabla : vTables.getVTables().values()) {
-            if (tabla == null || tabla.isEmpty()) {
-                continue;
-            }
-            // .align 2 (alineación a 4) - el padding es a lo sumo 3 bytes.
-            total += 3;
-            // Etiqueta (__vtable_xxx:) - no ocupa bytes.
-            // Cada entrada = 1 palabra = 4 bytes.
-            total += tabla.size() * 4;
-        }
-        return total;
-    }
-
-    /**
-     * Escanea el cuerpo .text y mapea cada etiqueta a su dirección de memoria.
-     * La dirección empieza en {@code direccionInicio} y cada instrucción ocupa 4 bytes.
-     */
-    private Map<String, Integer> escanearEtiquetas(String cuerpo, int direccionInicio) {
-        Map<String, Integer> direcciones = new LinkedHashMap<>();
-        int direccion = direccionInicio;
-        for (String linea : cuerpo.split("\n")) {
-            String s = linea.trim();
-            if (s.isEmpty() || s.startsWith("#")) {
-                continue;
-            }
-            if (s.endsWith(":") && !s.startsWith(".")) {
-                String nombre = s.substring(0, s.length() - 1).trim();
-                direcciones.putIfAbsent(nombre, direccion);
-                continue;
-            }
-            // Es una instrucción: 4 bytes.
-            direccion += 4;
-        }
-        return direcciones;
-    }
-
     private String seccionDatos(PoolLiterales pool) {
         StringBuilder datos = new StringBuilder();
         datos.append(".data\n");
@@ -201,9 +148,11 @@ public class GeneradorRiscV {
                 datos.append(".align 2\n");
                 datos.append(entrada.getEtiqueta()).append(": ");
                 if (esCadena(entrada)) {
-                    datos.append(".asciiz ").append(entrada.getValor());
+                    datos.append(".asciz ").append(entrada.getValor());
                 } else {
-                    datos.append(".word ").append((int) Double.parseDouble(entrada.getValor()));
+                    double val = Double.parseDouble(entrada.getValor());
+                    int scaled = (int) Math.round(val * 1000.0);
+                    datos.append(".word ").append(scaled);
                 }
                 datos.append("\n");
             }
@@ -212,9 +161,11 @@ public class GeneradorRiscV {
     }
 
     /**
-     * Genera la sección de vTables usando direcciones numéricas resueltas.
+     * Genera la sección de vTables usando etiquetas de métodos
+     * (no direcciones numéricas) para que Venus/RARS las resuelvan.
+     * Solo emite vtables para clases cuyos métodos se generan en el cuerpo.
      */
-    private String seccionVTables(ListaCuartetas cuartetas, Map<String, Integer> direcciones) {
+    private String seccionVTables(ListaCuartetas cuartetas, Set<String> clasesConMetodos) {
         TablaVTables vTables = (cuartetas != null) ? cuartetas.getVTables() : null;
         if (vTables == null || vTables.getVTables().isEmpty()) {
             return "";
@@ -222,6 +173,10 @@ public class GeneradorRiscV {
         StringBuilder datos = new StringBuilder();
         for (Map.Entry<String, List<EntradaVTable>> entrada
                 : vTables.getVTables().entrySet()) {
+            // Solo emitir vtable para clases cuyos métodos se generan
+            if (!clasesConMetodos.contains(entrada.getKey())) {
+                continue;
+            }
             List<EntradaVTable> tabla = entrada.getValue();
             if (tabla == null || tabla.isEmpty()) {
                 continue;
@@ -230,15 +185,32 @@ public class GeneradorRiscV {
             datos.append("__vtable_").append(entrada.getKey()).append(":\n");
             for (EntradaVTable entradaVTable : tabla) {
                 String etiqueta = entradaVTable.getEtiquetaImplementacion();
-                Integer dir = direcciones.get(etiqueta);
-                if (dir == null) {
-                    // Etiqueta no encontrada (no debería ocurrir); usar 0.
-                    dir = 0;
-                }
-                datos.append("    .word ").append(dir).append("\n");
+                datos.append("    .word ").append(etiqueta).append("\n");
             }
         }
         return datos.toString();
+    }
+
+    /**
+     * Extrae los nombres de clase cuyas etiquetas de método aparecen en el cuerpo.
+     * Las etiquetas tienen el formato: metodo_Clase_metodo_N  o  constructor_Clase_N
+     */
+    private Set<String> extraerClasesConMetodos(String cuerpo) {
+        Set<String> clases = new HashSet<>();
+        if (cuerpo == null) {
+            return clases;
+        }
+        for (String linea : cuerpo.split("\n")) {
+            String s = linea.trim();
+            if (s.endsWith(":") && (s.startsWith("metodo_") || s.startsWith("constructor_"))) {
+                String nombre = s.substring(0, s.indexOf(':'));
+                String[] partes = nombre.split("_", 3);
+                if (partes.length >= 2) {
+                    clases.add(partes[1]);
+                }
+            }
+        }
+        return clases;
     }
 
     private String buscarEntrada(ListaCuartetas cuartetas) {

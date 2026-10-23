@@ -1,5 +1,8 @@
 package com.ronaldo.cd3.compiler.api.dtos.respuesta;
 
+import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorAnalisis;
+import java.util.List;
+
 /**
  * Respuesta de operaciones de sesion interactiva de Venus.
  */
@@ -8,18 +11,19 @@ public class EjecutarSesionRespuestaDTO {
     private boolean exito;
     private String sessionId;
     private String salida;
-    private String error;
+    private List<ErrorAnalisis> errores;
     private String codigoRiscV;
+    private boolean terminado;
 
     public EjecutarSesionRespuestaDTO() {
     }
 
     public EjecutarSesionRespuestaDTO(boolean exito, String sessionId,
-                                      String salida, String error, String codigoRiscV) {
+            String salida, List<ErrorAnalisis> errores, String codigoRiscV) {
         this.exito = exito;
         this.sessionId = sessionId;
         this.salida = salida;
-        this.error = error;
+        this.errores = errores;
         this.codigoRiscV = codigoRiscV;
     }
 
@@ -47,12 +51,12 @@ public class EjecutarSesionRespuestaDTO {
         this.salida = salida;
     }
 
-    public String getError() {
-        return error;
+    public List<ErrorAnalisis> getErrores() {
+        return errores;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setErrores(List<ErrorAnalisis> errores) {
+        this.errores = errores;
     }
 
     public String getCodigoRiscV() {
@@ -61,5 +65,13 @@ public class EjecutarSesionRespuestaDTO {
 
     public void setCodigoRiscV(String codigoRiscV) {
         this.codigoRiscV = codigoRiscV;
+    }
+
+    public boolean isTerminado() {
+        return terminado;
+    }
+
+    public void setTerminado(boolean terminado) {
+        this.terminado = terminado;
     }
 }

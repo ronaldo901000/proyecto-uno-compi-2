@@ -57,6 +57,19 @@ public class Retorno extends Nodo implements Instruccion {
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
 
+        if (expresion instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
+            String temp = cuartetas.nuevoTemporal();
+            Tipo tipoRetorno = contexto.getTipoRetornoActual();
+            if (tipoRetorno != null) {
+                cuartetas.registrarTipoTemporal(temp, tipoRetorno);
+            }
+            cuartetas.agregar(OperadorCuarteta.LEER, null, null,
+                    temp, fila, columna);
+            cuartetas.agregar(OperadorCuarteta.RETORNO, temp,
+                    null, null, fila, columna);
+            return null;
+        }
+
         String dirExpresion = (expresion != null)
                 ? expresion.generarCuartetas(contexto, cuartetas)
                 : null;

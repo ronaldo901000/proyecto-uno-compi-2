@@ -214,7 +214,15 @@ public class Llamada extends Expresion implements Instruccion {
 
         if (argumentos != null) {
             for (Expresion arg : argumentos) {
-                temporalesArgumentos.add(arg.generarCuartetas(contexto, cuartetas));
+                if (arg instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
+                    String temp = cuartetas.nuevoTemporal();
+                    cuartetas.registrarTipoTemporal(temp, arg.getTipo());
+                    cuartetas.agregar(OperadorCuarteta.LEER, null, null,
+                            temp, arg.getFila(), arg.getColumna());
+                    temporalesArgumentos.add(temp);
+                } else {
+                    temporalesArgumentos.add(arg.generarCuartetas(contexto, cuartetas));
+                }
             }
         }
 

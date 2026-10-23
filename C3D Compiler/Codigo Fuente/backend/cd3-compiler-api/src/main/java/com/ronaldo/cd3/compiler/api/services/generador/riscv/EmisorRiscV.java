@@ -10,7 +10,9 @@ import com.ronaldo.cd3.compiler.api.modelos.ir.operando.Operando;
 import com.ronaldo.cd3.compiler.api.modelos.ir.operando.OperandoAtributo;
 import com.ronaldo.cd3.compiler.api.modelos.ir.operando.OperandoIndice;
 import com.ronaldo.cd3.compiler.api.modelos.ir.operando.OperandoLiteral;
+import com.ronaldo.cd3.compiler.api.modelos.ir.operando.OperandoParametro;
 import com.ronaldo.cd3.compiler.api.modelos.ir.operando.OperandoThis;
+import com.ronaldo.cd3.compiler.api.modelos.ir.operando.OperandoVariable;
 import com.ronaldo.cd3.compiler.api.modelos.ir.runtime.RuntimeZ;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
@@ -27,13 +29,14 @@ import java.util.Map;
  * vive en una ranura del frame y cada operacion materializa su resultado en
  * una ranura temporal. Registros de 32 bits, punteros de 4 bytes, alineacion
  * a 4 y aritmetica entera de punto fijo (sin instrucciones flotantes) para
- * ser compatible con Venus.
+ * ser compatible con RARS.
  */
 public class EmisorRiscV implements EmisorIR {
 
     private final int TAMAÑO_SLOT = 4;
     private final int TAMAÑO_ENCABEZADO_FRAME = 8;
     private final int TAMAÑO_BUFFER_CADENA = 256;
+    private final int ESCALA_DECIMAL = 1000;
 
     private final AmbienteIR ambiente;
     private final ListaCuartetas cuartetas;
@@ -179,7 +182,6 @@ public class EmisorRiscV implements EmisorIR {
 
     private String offsetDeClave(String clave) {
         int fin = asignarRanura(clave);
-        int reservado = tamañosRanura.getOrDefault(clave, TAMAÑO_SLOT);
         return String.valueOf(-TAMAÑO_ENCABEZADO_FRAME - fin);
     }
 
@@ -212,10 +214,21 @@ public class EmisorRiscV implements EmisorIR {
         if (esStructPorValor(destino) && esStructPorValor(origen)) {
             int tamaño = ((TipoStructura) destino.getTipo()).getTamañoHeap();
             int palabras = min(tamaño / 4 + ((tamaño % 4 != 0) ? 1 : 0), 4);
+            // Resolver direcciones de ambos structs y copiar campo por campo.
+            cargarDireccion(destino, "t2");   // direccion destino
+            cargarDireccion(origen, "t3");    // direccion origen
             for (int i = 0; i < palabras; i++) {
-                linea("lw t1, " + offsetPalabra(origen, i) + "(fp)");
-                linea("sw t1, " + offsetPalabra(destino, i) + "(fp)");
+                linea("lw t1, " + (i * 4) + "(t3)");
+                linea("sw t1, " + (i * 4) + "(t2)");
             }
+            return;
+        }
+        // Coerción: si destino es flotante y origen es entero, promover (×1000).
+        if (esDecimal(destino) && !esDecimal(origen) && esEntero(origen)) {
+            cargarValor(origen, "t1");
+            linea("li t4, " + ESCALA_DECIMAL);
+            linea("mul t1, t1, t4");
+            guardarValor(destino, "t1");
             return;
         }
         cargarValor(origen, "t1");
@@ -226,18 +239,199 @@ public class EmisorRiscV implements EmisorIR {
     public void emitirAritmetica(OperadorCuarteta operador, Operando izquierda,
             Operando derecha, Operando resultado) {
         asegurarUnidad();
+        boolean izqDec = esDecimal(izquierda);
+        boolean derDec = esDecimal(derecha);
+
+        // Si alguno de los operandos es string, hacer concatenación en vez de suma entera.
+        if (esCadena(izquierda) || esCadena(derecha) || esCadena(resultado)) {
+            emitirConcatena(operador, izquierda, derecha, resultado);
+            return;
+        }
+
+        if (izqDec || derDec) {
+            // Al menos uno es decimal (punto fijo escala 1000).
+            // Reglas de coerción:
+            //   decimal * decimal : (a * b) / 1000
+            //   decimal * entero  : directo (el entero no se escala)
+            //   decimal / entero  : directo
+            //   entero/decimal y decimal/decimal : (a' * 1000) / b, con a' promovido
+            //   +, -, %           : el entero se promueve (×1000) antes de operar
+            if (operador == OperadorCuarteta.MULTIPLICACION) {
+                cargarValor(izquierda, "t1");
+                cargarValor(derecha, "t2");
+                linea("mul t3, t1, t2");
+                if (izqDec && derDec) {
+                    linea("li t4, " + ESCALA_DECIMAL);
+                    linea("div t3, t3, t4");
+                }
+                guardarValor(resultado, "t3");
+                return;
+            }
+            if (operador == OperadorCuarteta.DIVISION) {
+                if (izqDec && !derDec) {
+                    // decimal / entero: directo
+                    cargarValor(izquierda, "t1");
+                    cargarValor(derecha, "t2");
+                    linea("div t3, t1, t2");
+                } else {
+                    // decimal / decimal  o  entero / decimal:
+                    // se promueve el izquierdo si es entero y luego (a' * 1000) / b
+                    cargarValor(izquierda, "t1");
+                    if (!izqDec) {
+                        linea("li t4, " + ESCALA_DECIMAL);
+                        linea("mul t1, t1, t4");
+                    }
+                    linea("li t4, " + ESCALA_DECIMAL);
+                    linea("mul t1, t1, t4");
+                    cargarValor(derecha, "t2");
+                    linea("div t3, t1, t2");
+                }
+                guardarValor(resultado, "t3");
+                return;
+            }
+            // +, -, %: promover el entero a flotante (×1000) si es mixto
+            cargarValor(izquierda, "t1");
+            if (!izqDec) {
+                linea("li t4, " + ESCALA_DECIMAL);
+                linea("mul t1, t1, t4");
+            }
+            cargarValor(derecha, "t2");
+            if (!derDec) {
+                linea("li t4, " + ESCALA_DECIMAL);
+                linea("mul t2, t2, t4");
+            }
+            if (operador == OperadorCuarteta.SUMA) {
+                linea("add t3, t1, t2");
+            } else if (operador == OperadorCuarteta.RESTA) {
+                linea("sub t3, t1, t2");
+            } else {
+                linea("rem t3, t1, t2");
+            }
+            guardarValor(resultado, "t3");
+            return;
+        }
+
+        // Ninguno es decimal: aritmetica entera.
         cargarValor(izquierda, "t1");
         cargarValor(derecha, "t2");
         linea(instruccionAritmetica(operador) + " t3, t1, t2");
         guardarValor(resultado, "t3");
     }
 
+    private void emitirConcatena(OperadorCuarteta operador, Operando izquierda,
+            Operando derecha, Operando resultado) {
+        boolean izqEsCadena = esCadena(izquierda);
+        boolean derEsCadena = esCadena(derecha);
+        boolean izqEsDecimal = esDecimal(izquierda);
+        boolean derEsDecimal = esDecimal(derecha);
+
+        // Guardar ambos operandos en la pila antes de cualquier call.
+        // Los registros t* no sobreviven a un call (z_itoa, z_concat, z_strlen).
+        // Se reservan 3 palabras: 0(sp)=izq, 4(sp)=der, 8(sp)=cadena temporal.
+        cargarValor(izquierda, "t1");
+        cargarValor(derecha, "t2");
+        linea("addi sp, sp, -12");
+        linea("sw t1, 0(sp)");
+        linea("sw t2, 4(sp)");
+        linea("sw zero, 8(sp)");
+
+        if (izqEsCadena && derEsCadena) {
+            linea("lw t1, 0(sp)");
+            linea("lw t2, 4(sp)");
+            linea("mv a0, t1");
+            linea("mv a1, t2");
+            linea("call z_concat");
+        } else if (izqEsCadena && !derEsCadena) {
+            // Convertir der a string, luego concatenar con izq.
+            linea("lw t2, 4(sp)");
+            if (derEsDecimal) {
+                linea("mv a0, t2");
+                linea("call z_ftoa");
+            } else {
+                linea("mv a0, t2");
+                linea("call z_itoa");
+            }
+            linea("sw a0, 4(sp)");     // guardar str(der)
+            linea("lw t1, 0(sp)");
+            linea("lw a1, 4(sp)");     // a1 = str(der)
+            linea("mv a0, t1");        // a0 = izq
+            linea("call z_concat");
+        } else if (!izqEsCadena && derEsCadena) {
+            // Convertir izq a string, luego concatenar con der.
+            linea("lw t1, 0(sp)");
+            if (izqEsDecimal) {
+                linea("mv a0, t1");
+                linea("call z_ftoa");
+            } else {
+                linea("mv a0, t1");
+                linea("call z_itoa");
+            }
+            linea("sw a0, 8(sp)");     // guardar str(izq) en la tercera palabra
+            linea("lw t2, 4(sp)");
+            linea("lw a0, 8(sp)");     // a0 = str(izq)
+            linea("mv a1, t2");        // a1 = der
+            linea("call z_concat");
+        } else {
+            // Ninguno es string: convertir ambos a string y concatenar.
+            linea("lw t1, 0(sp)");
+            if (izqEsDecimal) {
+                linea("mv a0, t1");
+                linea("call z_ftoa");
+            } else {
+                linea("mv a0, t1");
+                linea("call z_itoa");
+            }
+            linea("sw a0, 8(sp)");     // guardar str(izq)
+            linea("lw t2, 4(sp)");
+            if (derEsDecimal) {
+                linea("mv a0, t2");
+                linea("call z_ftoa");
+            } else {
+                linea("mv a0, t2");
+                linea("call z_itoa");
+            }
+            linea("mv a1, a0");        // a1 = str(der)
+            linea("lw a0, 8(sp)");     // a0 = str(izq)
+            linea("call z_concat");
+        }
+        linea("addi sp, sp, 12");
+        guardarValor(resultado, "a0");
+    }
+
+    private boolean esCadena(Operando operando) {
+        if (operando == null || operando.getTipo() == null) {
+            return false;
+        }
+        return operando.getTipo().getTipoDato() == TipoDato.CADENA;
+    }
+
     @Override
     public void emitirComparacion(OperadorCuarteta operador, Operando izquierda,
             Operando derecha, Operando resultado) {
         asegurarUnidad();
+        if (esDecimal(izquierda) || esDecimal(derecha)) {
+            // Comparacion mixta: promover entero a flotante (×1000)
+            cargarValor(izquierda, "t1");
+            if (!esDecimal(izquierda) && esEntero(izquierda)) {
+                linea("li t4, " + ESCALA_DECIMAL);
+                linea("mul t1, t1, t4");
+            }
+            cargarValor(derecha, "t2");
+            if (!esDecimal(derecha) && esEntero(derecha)) {
+                linea("li t4, " + ESCALA_DECIMAL);
+                linea("mul t2, t2, t4");
+            }
+            emitirSlt(operador);
+            guardarValor(resultado, "t3");
+            return;
+        }
         cargarValor(izquierda, "t1");
         cargarValor(derecha, "t2");
+        emitirSlt(operador);
+        guardarValor(resultado, "t3");
+    }
+
+    private void emitirSlt(OperadorCuarteta operador) {
         switch (operador) {
             case MENOR_Q:
                 linea("slt t3, t1, t2");
@@ -257,15 +451,23 @@ public class EmisorRiscV implements EmisorIR {
                 linea("slt t3, t1, t2");
                 break;
         }
-        guardarValor(resultado, "t3");
     }
 
     @Override
     public void emitirIgualdad(OperadorCuarteta operador, Operando izquierda,
             Operando derecha, Operando resultado) {
         asegurarUnidad();
+        boolean mixto = esDecimal(izquierda) || esDecimal(derecha);
         cargarValor(izquierda, "t1");
+        if (mixto && !esDecimal(izquierda) && esEntero(izquierda)) {
+            linea("li t4, " + ESCALA_DECIMAL);
+            linea("mul t1, t1, t4");
+        }
         cargarValor(derecha, "t2");
+        if (mixto && !esDecimal(derecha) && esEntero(derecha)) {
+            linea("li t4, " + ESCALA_DECIMAL);
+            linea("mul t2, t2, t4");
+        }
         linea("sub t3, t1, t2");
         if (operador == OperadorCuarteta.DISTINTO) {
             linea("snez t3, t3");
@@ -303,9 +505,15 @@ public class EmisorRiscV implements EmisorIR {
             Operando resultado) {
         asegurarUnidad();
         cargarValor(objetivo, "t1");
-        linea((operador == OperadorCuarteta.INCREMENTO ? "addi t3, t1, 1" : "addi t3, t1, -1"));
+        // En punto fijo, una unidad de un flotante vale ESCALA_DECIMAL.
+        int paso = esDecimal(objetivo) ? ESCALA_DECIMAL : 1;
+        if (operador == OperadorCuarteta.INCREMENTO) {
+            linea("addi t3, t1, " + paso);
+        } else {
+            linea("addi t3, t1, " + (-paso));
+        }
         guardarValor(objetivo, "t3");
-        if (resultado != null) {
+        if (resultado != null && !resultado.getTexto().equals(objetivo.getTexto())) {
             guardarValor(resultado, "t3");
         }
     }
@@ -360,14 +568,14 @@ public class EmisorRiscV implements EmisorIR {
             return;
         }
         if (destino.getTipo().getTipoDato() == TipoDato.CADENA) {
-            // z_alloc reserva el buffer y lo deja en a0; z_leer_cadena de Venus
-            // espera el buffer en a1 y el maximo en a2.
+            // z_alloc: a0 = tamaño, retorna a0 = puntero al buffer.
+            // z_leer_cadena: a0 = buffer, a1 = maximo.
             linea("li a0, " + TAMAÑO_BUFFER_CADENA);
             linea("call z_alloc");
-            linea("mv a1, a0");
-            linea("li a2, " + TAMAÑO_BUFFER_CADENA);
+            linea("mv t0, a0");           // guardar puntero del buffer
+            linea("li a1, " + TAMAÑO_BUFFER_CADENA);
             linea("call z_leer_cadena");
-            linea("mv a0, a1");
+            linea("mv a0, t0");           // restaurar puntero del buffer
             guardarValor(destino, "a0");
             return;
         }
@@ -383,8 +591,8 @@ public class EmisorRiscV implements EmisorIR {
     public void emitirPunteroInicio(Operando destino, Operando cantidad) {
         asegurarUnidad();
         int bytes = bytesDeObjeto(destino, cantidad);
-        // sbrk de Venus: a0 = 9, a1 = bytes. Retorna puntero en a0.
-        linea("li a1, " + bytes);
+        // z_alloc de RARS: a0 = tamaño, retorna a0 = puntero.
+        linea("li a0, " + bytes);
         linea("call z_alloc");
         guardarValor(destino, "a0");
     }
@@ -421,11 +629,40 @@ public class EmisorRiscV implements EmisorIR {
         }
         for (int i = 0; i < total; i++) {
             Operando argumento = parametrosPendientes.get(i);
-            if (i < registros) {
-                cargarValor(argumento, "a" + i);
+            if (esStructPorValor(argumento)) {
+                linea("addi a" + i + ", fp, " + offset(argumento));
             } else {
-                cargarValor(argumento, "t1");
-                linea("sw t1, " + ((i - registros) * TAMAÑO_SLOT) + "(sp)");
+                // Coerción: si el parámetro es flotante y el argumento es entero, promover.
+                boolean promover = false;
+                if (funcion != null && funcion.getTexto() != null) {
+                    List<SimboloParametro> params =
+                            cuartetas.parametrosDeFuncion(funcion.getTexto());
+                    if (params != null && i < params.size()) {
+                        SimboloParametro param = params.get(i);
+                        if (param.getTipo() != null
+                                && param.getTipo().getTipoDato() == TipoDato.DECIMAL
+                                && argumento != null && argumento.getTipo() != null
+                                && argumento.getTipo().getTipoDato() != TipoDato.DECIMAL
+                                && esEntero(argumento)) {
+                            promover = true;
+                        }
+                    }
+                }
+                if (promover) {
+                    cargarValor(argumento, "t1");
+                    linea("li t4, " + ESCALA_DECIMAL);
+                    linea("mul t1, t1, t4");
+                    if (i < registros) {
+                        linea("mv a" + i + ", t1");
+                    } else {
+                        linea("sw t1, " + ((i - registros) * TAMAÑO_SLOT) + "(sp)");
+                    }
+                } else if (i < registros) {
+                    cargarValor(argumento, "a" + i);
+                } else {
+                    cargarValor(argumento, "t1");
+                    linea("sw t1, " + ((i - registros) * TAMAÑO_SLOT) + "(sp)");
+                }
             }
         }
         if (funcion != null && funcion.getTexto() != null) {
@@ -442,15 +679,7 @@ public class EmisorRiscV implements EmisorIR {
         if (resultado == null) {
             return;
         }
-        if (esStructPorValor(resultado)) {
-            int tamaño = ((TipoStructura) resultado.getTipo()).getTamañoHeap();
-            int palabras = min((tamaño + 3) / 4, 4);
-            for (int i = 0; i < palabras; i++) {
-                linea("lw t1, " + offsetPalabra(resultado, i) + "(fp)");
-                linea("mv a" + i + ", t1");
-            }
-            return;
-        }
+        // Tanto para primitivos como para struct (puntero devuelto) el valor llega en a0.
         guardarValor(resultado, "a0");
     }
 
@@ -465,13 +694,17 @@ public class EmisorRiscV implements EmisorIR {
         }
         for (int i = 0; i < total; i++) {
             Operando argumento = parametrosPendientes.get(i);
-            if (i < registros) {
+            if (esStructPorValor(argumento)) {
+                linea("addi a" + i + ", fp, " + offset(argumento));
+            } else if (i < registros) {
                 cargarValor(argumento, "a" + i);
             } else {
                 cargarValor(argumento, "t1");
                 linea("sw t1, " + ((i - registros) * TAMAÑO_SLOT) + "(sp)");
             }
         }
+        // Pendiente: en llamadas virtuales no se conoce el metodo en compilacion,
+        // por eso no se promueven argumentos entero -> flotante aqui.
         if (total > 0) {
             linea("mv t0, a0");
         } else if (receptor != null) {
@@ -503,7 +736,23 @@ public class EmisorRiscV implements EmisorIR {
     public void emitirRetorno(Operando valor) {
         asegurarUnidad();
         if (valor != null) {
-            cargarValor(valor, "a0");
+            if (esStructPorValor(valor)) {
+                if (valor instanceof OperandoParametro) {
+                    // Parametro de struct: retornar el puntero guardado en el slot.
+                    cargarValor(valor, "a0");
+                } else {
+                    // Struct local: retornar su direccion (fp+offset).
+                    linea("addi a0, fp, " + offset(valor));
+                }
+            } else if (esDecimalRetorno(unidadEnCurso) && esEntero(valor)) {
+                // Promocion: entero -> flotante (×1000)
+                cargarValor(valor, "t1");
+                linea("li t4, " + ESCALA_DECIMAL);
+                linea("mul t1, t1, t4");
+                linea("mv a0, t1");
+            } else {
+                cargarValor(valor, "a0");
+            }
         }
         if (unidadEnCurso != null) {
             if (unidadEnCurso.startsWith("__entrada_")) {
@@ -512,6 +761,14 @@ public class EmisorRiscV implements EmisorIR {
                 linea("j __epilogo_" + unidadEnCurso);
             }
         }
+    }
+
+    private boolean esDecimalRetorno(String nombreUnidad) {
+        if (nombreUnidad == null) {
+            return false;
+        }
+        Tipo tipo = cuartetas.tipoDeFuncion(nombreUnidad);
+        return tipo != null && tipo.getTipoDato() == TipoDato.DECIMAL;
     }
 
     private boolean esStructPorValor(Operando operando) {
@@ -589,6 +846,17 @@ public class EmisorRiscV implements EmisorIR {
             }
             return;
         }
+        if (operando instanceof OperandoParametro) {
+            Tipo tipo = operando.getTipo();
+            if (tipo instanceof TipoStructura && !((TipoStructura) tipo).esPorReferencia()) {
+                // Parametro de struct: cargar el puntero guardado en el slot.
+                cargarValor(operando, registro);
+                return;
+            }
+            // Parametro primitivo: direccion del slot.
+            linea("addi " + registro + ", fp, " + offset(operando));
+            return;
+        }
         linea("addi " + registro + ", fp, " + offset(operando));
     }
 
@@ -596,7 +864,10 @@ public class EmisorRiscV implements EmisorIR {
         if (base == null) {
             return;
         }
-        if (esPorValor(base)) {
+        // Solo las variables locales de struct se direccionan como fp+offset.
+        // Los parametros (que contienen un puntero) y otros casos cargan
+        // el valor guardado en el slot.
+        if (base instanceof OperandoVariable && esPorValor(base)) {
             linea("addi " + registro + ", fp, " + offset(base));
         } else {
             cargarValor(base, registro);
@@ -613,8 +884,16 @@ public class EmisorRiscV implements EmisorIR {
 
     private void cargarLiteral(OperandoLiteral literal, String registro) {
         if (literal.getEtiqueta() != null) {
-            linea("la " + registro + ", " + literal.getEtiqueta());
-            linea("lw " + registro + ", 0(" + registro + ")");
+            // Para strings (.asciz) solo se carga la direccion (la).
+            // Para numericos (.word) se carga el valor (lw).
+            boolean esCadena = literal.getTipo() != null
+                    && literal.getTipo().getTipoDato() == TipoDato.CADENA;
+            if (esCadena) {
+                linea("la " + registro + ", " + literal.getEtiqueta());
+            } else {
+                linea("la " + registro + ", " + literal.getEtiqueta());
+                linea("lw " + registro + ", 0(" + registro + ")");
+            }
             return;
         }
         linea("li " + registro + ", " + valorDeLiteral(literal));
@@ -696,11 +975,8 @@ public class EmisorRiscV implements EmisorIR {
         if (base != null && base.getTipo() instanceof TipoArreglo) {
             Tipo elemento = ((TipoArreglo) base.getTipo()).getTipoBase();
             if (elemento != null) {
-                if (elemento.esPorReferencia()) {
-                    return 4;
-                }
-                int bytes = elemento.tamañoBytes();
-                return (bytes <= 4) ? 4 : 4;
+                // Todos los elementos ocupan 4 bytes (primitivos y referencias).
+                return 4;
             }
         }
         return tamañoAlmacen(indice);
@@ -716,9 +992,6 @@ public class EmisorRiscV implements EmisorIR {
         int tamaño = operando.getTipo().tamañoBytes();
         if (tamaño <= 1) {
             return 1;
-        }
-        if (tamaño <= 4) {
-            return 4;
         }
         return 4;
     }
@@ -781,7 +1054,11 @@ public class EmisorRiscV implements EmisorIR {
             return Integer.parseInt(texto.trim());
         } catch (NumberFormatException ex) {
             try {
-                return (int) Double.parseDouble(texto.trim());
+                double d = Double.parseDouble(texto.trim());
+                if (literal.getTipo() != null && literal.getTipo().getTipoDato() == TipoDato.DECIMAL) {
+                    return (int) Math.round(d * 1000.0);
+                }
+                return (int) d;
             } catch (NumberFormatException ex2) {
                 return 0;
             }

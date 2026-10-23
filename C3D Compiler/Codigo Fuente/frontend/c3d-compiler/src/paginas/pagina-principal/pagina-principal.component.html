@@ -5,7 +5,7 @@
         {{ avisoService.mensajeError() }}
       </div>
     }
-    @if (avisoService.hayCodigoC()) {
+    @if (avisoService.hayCodigoRisc()) {
       <div class="alert alert-success text-center" role="alert">
         ¡Codigo C generado con exito!
       </div>
@@ -17,6 +17,6 @@
       <app-editor class="flex-grow-1"></app-editor>
     </div>
   </div>
-
   <app-tabla-errores></app-tabla-errores>
+    <app-consola></app-consola>
 </div>

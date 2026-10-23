@@ -1,5 +1,5 @@
 @if (respuestaService.respuesta$ | async; as respuesta) {
-  @if (respuesta.hayErrores) {
+  @if (!respuesta.exito) {
     <div class="table-container">
       <table>
         <thead>

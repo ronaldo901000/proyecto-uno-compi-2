@@ -34,10 +34,10 @@ public class TipoPrimitivo extends Tipo {
             case ENTERO:
                 return 4;
             case DECIMAL:
-                return 8;
+                return 4;
             case CADENA:
             case NULO:
-                return 8;
+                return 4;
             case CHAR:
             case BOOLEAN:
                 return 1;

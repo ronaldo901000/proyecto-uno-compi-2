@@ -49,6 +49,11 @@ public class Asignacion extends Nodo implements Instruccion {
         if (objetivo != null) {
             objetivo.verificarSemantica(contexto);
         }
+        if (valor instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura
+                && objetivo != null && objetivo.getTipo() != null) {
+            ((com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) valor)
+                    .setTipoEsperado(objetivo.getTipo());
+        }
         if (valor != null) {
             valor.verificarSemantica(contexto);
         }
@@ -75,6 +80,12 @@ public class Asignacion extends Nodo implements Instruccion {
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
         if (objetivo == null || valor == null) {
+            return null;
+        }
+        if (valor instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
+            String dirObjetivo = direccion.lvalue(objetivo, contexto, cuartetas);
+            cuartetas.agregar(OperadorCuarteta.LEER, null, null,
+                    dirObjetivo, fila, columna);
             return null;
         }
         String dirValor = valor.generarCuartetas(contexto, cuartetas);

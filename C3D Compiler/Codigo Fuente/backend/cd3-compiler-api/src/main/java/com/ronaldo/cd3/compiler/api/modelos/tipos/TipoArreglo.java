@@ -81,7 +81,7 @@ public class TipoArreglo extends Tipo {
 
     @Override
     public int alineacion() {
-        return 8;
+        return 4;
     }
 
     @Override

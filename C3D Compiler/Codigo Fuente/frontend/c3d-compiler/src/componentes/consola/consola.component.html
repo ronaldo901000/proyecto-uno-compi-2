@@ -1,0 +1,51 @@
+<div class="card bg-dark text-light border-secondary" data-bs-theme="dark">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span class="fw-semibold">Consola</span>
+    @if (ejecucionService.ejecutando()) {
+      <span class="badge text-bg-success">
+        <span class="spinner-grow spinner-grow-sm me-1"></span>Ejecutando
+      </span>
+    } @else {
+      <span class="badge text-bg-secondary">Inactivo</span>
+    }
+  </div>
+
+  <div class="card-body d-flex flex-column gap-2">
+    <textarea
+      #salidaRef
+      class="form-control bg-black text-success font-monospace"
+      rows="14"
+      [value]="ejecucionService.salida()"
+      readonly
+      placeholder="Salida..."
+    ></textarea>
+
+    <textarea
+      class="form-control bg-dark text-light font-monospace"
+      rows="3"
+      [(ngModel)]="entrada"
+      (keydown.enter)="onEnter($event)"
+      [disabled]="!ejecucionService.ejecutando()"
+      placeholder="Escribe aquí (Enter envía, Shift+Enter nueva línea)"
+    ></textarea>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-success"
+        (click)="enviar()"
+        [disabled]="!ejecucionService.ejecutando() || !entrada.trim()"
+      >
+        Enviar
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="detener()"
+        [disabled]="!ejecucionService.ejecutando()"
+      >
+        Detener
+      </button>
+    </div>
+  </div>
+</div>
