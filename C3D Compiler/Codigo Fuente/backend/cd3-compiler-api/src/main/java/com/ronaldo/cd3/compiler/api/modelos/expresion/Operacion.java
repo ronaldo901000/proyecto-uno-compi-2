@@ -150,6 +150,13 @@ public class Operacion extends Expresion implements Verificable {
     @Override
     public String generarCuartetas(Contexto contexto, ListaCuartetas cuartetas) {
 
+        if (operador == Operador.AND) {
+            return generarCortocircuito(contexto, cuartetas, true);
+        }
+        if (operador == Operador.OR) {
+            return generarCortocircuito(contexto, cuartetas, false);
+        }
+
         //generar operando izquierdo 
         String dirIzquierda = (izquierda != null)
                 ? izquierda.generarCuartetas(contexto, cuartetas)
@@ -208,6 +215,41 @@ public class Operacion extends Expresion implements Verificable {
             default:
                 return OperadorCuarteta.ASIGNACION;
         }
+    }
+
+    private String generarCortocircuito(Contexto contexto, ListaCuartetas cuartetas, boolean esAnd) {
+
+        String resultado = cuartetas.nuevoTemporal();
+        cuartetas.registrarTipoTemporal(resultado, getTipo());
+
+        String etiquetaEvaluarDer = cuartetas.nuevaEtiqueta();
+        String etiquetaCorto = cuartetas.nuevaEtiqueta();
+        String etiquetaFin = cuartetas.nuevaEtiqueta();
+
+
+        String dirIzq = izquierda.generarCuartetas(contexto, cuartetas);
+
+        if (esAnd) {
+
+            cuartetas.agregar(OperadorCuarteta.IF_VERDADERO, dirIzq, etiquetaEvaluarDer, null, fila, columna);
+            cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaCorto, null, null, fila, columna);
+        } else {
+
+            cuartetas.agregar(OperadorCuarteta.IF_VERDADERO, dirIzq, etiquetaCorto, null, fila, columna);
+            cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaEvaluarDer, null, null, fila, columna);
+        }
+
+
+        cuartetas.agregarEtiqueta(etiquetaEvaluarDer, fila, columna);
+        String dirDer = derecha.generarCuartetas(contexto, cuartetas);
+        cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirDer, null, resultado, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.GOTO, etiquetaFin, null, null, fila, columna);
+
+        cuartetas.agregarEtiqueta(etiquetaCorto, fila, columna);
+        cuartetas.agregar(OperadorCuarteta.ASIGNACION, esAnd ? "0" : "1", null, resultado, fila, columna);
+
+        cuartetas.agregarEtiqueta(etiquetaFin, fila, columna);
+        return resultado;
     }
 
     private boolean esCaracter(Tipo tipo) {

@@ -115,7 +115,7 @@ public class ResolutorOperandos {
     }
 
     private Operando resolverIndice(String texto, RolOperando rol) {
-        int fin = texto.length() - 1;        
+        int fin = texto.length() - 1;
         int prof = 0, ini = -1;
         for (int i = fin; i >= 0; i--) {
             char c = texto.charAt(i);
@@ -132,10 +132,10 @@ public class ResolutorOperandos {
         String textoBase = texto.substring(0, ini);
         String textoIndice = texto.substring(ini + 1, fin);
         Operando base = resolver(textoBase, RolOperando.VALOR);
-        Operando indice = resolver(textoIndice, RolOperando.VALOR);
+        Operando indice = resolverIndiceTexto(textoIndice);
 
         Tipo tipoElemento;
-        if (textoBase.indexOf('[') >= 0) {         
+        if (textoBase.indexOf('[') >= 0) {
             Tipo t = base.getTipo();
             tipoElemento = (t instanceof TipoArreglo) ? ((TipoArreglo) t).getTipoBase() : t;
         } else {
@@ -143,6 +143,16 @@ public class ResolutorOperandos {
         }
         int tamañoElemento = (tipoElemento != null) ? tipoElemento.tamañoBytes() : 0;
         return new OperandoIndice(texto, tipoElemento, rol, base, indice, tamañoElemento);
+    }
+
+    private Operando resolverIndiceTexto(String textoIndice) {
+        if (textoIndice != null && textoIndice.trim().matches("-?\\d+")) {
+            return new OperandoLiteral(textoIndice.trim(),
+                    TipoOperando.CONSTANTE_ENTERA,
+                    tipoDeConstante(TipoOperando.CONSTANTE_ENTERA),
+                    RolOperando.VALOR);
+        }
+        return resolver(textoIndice, RolOperando.VALOR);
     }
 
     private Operando resolverAtributo(String texto, RolOperando rol, int corte) {

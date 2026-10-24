@@ -82,7 +82,11 @@ public class ListaCuartetas {
         if (operando == null) {
             return null;
         }
-        return this.categoriasOperandos.get(operando);
+        TipoOperando categoria = this.categoriasOperandos.get(operando);
+        if (categoria == null && operando.matches("-?\\d+")) {
+            return TipoOperando.CONSTANTE_ENTERA;
+        }
+        return categoria;
     }
 
     public void agregar(Cuarteta cuarteta) {

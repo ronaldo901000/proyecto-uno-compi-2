@@ -37,6 +37,7 @@ public class EmisorRiscV implements EmisorIR {
     private final int TAMAÑO_ENCABEZADO_FRAME = 8;
     private final int TAMAÑO_BUFFER_CADENA = 256;
     private final int ESCALA_DECIMAL = 1000;
+    private final int LIMITE_PARAMETROS = 8;
 
     private final AmbienteIR ambiente;
     private final ListaCuartetas cuartetas;
@@ -112,8 +113,15 @@ public class EmisorRiscV implements EmisorIR {
         }
         for (int i = 0; i < parametros.size(); i++) {
             int registro = i + (metodoEnCurso ? 1 : 0);
-            cuerpo.append("    sw a").append(registro).append(", ")
-                    .append(offsetDeClave(claveParametro(parametros.get(i)))).append("(fp)\n");
+            String slot = offsetDeClave(claveParametro(parametros.get(i)));
+
+            if (registro < LIMITE_PARAMETROS) {
+                cuerpo.append("    sw a").append(registro).append(", ")
+                        .append(slot).append("(fp)\n");
+            } else {
+                cuerpo.append("    lw t1, ").append((registro - LIMITE_PARAMETROS) * 4).append("(fp)\n");
+                cuerpo.append("    sw t1, ").append(slot).append("(fp)\n");
+            }
         }
         cuerpo.append(unidad);
         cuerpo.append("__epilogo_").append(unidadEnCurso).append(":\n");
@@ -257,10 +265,10 @@ public class EmisorRiscV implements EmisorIR {
             if (operador == OperadorCuarteta.MULTIPLICACION) {
                 cargarValor(izquierda, "t1");
                 cargarValor(derecha, "t2");
-                linea("mul t3, t1, t2");
                 if (izqDec && derDec) {
-                    linea("li t4, " + ESCALA_DECIMAL);
-                    linea("div t3, t3, t4");
+                    emitirMultiplicacionFija();
+                } else {
+                    linea("mul t3, t1, t2");
                 }
                 guardarValor(resultado, "t3");
                 return;
@@ -272,17 +280,19 @@ public class EmisorRiscV implements EmisorIR {
                     cargarValor(derecha, "t2");
                     linea("div t3, t1, t2");
                 } else {
-                    // decimal / decimal  o  entero / decimal:
-                    // se promueve el izquierdo si es entero y luego (a' * 1000) / b
                     cargarValor(izquierda, "t1");
                     if (!izqDec) {
                         linea("li t4, " + ESCALA_DECIMAL);
                         linea("mul t1, t1, t4");
                     }
-                    linea("li t4, " + ESCALA_DECIMAL);
-                    linea("mul t1, t1, t4");
                     cargarValor(derecha, "t2");
                     linea("div t3, t1, t2");
+                    linea("rem t4, t1, t2");
+                    linea("li t5, " + ESCALA_DECIMAL);
+                    linea("mul t3, t3, t5");
+                    linea("mul t4, t4, t5");
+                    linea("div t4, t4, t2");
+                    linea("add t3, t3, t4");
                 }
                 guardarValor(resultado, "t3");
                 return;
@@ -314,6 +324,23 @@ public class EmisorRiscV implements EmisorIR {
         cargarValor(derecha, "t2");
         linea(instruccionAritmetica(operador) + " t3, t1, t2");
         guardarValor(resultado, "t3");
+    }
+
+    private void emitirMultiplicacionFija() {
+        linea("li t4, " + ESCALA_DECIMAL);
+        linea("div t5, t1, t4");
+        linea("rem t6, t1, t4");
+        linea("div t0, t2, t4");
+        linea("rem t2, t2, t4");
+        linea("mul t3, t5, t0");
+        linea("mul t3, t3, t4");
+        linea("mul t5, t5, t2");
+        linea("add t3, t3, t5");
+        linea("mul t0, t6, t0");
+        linea("add t3, t3, t0");
+        linea("mul t6, t6, t2");
+        linea("div t6, t6, t4");
+        linea("add t3, t3, t6");
     }
 
     private boolean esCaracter(Operando operando) {
@@ -604,6 +631,11 @@ public class EmisorRiscV implements EmisorIR {
         if (extra > 0) {
             linea("addi sp, sp, -" + (extra * TAMAÑO_SLOT));
         }
+
+        int desfase = (funcion != null && funcion.getTexto() != null
+                && (funcion.getTexto().startsWith("metodo_")
+                || funcion.getTexto().startsWith("constructor_"))) ? 1 : 0;
+
         for (int i = 0; i < total; i++) {
             Operando argumento = parametrosPendientes.get(i);
             if (esStructPorValor(argumento)) {
@@ -618,8 +650,9 @@ public class EmisorRiscV implements EmisorIR {
                 if (funcion != null && funcion.getTexto() != null) {
                     List<SimboloParametro> params
                             = cuartetas.parametrosDeFuncion(funcion.getTexto());
-                    if (params != null && i < params.size()) {
-                        SimboloParametro param = params.get(i);
+                    int idxParam = i - desfase;
+                    if (params != null && idxParam >= 0 && idxParam < params.size()) {
+                        SimboloParametro param = params.get(idxParam);
                         if (param.getTipo() != null
                                 && param.getTipo().getTipoDato() == TipoDato.DECIMAL
                                 && argumento != null && argumento.getTipo() != null
@@ -955,22 +988,45 @@ public class EmisorRiscV implements EmisorIR {
     }
 
     private int tamañoElementoIndice(OperandoIndice indice) {
-        int tamaño = indice.getTamañoElemento();
-        if (tamaño > 0) {
-            return tamaño;
+        int nivel = 1;
+        Operando raiz = indice.getBase();
+        while (raiz instanceof OperandoIndice) {
+            raiz = ((OperandoIndice) raiz).getBase();
+            nivel++;
         }
-        Operando base = indice.getBase();
-        if (base != null && base.getTipo() instanceof TipoArreglo) {
-            Tipo elemento = ((TipoArreglo) base.getTipo()).getTipoBase();
-            if (elemento != null) {
-                // Todos los elementos ocupan 4 bytes (primitivos y referencias).
+        if (raiz != null && raiz.getTipo() instanceof TipoArreglo) {
+            TipoArreglo arr = (TipoArreglo) raiz.getTipo();
+            if (nivel < rangoArreglo(arr)) {
+                return 4;                         // fila: puntero
+            }
+            Tipo hoja = arr;
+            while (hoja instanceof TipoArreglo) {
+                hoja = ((TipoArreglo) hoja).getTipoBase();
+            }
+            if (hoja == null || hoja instanceof TipoStructura) {
                 return 4;
             }
+            return (hoja.tamañoBytes() <= 1) ? 1 : 4;
         }
-        return tamañoAlmacen(indice);
+        int tamaño = indice.getTamañoElemento();
+        return tamaño > 0 ? tamaño : 4;
+    }
+
+    private int rangoArreglo(TipoArreglo arr) {
+        // Ajusta al getter real de tu TipoArreglo (por ejemplo getDimensiones().size()).
+        int rango = 1;
+        Tipo t = arr.getTipoBase();
+        while (t instanceof TipoArreglo) {
+            rango++;
+            t = ((TipoArreglo) t).getTipoBase();
+        }
+        return rango;
     }
 
     private int tamañoAlmacen(Operando operando) {
+        if (operando instanceof OperandoIndice) {
+            return tamañoElementoIndice((OperandoIndice) operando);   // 1 solo si es hoja char
+        }
         if (operando == null || operando.getTipo() == null) {
             return 4;
         }
@@ -978,10 +1034,7 @@ public class EmisorRiscV implements EmisorIR {
             return 4;
         }
         int tamaño = operando.getTipo().tamañoBytes();
-        if (tamaño <= 1) {
-            return 1;
-        }
-        return 4;
+        return (tamaño <= 1) ? 1 : 4;
     }
 
     private int bytesDeObjeto(Operando destino, Operando cantidad) {
