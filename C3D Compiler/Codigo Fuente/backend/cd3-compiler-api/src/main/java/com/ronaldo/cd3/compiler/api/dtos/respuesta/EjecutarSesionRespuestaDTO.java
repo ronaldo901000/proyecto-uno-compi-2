@@ -1,6 +1,7 @@
 package com.ronaldo.cd3.compiler.api.dtos.respuesta;
 
 import com.ronaldo.cd3.compiler.api.dtos.error.analisis.ErrorAnalisis;
+import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Cuarteta;
 import java.util.List;
 
 /**
@@ -14,17 +15,19 @@ public class EjecutarSesionRespuestaDTO {
     private List<ErrorAnalisis> errores;
     private String codigoRiscV;
     private boolean terminado;
+    private List<Cuarteta> cuartetas;
 
     public EjecutarSesionRespuestaDTO() {
     }
 
     public EjecutarSesionRespuestaDTO(boolean exito, String sessionId,
-            String salida, List<ErrorAnalisis> errores, String codigoRiscV) {
+            String salida, List<ErrorAnalisis> errores, String codigoRiscV, List<Cuarteta> cuartetas) {
         this.exito = exito;
         this.sessionId = sessionId;
         this.salida = salida;
         this.errores = errores;
         this.codigoRiscV = codigoRiscV;
+        this.cuartetas = cuartetas;
     }
 
     public boolean isExito() {
@@ -74,4 +77,13 @@ public class EjecutarSesionRespuestaDTO {
     public void setTerminado(boolean terminado) {
         this.terminado = terminado;
     }
+
+    public List<Cuarteta> getCuartetas() {
+        return cuartetas;
+    }
+
+    public void setCuartetas(List<Cuarteta> cuartetas) {
+        this.cuartetas = cuartetas;
+    }
+
 }

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CreacionEntradaService } from '../../servicios/creacion-entrada/CreacionEntrada.service';
 import { ArbolTrabajoService } from '../../servicios/arbol-trabajo/ArbolTrabajo.service';
 import { AnalisisService } from '../../servicios/analisis/Analisis.service';
-import { Respuesta } from '../../modelos/respuesta/Respuesta';
 import { RespuestaCompilacionService } from '../../servicios/respuesta-compilacion/RespuestaCompilacion.service';
 import { AvisoService } from '../../servicios/avisos/aviso.service';
 import { SessionRespuesta } from '../../modelos/respuesta/sesion-respuesta';

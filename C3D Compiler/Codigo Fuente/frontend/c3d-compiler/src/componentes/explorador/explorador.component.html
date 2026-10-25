@@ -1,6 +1,10 @@
-<div class="contenedor-explorador bg-dark text-light h-100 d-flex flex-column">
-  <div class="p-2 border-bottom border-secondary d-flex flex-wrap gap-2 justify-content-between align-items-center">
-
+<div
+  class="contenedor-explorador bg-dark text-light h-100 d-flex flex-column overflow-hidden"
+>
+  <!-- Toolbar: altura fija, nunca se encoge -->
+  <div
+    class="flex-shrink-0 p-2 border-bottom border-secondary d-flex flex-wrap gap-2 justify-content-between align-items-center"
+  >
     <!-- Herramientas del árbol: se deshabilitan si no hay proyecto o no hay selección válida -->
     <div class="d-flex gap-1">
       <button
@@ -38,6 +42,12 @@
       >
         <i class="bi bi-trash"></i>
       </button>
+
+      <!--BOTON PARA VER LAS CUARTETAS-->
+     <button class="btn btn-sm btn-outline-warning" (click)="cuartetasVisible.set(true)">
+        <i class="bi-table me-1"></i>
+        Cuartetas
+      </button>
     </div>
 
     <!-- Gestión del proyecto: SIEMPRE visibles -->
@@ -59,7 +69,10 @@
         (click)="inputProyecto.click()"
       >
         @if (importando) {
-          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          <span
+            class="spinner-border spinner-border-sm me-1"
+            role="status"
+          ></span>
           Importando...
         } @else {
           <i class="bi bi-folder2-open me-1"></i> Abrir Proyecto
@@ -82,7 +95,10 @@
         (click)="descargarProyecto()"
       >
         @if (descargando) {
-          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          <span
+            class="spinner-border spinner-border-sm me-1"
+            role="status"
+          ></span>
           Generando...
         } @else {
           <i class="bi bi-download me-1"></i> Descargar
@@ -92,12 +108,16 @@
   </div>
 
   @if (arbolService.arbol$ | async; as raiz) {
-    <div class="flex-grow-1 overflow-auto p-2">
-      <app-nodo-arbol [nodo]="raiz" />
+    <!-- Área del árbol: ocupa el espacio restante y scrollea (vertical y horizontal) -->
+    <div class="flex-grow-1 overflow-auto p-2" style="min-height: 0">
+      <div style="min-width: max-content">
+        <app-nodo-arbol [nodo]="raiz" />
+      </div>
     </div>
   } @else {
     <div
       class="d-flex flex-column align-items-center justify-content-center flex-grow-1 text-muted p-3 text-center"
+      style="min-height: 0"
     >
       <i class="bi bi-folder2-open display-4 mb-2"></i>
       <p class="small mb-0">No hay un proyecto abierto.</p>
@@ -116,4 +136,7 @@
     (cerrar)="cerrarModal()"
     (confirmar)="procesarAccionModal($event)"
   />
+}
+@if (cuartetasVisible()) {
+  <app-cuartetas-modal (cerrar)="cuartetasVisible.set(false)" />
 }

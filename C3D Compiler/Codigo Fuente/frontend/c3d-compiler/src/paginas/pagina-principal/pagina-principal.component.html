@@ -1,22 +1,29 @@
 <div class="page-container d-flex flex-column flex-grow-1">
   <div class="row g-2 flex-grow-1 min-h-0">
     @if (avisoService.hayError()) {
-      <div class="alert alert-danger text-center" role="alert">
-        {{ avisoService.mensajeError() }}
+      <div class="col-12">
+        <div class="alert alert-danger text-center mb-0" role="alert">
+          {{ avisoService.mensajeError() }}
+        </div>
       </div>
     }
     @if (avisoService.hayCodigoRisc()) {
-      <div class="alert alert-success text-center" role="alert">
-        ¡Codigo Risc-V generado con exito!
+      <div class="col-12">
+        <div class="alert alert-success text-center mb-0" role="alert">
+          ¡Codigo Risc-V generado con exito!
+        </div>
       </div>
     }
-    <div class="col-3 d-flex flex-column min-h-0">
-      <app-explorador class="flex-grow-1"></app-explorador>
+
+    <div class="col-md-3 explorador-col">
+      <app-explorador></app-explorador>
     </div>
+
     <div class="col-md-9 d-flex flex-column min-h-0">
       <app-editor class="flex-grow-1"></app-editor>
     </div>
   </div>
+
   <app-tabla-errores></app-tabla-errores>
-    <app-consola></app-consola>
+  <app-consola></app-consola>
 </div>

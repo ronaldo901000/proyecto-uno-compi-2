@@ -61,6 +61,7 @@ public class EjecutarSesionResource {
                         null,
                         null,
                         resDto.getErrores(),
+                        null,
                         null
                 );
                 return Response.ok(resp).build();
@@ -91,7 +92,8 @@ public class EjecutarSesionResource {
                     sessionId,
                     sesion.leerNuevo(),
                     null,
-                    codigoRiscV
+                    codigoRiscV,
+                    analizador.getCuartetas().getCuartetas()
             );
 
             boolean terminado = sesion.terminado();
@@ -148,6 +150,7 @@ public class EjecutarSesionResource {
                     sessionId,
                     salida,
                     null,
+                    null,
                     null
             );
 
@@ -195,6 +198,7 @@ public class EjecutarSesionResource {
                     sessionId,
                     sesion.leerNuevo(),
                     null,
+                    null,
                     null
             );
 
@@ -237,6 +241,7 @@ public class EjecutarSesionResource {
             EjecutarSesionRespuestaDTO respuesta = new EjecutarSesionRespuestaDTO(
                     true,
                     sessionId,
+                    null,
                     null,
                     null,
                     null

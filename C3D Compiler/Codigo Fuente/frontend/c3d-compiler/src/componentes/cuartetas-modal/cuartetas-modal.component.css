@@ -1,0 +1,26 @@
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1050;
+}
+
+.modal {
+  z-index: 1055;
+}
+
+.tabla-cuartetas {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+.tabla-cuartetas thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #212529;
+}
+
+.col-num {
+  width: 60px;
+}

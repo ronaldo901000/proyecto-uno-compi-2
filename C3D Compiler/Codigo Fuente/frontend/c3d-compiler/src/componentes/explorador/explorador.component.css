@@ -2,3 +2,8 @@
   font-family: var(--bs-font-monospace);
   overflow: hidden;
 }
+
+:host {
+  display: block;
+  height: 100%;
+}

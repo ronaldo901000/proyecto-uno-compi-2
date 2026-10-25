@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalArchivosComponent } from '../modal-archivos/modal-archivos.component';
 import { ExtensionArchivo } from '../../modelos/extension-archivo/ExtensionArchivo';
 import { TipoNodo } from '../../modelos/tipo-nodo/TipoNodo';
 import { ArbolTrabajoService } from '../../servicios/arbol-trabajo/ArbolTrabajo.service';
 import { NodoArbolComponent } from '../nodo-arbol/nodo-arbol.component';
+import { CuartetasModalComponent } from '../cuartetas-modal/cuartetas-modal.component';
 
 @Component({
   selector: 'app-explorador',
   standalone: true,
-  imports: [CommonModule, ModalArchivosComponent, NodoArbolComponent],
+  imports: [CommonModule, ModalArchivosComponent, NodoArbolComponent, CuartetasModalComponent],
   templateUrl: './explorador.component.html',
   styleUrl: './explorador.component.css'
 })
@@ -22,6 +23,8 @@ export class ExploradorComponent {
   modoAccion: 'crear' | 'editar' = 'crear';
   nombreInicial: string = '';
   extensionInicial: ExtensionArchivo = 'y';
+
+  cuartetasVisible =signal(false);
 
   public importando: boolean = false;
   public descargando: boolean = false;

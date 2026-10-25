@@ -78,41 +78,35 @@ str_23: .asciz "-12.5*4 = "
 .align 2
 str_24: .asciz "3000/2.0 = "
 .align 2
-str_25: .asciz "testeando"
+str_25: .asciz ""
 .align 2
-str_26: .asciz "testeando2"
+str_26: .asciz "Dragon"
 .align 2
-str_27: .asciz ""
+str_27: .asciz "[JEFE] "
 .align 2
-str_28: .asciz "Dragon"
+str_28: .asciz "Conan"
 .align 2
-str_29: .asciz "[JEFE] "
+str_29: .asciz "Merlin"
 .align 2
-str_30: .asciz "Conan"
+str_30: .asciz "Legolas"
 .align 2
-str_31: .asciz "Merlin"
+str_31: .asciz "Grunk"
 .align 2
-str_32: .asciz "Legolas"
+str_32: .asciz "Azog"
 .align 2
-str_33: .asciz "Grunk"
+str_33: .asciz "Estado inicial:"
 .align 2
-str_34: .asciz "Azog"
+str_34: .asciz "Checksum: "
 .align 2
-str_35: .asciz "Estado inicial:"
+str_35: .asciz "Puntaje arquero: "
 .align 2
-str_36: .asciz "Checksum: "
+str_36: .asciz "Suerte mago: "
 .align 2
-str_37: .asciz "Puntaje arquero: "
+str_37: .asciz "Hechizos: "
 .align 2
-str_38: .asciz "Suerte mago: "
+str_38: .asciz "Oro guerrero: "
 .align 2
-str_39: .asciz "Hechizos: "
-.align 2
-str_40: .asciz "Oro guerrero: "
-.align 2
-str_41: .asciz "Comparar: "
-.align 2
-str_42: .asciz "PROGRAMA TERMINADO"
+str_39: .asciz "Comparar: "
 .align 2
 __vtable_Arquero:
     .word metodo_Entidad_getId_1
@@ -171,8 +165,6 @@ __vtable_Partida:
     .word metodo_Partida_resumen_9
     .word metodo_Partida_checksum_10
     .word metodo_Partida_pruebaDecimal_11
-    .word metodo_Partida_test_12
-    .word metodo_Partida_test2_13
 .align 2
 __vtable_Reloj:
     .word metodo_Reloj_avanzar_1
@@ -999,21 +991,6 @@ __epilogo_constructor_Entidad_1:
     lw t0, -8(fp)
     lw ra, -4(fp)
     addi sp, sp, 28
-    mv fp, t0
-    ret
-
-constructor_Entidad_2:
-    addi sp, sp, -12
-    sw ra, 8(sp)
-    sw fp, 4(sp)
-    addi fp, sp, 12
-    sw a0, -12(fp)
-    j __epilogo_constructor_Entidad_2
-__epilogo_constructor_Entidad_2:
-    lw a0, -12(fp)
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 12
     mv fp, t0
     ret
 
@@ -2950,113 +2927,6 @@ __epilogo_metodo_Partida_pruebaDecimal_11:
     mv fp, t0
     ret
 
-metodo_Partida_test_12:
-    addi sp, sp, -36
-    sw ra, 32(sp)
-    sw fp, 28(sp)
-    addi fp, sp, 36
-    sw a0, -12(fp)
-    li a0, 36
-    call z_alloc
-    sw a0, -16(fp)
-    lw t6, -16(fp)
-    la t1, __vtable_Entidad
-    sw t1, 0(t6)
-    lw a0, -16(fp)
-    call constructor_Entidad_2
-    sw a0, -16(fp)
-    lw t1, -16(fp)
-    sw t1, -20(fp)
-    lw t1, -20(fp)
-    li t2, 0
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -24(fp)
-    lw t1, -24(fp)
-    bnez t1, L52
-    j L51
-L51:
-    lw a0, -20(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 28(t0)
-    jalr t0
-    sw a0, -28(fp)
-    lw t1, -28(fp)
-    seqz t3, t1
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    sw t1, -36(fp)
-    j L53
-L52:
-    li t1, 1
-    sw t1, -36(fp)
-L53:
-    lw t1, -36(fp)
-    bnez t1, L54
-    j L50
-L54:
-    la a0, str_25
-    call z_print_cadena
-    call z_print_salto
-L50:
-    j __epilogo_metodo_Partida_test_12
-__epilogo_metodo_Partida_test_12:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 36
-    mv fp, t0
-    ret
-
-metodo_Partida_test2_13:
-    addi sp, sp, -32
-    sw ra, 28(sp)
-    sw fp, 24(sp)
-    addi fp, sp, 32
-    sw a0, -12(fp)
-    li t1, 0
-    sw t1, -16(fp)
-    lw t1, -16(fp)
-    li t2, 0
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -20(fp)
-    lw t1, -20(fp)
-    bnez t1, L57
-    j L56
-L56:
-    lw a0, -16(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 28(t0)
-    jalr t0
-    sw a0, -24(fp)
-    lw t1, -24(fp)
-    seqz t3, t1
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    sw t1, -32(fp)
-    j L58
-L57:
-    li t1, 1
-    sw t1, -32(fp)
-L58:
-    lw t1, -32(fp)
-    bnez t1, L59
-    j L55
-L59:
-    la a0, str_26
-    call z_print_cadena
-    call z_print_salto
-L55:
-    j __epilogo_metodo_Partida_test2_13
-__epilogo_metodo_Partida_test2_13:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 32
-    mv fp, t0
-    ret
-
 constructor_Partida_1:
     addi sp, sp, -32
     sw ra, 28(sp)
@@ -3145,9 +3015,9 @@ metodo_Tablero_dentro_1:
     xori t3, t3, 1
     sw t3, -24(fp)
     lw t1, -24(fp)
-    bnez t1, L66
-    j L67
-L66:
+    bnez t1, L56
+    j L57
+L56:
     lw t1, -16(fp)
     lw t6, -12(fp)
     addi t6, t6, 12
@@ -3156,15 +3026,15 @@ L66:
     sw t3, -28(fp)
     lw t1, -28(fp)
     sw t1, -32(fp)
-    j L68
-L67:
+    j L58
+L57:
     li t1, 0
     sw t1, -32(fp)
-L68:
+L58:
     lw t1, -32(fp)
-    bnez t1, L63
-    j L64
-L63:
+    bnez t1, L53
+    j L54
+L53:
     lw t1, -20(fp)
     li t2, 0
     slt t3, t1, t2
@@ -3172,15 +3042,15 @@ L63:
     sw t3, -36(fp)
     lw t1, -36(fp)
     sw t1, -40(fp)
-    j L65
-L64:
+    j L55
+L54:
     li t1, 0
     sw t1, -40(fp)
-L65:
+L55:
     lw t1, -40(fp)
-    bnez t1, L60
-    j L61
-L60:
+    bnez t1, L50
+    j L51
+L50:
     lw t1, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 16
@@ -3189,11 +3059,11 @@ L60:
     sw t3, -44(fp)
     lw t1, -44(fp)
     sw t1, -48(fp)
-    j L62
-L61:
+    j L52
+L51:
     li t1, 0
     sw t1, -48(fp)
-L62:
+L52:
     lw a0, -48(fp)
     j __epilogo_metodo_Tablero_dentro_1
     j __epilogo_metodo_Tablero_dentro_1
@@ -3222,12 +3092,12 @@ metodo_Tablero_colocar_2:
     seqz t3, t1
     sw t3, -32(fp)
     lw t1, -32(fp)
-    bnez t1, L70
-    j L69
-L70:
+    bnez t1, L60
+    j L59
+L60:
     li a0, 0
     j __epilogo_metodo_Tablero_colocar_2
-L69:
+L59:
     lw t2, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 4
@@ -3250,12 +3120,12 @@ L69:
     snez t3, t3
     sw t3, -44(fp)
     lw t1, -44(fp)
-    bnez t1, L72
-    j L71
-L72:
+    bnez t1, L62
+    j L61
+L62:
     li a0, 0
     j __epilogo_metodo_Tablero_colocar_2
-L71:
+L61:
     lw t2, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 4
@@ -3386,12 +3256,12 @@ metodo_Tablero_mover_3:
     seqz t3, t1
     sw t3, -32(fp)
     lw t1, -32(fp)
-    bnez t1, L74
-    j L73
-L74:
+    bnez t1, L64
+    j L63
+L64:
     li a0, 0
     j __epilogo_metodo_Tablero_mover_3
-L73:
+L63:
     lw t2, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 4
@@ -3414,12 +3284,12 @@ L73:
     snez t3, t3
     sw t3, -44(fp)
     lw t1, -44(fp)
-    bnez t1, L76
-    j L75
-L76:
+    bnez t1, L66
+    j L65
+L66:
     li a0, 0
     j __epilogo_metodo_Tablero_mover_3
-L75:
+L65:
     lw a0, -16(fp)
     mv t0, a0
     lw t0, 0(t0)
@@ -3568,12 +3438,12 @@ metodo_Tablero_en_4:
     seqz t3, t1
     sw t3, -28(fp)
     lw t1, -28(fp)
-    bnez t1, L78
-    j L77
-L78:
+    bnez t1, L68
+    j L67
+L68:
     li a0, 0
     j __epilogo_metodo_Tablero_en_4
-L77:
+L67:
     lw t2, -16(fp)
     lw t6, -12(fp)
     addi t6, t6, 4
@@ -3610,7 +3480,7 @@ metodo_Tablero_limpiarMuertos_5:
     sw t1, -16(fp)
     li t1, 0
     sw t1, -20(fp)
-L79:
+L69:
     lw t1, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 12
@@ -3618,12 +3488,12 @@ L79:
     slt t3, t1, t2
     sw t3, -24(fp)
     lw t1, -24(fp)
-    bnez t1, L80
-    j L82
-L80:
+    bnez t1, L70
+    j L72
+L70:
     li t1, 0
     sw t1, -28(fp)
-L83:
+L73:
     lw t1, -28(fp)
     lw t6, -12(fp)
     addi t6, t6, 16
@@ -3631,9 +3501,9 @@ L83:
     slt t3, t1, t2
     sw t3, -32(fp)
     lw t1, -32(fp)
-    bnez t1, L84
-    j L86
-L84:
+    bnez t1, L74
+    j L76
+L74:
     lw t2, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 4
@@ -3658,9 +3528,9 @@ L84:
     snez t3, t3
     sw t3, -48(fp)
     lw t1, -48(fp)
-    bnez t1, L88
-    j L89
-L88:
+    bnez t1, L78
+    j L79
+L78:
     lw a0, -44(fp)
     mv t0, a0
     lw t0, 0(t0)
@@ -3672,15 +3542,15 @@ L88:
     sw t3, -56(fp)
     lw t1, -56(fp)
     sw t1, -60(fp)
-    j L90
-L89:
+    j L80
+L79:
     li t1, 0
     sw t1, -60(fp)
-L90:
+L80:
     lw t1, -60(fp)
-    bnez t1, L91
-    j L87
-L91:
+    bnez t1, L81
+    j L77
+L81:
     lw t2, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 4
@@ -3772,19 +3642,19 @@ L91:
     lw t1, -16(fp)
     addi t3, t1, 1
     sw t3, -16(fp)
-L87:
-L85:
+L77:
+L75:
     lw t1, -28(fp)
     addi t3, t1, 1
     sw t3, -28(fp)
-    j L83
-L86:
-L81:
+    j L73
+L76:
+L71:
     lw t1, -20(fp)
     addi t3, t1, 1
     sw t3, -20(fp)
-    j L79
-L82:
+    j L69
+L72:
     lw a0, -16(fp)
     j __epilogo_metodo_Tablero_limpiarMuertos_5
     j __epilogo_metodo_Tablero_limpiarMuertos_5
@@ -3805,7 +3675,7 @@ metodo_Tablero_contar_6:
     sw t1, -16(fp)
     li t1, 0
     sw t1, -20(fp)
-L92:
+L82:
     lw t1, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 12
@@ -3813,12 +3683,12 @@ L92:
     slt t3, t1, t2
     sw t3, -24(fp)
     lw t1, -24(fp)
-    bnez t1, L93
-    j L95
-L93:
+    bnez t1, L83
+    j L85
+L83:
     li t1, 0
     sw t1, -28(fp)
-L96:
+L86:
     lw t1, -28(fp)
     lw t6, -12(fp)
     addi t6, t6, 16
@@ -3826,9 +3696,9 @@ L96:
     slt t3, t1, t2
     sw t3, -32(fp)
     lw t1, -32(fp)
-    bnez t1, L97
-    j L99
-L97:
+    bnez t1, L87
+    j L89
+L87:
     lw t2, -20(fp)
     lw t6, -12(fp)
     addi t6, t6, 4
@@ -3851,25 +3721,25 @@ L97:
     snez t3, t3
     sw t3, -44(fp)
     lw t1, -44(fp)
-    bnez t1, L101
-    j L100
-L101:
+    bnez t1, L91
+    j L90
+L91:
     lw t1, -16(fp)
     addi t3, t1, 1
     sw t3, -16(fp)
-L100:
-L98:
+L90:
+L88:
     lw t1, -28(fp)
     addi t3, t1, 1
     sw t3, -28(fp)
-    j L96
-L99:
-L94:
+    j L86
+L89:
+L84:
     lw t1, -20(fp)
     addi t3, t1, 1
     sw t3, -20(fp)
-    j L92
-L95:
+    j L82
+L85:
     lw a0, -16(fp)
     j __epilogo_metodo_Tablero_contar_6
     j __epilogo_metodo_Tablero_contar_6
@@ -3888,7 +3758,7 @@ metodo_Tablero_imprimir_7:
     sw a0, -12(fp)
     li t1, 0
     sw t1, -16(fp)
-L102:
+L92:
     lw t1, -16(fp)
     lw t6, -12(fp)
     addi t6, t6, 12
@@ -3896,14 +3766,14 @@ L102:
     slt t3, t1, t2
     sw t3, -20(fp)
     lw t1, -20(fp)
-    bnez t1, L103
-    j L105
-L103:
-    la t1, str_27
+    bnez t1, L93
+    j L95
+L93:
+    la t1, str_25
     sw t1, -24(fp)
     li t1, 0
     sw t1, -28(fp)
-L106:
+L96:
     lw t1, -28(fp)
     lw t6, -12(fp)
     addi t6, t6, 16
@@ -3911,9 +3781,9 @@ L106:
     slt t3, t1, t2
     sw t3, -32(fp)
     lw t1, -32(fp)
-    bnez t1, L107
-    j L109
-L107:
+    bnez t1, L97
+    j L99
+L97:
     lw t2, -16(fp)
     lw t6, -12(fp)
     addi t6, t6, 8
@@ -3947,21 +3817,21 @@ L107:
     sw a0, -44(fp)
     lw t1, -44(fp)
     sw t1, -24(fp)
-L108:
+L98:
     lw t1, -28(fp)
     addi t3, t1, 1
     sw t3, -28(fp)
-    j L106
-L109:
+    j L96
+L99:
     lw a0, -24(fp)
     call z_print_cadena
     call z_print_salto
-L104:
+L94:
     lw t1, -16(fp)
     addi t3, t1, 1
     sw t3, -16(fp)
-    j L102
-L105:
+    j L92
+L95:
     j __epilogo_metodo_Tablero_imprimir_7
 __epilogo_metodo_Tablero_imprimir_7:
     lw t0, -8(fp)
@@ -4058,26 +3928,26 @@ Lnew_1_fin:
     sw t1, 0(t6)
     li t1, 0
     sw t1, -32(fp)
-L110:
+L100:
     lw t1, -32(fp)
     lw t2, -16(fp)
     slt t3, t1, t2
     sw t3, -36(fp)
     lw t1, -36(fp)
-    bnez t1, L111
-    j L113
-L111:
+    bnez t1, L101
+    j L103
+L101:
     li t1, 0
     sw t1, -40(fp)
-L114:
+L104:
     lw t1, -40(fp)
     lw t2, -20(fp)
     slt t3, t1, t2
     sw t3, -44(fp)
     lw t1, -44(fp)
-    bnez t1, L115
-    j L117
-L115:
+    bnez t1, L105
+    j L107
+L105:
     lw t2, -32(fp)
     lw t6, -12(fp)
     addi t6, t6, 8
@@ -4122,18 +3992,18 @@ L115:
     mul t2, t2, t4
     add t6, t6, t2
     sb t1, 0(t6)
-L116:
+L106:
     lw t1, -40(fp)
     addi t3, t1, 1
     sw t3, -40(fp)
-    j L114
-L117:
-L112:
+    j L104
+L107:
+L102:
     lw t1, -32(fp)
     addi t3, t1, 1
     sw t3, -32(fp)
-    j L110
-L113:
+    j L100
+L103:
     j __epilogo_constructor_Tablero_1
 __epilogo_constructor_Tablero_1:
     lw a0, -12(fp)
@@ -4168,12 +4038,12 @@ metodo_Dragon_calcularDano_1:
     seqz t3, t3
     sw t3, -20(fp)
     lw t1, -20(fp)
-    bnez t1, L119
-    j L118
-L119:
+    bnez t1, L109
+    j L108
+L109:
     li a0, 15
     j __epilogo_metodo_Dragon_calcularDano_1
-L118:
+L108:
     lw a0, -12(fp)
     call metodo_Enemigo_calcularDano_2
     sw a0, -24(fp)
@@ -4223,7 +4093,7 @@ constructor_Dragon_1:
     sw a1, -16(fp)
     lw a0, -12(fp)
     lw a1, -16(fp)
-    la a2, str_28
+    la a2, str_26
     li a3, 80
     li a4, 68
     li a5, 100
@@ -4273,7 +4143,7 @@ metodo_OrcoJefe_describir_2:
     lw a0, -12(fp)
     call metodo_Entidad_describir_15
     sw a0, -16(fp)
-    la t1, str_29
+    la t1, str_27
     lw t2, -16(fp)
     addi sp, sp, -12
     sw t1, 0(sp)
@@ -4466,10 +4336,10 @@ __epilogo_constructor_Enemigo_1:
     ret
 
 __entrada_main:
-    addi sp, sp, -160
-    sw ra, 156(sp)
-    sw fp, 152(sp)
-    addi fp, sp, 160
+    addi sp, sp, -152
+    sw ra, 148(sp)
+    sw fp, 144(sp)
+    addi fp, sp, 152
     li t1, 42
     sw t1, -12(fp)
     li t1, 12
@@ -4496,7 +4366,7 @@ __entrada_main:
     sw t1, 0(t6)
     lw a0, -32(fp)
     li a1, 1
-    la a2, str_30
+    la a2, str_28
     call constructor_Guerrero_1
     sw a0, -32(fp)
     lw t1, -32(fp)
@@ -4509,7 +4379,7 @@ __entrada_main:
     sw t1, 0(t6)
     lw a0, -40(fp)
     li a1, 2
-    la a2, str_31
+    la a2, str_29
     call constructor_Mago_1
     sw a0, -40(fp)
     lw t1, -40(fp)
@@ -4522,7 +4392,7 @@ __entrada_main:
     sw t1, 0(t6)
     lw a0, -48(fp)
     li a1, 3
-    la a2, str_32
+    la a2, str_30
     call constructor_Arquero_1
     sw a0, -48(fp)
     lw t1, -48(fp)
@@ -4535,7 +4405,7 @@ __entrada_main:
     sw t1, 0(t6)
     lw a0, -56(fp)
     li a1, 10
-    la a2, str_33
+    la a2, str_31
     call constructor_Orco_1
     sw a0, -56(fp)
     lw t1, -56(fp)
@@ -4548,7 +4418,7 @@ __entrada_main:
     sw t1, 0(t6)
     lw a0, -64(fp)
     li a1, 11
-    la a2, str_34
+    la a2, str_32
     call constructor_OrcoJefe_1
     sw a0, -64(fp)
     lw t1, -64(fp)
@@ -4607,7 +4477,7 @@ __entrada_main:
     lw t0, 4(t0)
     jalr t0
     sw a0, -100(fp)
-    la a0, str_35
+    la a0, str_33
     call z_print_cadena
     call z_print_salto
     lw a0, -28(fp)
@@ -4629,7 +4499,7 @@ __entrada_main:
     lw t0, 16(t0)
     jalr t0
     sw a0, -112(fp)
-    la a0, str_36
+    la a0, str_34
     call z_print_cadena
     addi sp, sp, -8
     lw a0, -28(fp)
@@ -4653,7 +4523,7 @@ __entrada_main:
     lw a0, -116(fp)
     call z_print_entero
     call z_print_salto
-    la a0, str_37
+    la a0, str_35
     call z_print_cadena
     lw a0, -52(fp)
     mv t0, a0
@@ -4664,7 +4534,7 @@ __entrada_main:
     lw a0, -120(fp)
     call z_print_decimal
     call z_print_salto
-    la a0, str_38
+    la a0, str_36
     call z_print_cadena
     lw a0, -44(fp)
     mv t0, a0
@@ -4675,7 +4545,7 @@ __entrada_main:
     lw a0, -124(fp)
     call z_print_decimal
     call z_print_salto
-    la a0, str_39
+    la a0, str_37
     call z_print_cadena
     lw a0, -44(fp)
     mv t0, a0
@@ -4693,7 +4563,7 @@ __entrada_main:
     lw t0, 72(t0)
     jalr t0
     sw a0, -132(fp)
-    la a0, str_40
+    la a0, str_38
     call z_print_cadena
     lw a0, -36(fp)
     mv t0, a0
@@ -4724,7 +4594,7 @@ __entrada_main:
     sw t3, -148(fp)
     lw t1, -148(fp)
     sw t1, -20(fp)
-    la a0, str_41
+    la a0, str_39
     call z_print_cadena
     lw a0, -20(fp)
     call z_print_entero
@@ -4735,25 +4605,10 @@ __entrada_main:
     lw t0, 24(t0)
     jalr t0
     sw a0, -152(fp)
-    lw a0, -28(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 28(t0)
-    jalr t0
-    sw a0, -156(fp)
-    lw a0, -28(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 32(t0)
-    jalr t0
-    sw a0, -160(fp)
-    la a0, str_42
-    call z_print_cadena
-    call z_print_salto
 __epilogo_main:
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 160
+    addi sp, sp, 152
     mv fp, t0
     ret
 

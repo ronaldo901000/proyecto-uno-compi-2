@@ -1,3 +1,4 @@
+import { Cuarteta } from "../cuarteta/cuarteta";
 import { ErrorAnalisis } from "../error-analisis/ErrorAnalisis";
 
 export interface SessionRespuesta {
@@ -6,5 +7,6 @@ export interface SessionRespuesta {
     salida: string,
     errores: ErrorAnalisis[];
     codigoRiscV: string,
-    terminado?: boolean;
+    terminado?: boolean,
+    cuartetas?: Cuarteta[];
 }

@@ -34,10 +34,6 @@ public class Analizador {
 
     private ListaCuartetas cuartetas;
 
-    public ListaCuartetas getCuartetas() {
-        return cuartetas;
-    }
-
     public RespuestaDTO iniciar(EntradaDTO entrada) throws EntradaException {
         RespuestaDTO respuestaDTO = new RespuestaDTO();
 
@@ -130,4 +126,7 @@ public class Analizador {
 
     }
 
+    public ListaCuartetas getCuartetas() {
+        return cuartetas;
+    }
 }
