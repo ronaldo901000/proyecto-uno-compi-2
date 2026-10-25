@@ -6,9 +6,11 @@ import com.ronaldo.cd3.compiler.api.enums.TipoDato;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
+import com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
 
 /**
  *
@@ -35,14 +37,14 @@ public class DeclaracionVariable extends Declaracion {
 
     @Override
     public void verificarSemantica(Contexto contexto) {
-        if (valorInicial instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
-            // leer() polimorfico: el tipo se toma del tipo declarado
+        if (valorInicial instanceof Lectura) {
+
             Tipo tipoDecl = null;
             if (tipoDato != null) {
                 tipoDecl = reglas.resolverTipo(contexto, tipoDato, fila, columna);
             }
             if (tipoDecl != null && !reglas.esError(tipoDecl)) {
-                ((com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) valorInicial)
+                ((Lectura) valorInicial)
                         .setTipoEsperado(tipoDecl);
             }
         }
@@ -57,7 +59,7 @@ public class DeclaracionVariable extends Declaracion {
             if (tipo == null || tipo.getTipoDato() == TipoDato.NULO) {
                 contexto.agregarError(fila, columna, id,
                         "No se puede inferir el tipo de '" + id + "'. "
-                        + "Si es null, indique la clase: esto " + id + " : null : MiClase");
+                        + "Si es null, indica la clase: esto " + id + " : null : MiClase");
                 return;
             }
         }
@@ -78,12 +80,11 @@ public class DeclaracionVariable extends Declaracion {
                 ? reglas.resolverTipo(contexto, tipoDato, fila, columna)
                 : ((valorInicial != null) ? valorInicial.getTipo() : null);
         cuartetas.registrarTipoVariableDeclarada(id, tipo);
-        if (tipo instanceof com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) {
-            cuartetas.registrarTipoArregloDeclarado(id,
-                    ((com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) tipo).getTipoBase());
+        if (tipo instanceof TipoArreglo) {
+            cuartetas.registrarTipoArregloDeclarado(id, ((TipoArreglo) tipo).getTipoBase());
         }
-        if (valorInicial instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
-            // leer() es polimorfico: emitir LEER con la variable destino directamente
+        if (valorInicial instanceof Lectura) {
+
             cuartetas.agregar(OperadorCuarteta.LEER, null, null,
                     id, fila, columna);
         } else if (valorInicial != null) {

@@ -4,8 +4,8 @@ import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
 
 /**
- * Llamada a un metodo virtual. arg1 = objeto receptor, arg2 = slot (posicion en
- * la vtable), resultado = temporal de retorno.
+ * 
+ * @author ronaldo
  */
 public class CuartetaLlamadaVirtual extends Cuarteta {
 

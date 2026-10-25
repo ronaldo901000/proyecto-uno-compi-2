@@ -5,7 +5,8 @@ import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Cuarteta;
 import java.util.List;
 
 /**
- * Respuesta de operaciones de sesion interactiva de Venus.
+ * 
+ * @author ronaldo
  */
 public class EjecutarSesionRespuestaDTO {
 

@@ -18,8 +18,6 @@ import java.util.List;
  */
 public class LlamadaSuper extends Expresion implements Instruccion {
 
-    private static final String METODO = "del metodo";
-
     private final Reglas reglas = new Reglas();
     private final VerificadorAcceso verificadorAcceso = new VerificadorAcceso();
     private AccesoVariable variable;
@@ -46,10 +44,7 @@ public class LlamadaSuper extends Expresion implements Instruccion {
         }
     }
 
-    /**
-     * super solo es valido dentro de un metodo o constructor de una clase que
-     * tenga superclase
-     */
+
     private SimboloClase obtenerSuperclase(Contexto contexto) {
         SimboloClase claseActual = contexto.getClaseActual();
         if (claseActual == null) {
@@ -68,10 +63,7 @@ public class LlamadaSuper extends Expresion implements Instruccion {
         return superclase;
     }
 
-    /**
-     * el metodo se busca a partir de la superclase, por lo que no se
-     * sobreescrito por la clase actual
-     */
+
     private void verificarMetodoEnSuperclase(Contexto contexto, SimboloClase superclase) {
         List<Tipo> tiposArgumentos = verificarArgumentos(contexto);
 
@@ -96,10 +88,7 @@ public class LlamadaSuper extends Expresion implements Instruccion {
         setTipo(metodo.getTipoRetorno());
     }
 
-    /**
-     * el atributo se busca en el ambito de la superclase, la cadena de ambitos
-     * (padre-hijo) hace que la busqueda suba por la jerarquia de herencia
-     */
+
     private void verificarAtributoEnSuperclase(Contexto contexto, SimboloClase superclase) {
         TablaSimbolos ambitoPrevio = contexto.getAmbito();
         if (superclase.getAmbito() != null) {
@@ -123,7 +112,7 @@ public class LlamadaSuper extends Expresion implements Instruccion {
 
     private void errorSobrecargaNoCompatible(Contexto contexto) {
         contexto.agregarError(fila, columna, llamada.getNombreFuncion(),
-                "No existe una sobrecarga " + METODO + " '" + llamada.getNombreFuncion()
+                "No existe una sobrecarga del metodo '" + llamada.getNombreFuncion()
                 + "' compatible con los argumentos proporcionados");
     }
 
@@ -139,10 +128,7 @@ public class LlamadaSuper extends Expresion implements Instruccion {
         return variable.generarCuartetas(contexto, cuartetas);
     }
 
-    /**
-     * super se enlaza estaticamente con el metodo de la superclase, nunca con
-     * la version sobreescrita en la clase actual
-     */
+
     private String generarCuartetasMetodo(Contexto contexto, ListaCuartetas cuartetas) {
         List<String> temporalesArgumentos = new ArrayList<>();
         if (llamada.getArgumentos() != null) {

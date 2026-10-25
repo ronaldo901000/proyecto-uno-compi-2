@@ -4,9 +4,8 @@ import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.ir.EmisorIR;
 
 /**
- * Cuarteta que acumula un argumento de una llamada a funcion. Los argumentos
- * se encolan en el contexto hasta que llega la cuarteta LLAMADA que cierra la
- * secuencia.
+ * 
+ * @author ronaldo
  */
 public class CuartetaParametro extends Cuarteta {
 

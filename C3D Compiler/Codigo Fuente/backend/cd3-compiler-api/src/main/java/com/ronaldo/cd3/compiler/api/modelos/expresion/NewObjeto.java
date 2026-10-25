@@ -131,9 +131,6 @@ public class NewObjeto extends Expresion implements Verificable {
         cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, null,
                 null, temporalPtr, fila, columna);
 
-        // Fija la vtable (tabla virtual de despacho) de la clase en el
-        // encabezado del objeto. Se hace aqui, y no en los constructores, para
-        // que this ya tenga vtable dentro de cualquier metodo.
         if (contexto.getVTables() != null
                 && contexto.getVTables().tieneVTable(nombreClase)) {
             cuartetas.agregar(OperadorCuarteta.FIJAR_VTABLE, temporalPtr,

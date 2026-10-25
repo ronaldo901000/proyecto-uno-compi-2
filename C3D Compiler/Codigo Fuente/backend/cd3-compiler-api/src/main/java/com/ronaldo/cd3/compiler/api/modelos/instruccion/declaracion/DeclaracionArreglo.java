@@ -9,6 +9,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloVariable;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class DeclaracionArreglo extends Declaracion {
     }
 
     /**
-     * Verifica cada dimension declarada y devuelve sus tamaños , 0 si no se conoce
+     * Verifica cada dimension declarada y devuelve sus tamaños
      */
     private List<Integer> verificarDimensiones(Contexto contexto) {
         List<Integer> tamaños = new ArrayList<>();
@@ -93,7 +94,7 @@ public class DeclaracionArreglo extends Declaracion {
     }
 
     /**
-     * Devuelve el tamaño constante de la dimension, o 0 si no se conoce o es invalida
+     * Devuelve el tamaño constante de la dimension
      */
     private int verificarDimension(Contexto contexto, Expresion dimension, int indice) {
         if (dimension == null) {
@@ -131,7 +132,7 @@ public class DeclaracionArreglo extends Declaracion {
     }
 
     /**
-     * Verifica inicializadores como: new tipo[n] o una expresion cualquiera.
+     * Verifica inicializadores como: new tipo[n] o una expresion cualquiera
      */
     private void verificarValorExpresion(Contexto contexto, Tipo tipoArreglo) {
         if (valorExpresion == null) {
@@ -180,14 +181,10 @@ public class DeclaracionArreglo extends Declaracion {
         Tipo tipoArreglo = contexto.getTablaTipos().getArreglo(base, tamaños);
         cuartetas.registrarTipoVariableDeclarada(id, tipoArreglo);
 
-        // Reserva memoria en el heap para el arreglo local. Sin esto, escribir
-        // notas[i] usaria una direccion basura. Se omite si el arreglo se
-        // inicializa con una expresion externa (p.ej. x = objeto.obtenerNotas())
-        // que ya entrega un puntero valido.
-        if (tipoArreglo instanceof com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo
-                && ((com.ronaldo.cd3.compiler.api.modelos.tipos.TipoArreglo) tipoArreglo)
-                        .getTotalElementos() > 0
+        if (tipoArreglo instanceof TipoArreglo
+                && ((TipoArreglo) tipoArreglo).getTotalElementos() > 0
                 && !tieneValorExpresionExterno()) {
+
             cuartetas.agregar(OperadorCuarteta.PUNTERO_INICIO, null,
                     null, id, fila, columna);
         }

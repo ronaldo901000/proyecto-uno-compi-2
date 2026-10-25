@@ -7,7 +7,6 @@ import com.ronaldo.cd3.compiler.api.interfaces.Verificable;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
-
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
 

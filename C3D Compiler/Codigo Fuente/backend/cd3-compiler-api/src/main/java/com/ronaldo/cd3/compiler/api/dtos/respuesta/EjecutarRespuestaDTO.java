@@ -1,7 +1,8 @@
 package com.ronaldo.cd3.compiler.api.dtos.respuesta;
 
 /**
- * Respuesta de ejecucion de codigo RISC-V mediante Venus.
+ * 
+ * @author ronaldo
  */
 public class EjecutarRespuestaDTO {
 

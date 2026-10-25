@@ -6,6 +6,7 @@ import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Direccion;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
+import com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 
@@ -49,10 +50,8 @@ public class Asignacion extends Nodo implements Instruccion {
         if (objetivo != null) {
             objetivo.verificarSemantica(contexto);
         }
-        if (valor instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura
-                && objetivo != null && objetivo.getTipo() != null) {
-            ((com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) valor)
-                    .setTipoEsperado(objetivo.getTipo());
+        if (valor instanceof Lectura && objetivo != null && objetivo.getTipo() != null) {
+            ((Lectura) valor).setTipoEsperado(objetivo.getTipo());
         }
         if (valor != null) {
             valor.verificarSemantica(contexto);
@@ -82,7 +81,7 @@ public class Asignacion extends Nodo implements Instruccion {
         if (objetivo == null || valor == null) {
             return null;
         }
-        if (valor instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
+        if (valor instanceof Lectura) {
             String dirObjetivo = direccion.lvalue(objetivo, contexto, cuartetas);
             cuartetas.agregar(OperadorCuarteta.LEER, null, null,
                     dirObjetivo, fila, columna);

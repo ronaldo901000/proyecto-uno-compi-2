@@ -1,11 +1,13 @@
 package com.ronaldo.cd3.compiler.api.modelos.expresion;
 
+import com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso;
 import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.instruccion.Instruccion;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.VerificadorAcceso;
+import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloFuncion;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
@@ -58,13 +60,12 @@ public class Llamada extends Expresion implements Instruccion {
 
         List<Tipo> tiposArgumentos = verificarArgumentos(contexto);
 
-        if (verificarMetodoDeClaseActual(contexto, tiposArgumentos)) {  
+        if (verificarMetodoDeClaseActual(contexto, tiposArgumentos)) {
             return;
         }
-        verificarFuncionLibre(contexto, tiposArgumentos);                
+        verificarFuncionLibre(contexto, tiposArgumentos);
     }
 
-    
     private void verificarMetodoDeObjeto(Contexto contexto) {
         objetivo.verificarSemantica(contexto);
         List<Tipo> tiposArgumentos = verificarArgumentos(contexto);
@@ -113,7 +114,8 @@ public class Llamada extends Expresion implements Instruccion {
     }
 
     /**
-     * retorna true solo si existe en la clase actual o en la clase padre recursivamente
+     * retorna true solo si existe en la clase actual o en la clase padre
+     * recursivamente
      */
     private boolean verificarMetodoDeClaseActual(Contexto contexto, List<Tipo> tiposArgumentos) {
         SimboloClase claseActual = contexto.getClaseActual();
@@ -155,7 +157,6 @@ public class Llamada extends Expresion implements Instruccion {
 
         aceptarLlamada(contexto, funcion, FUNCION);
     }
-
 
     private void aceptarLlamada(Contexto contexto, SimboloFuncion destino, String descripcionDestino) {
         verificadorAcceso.verificar(contexto, fila, columna, nombreFuncion,
@@ -214,7 +215,7 @@ public class Llamada extends Expresion implements Instruccion {
 
         if (argumentos != null) {
             for (Expresion arg : argumentos) {
-                if (arg instanceof com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura) {
+                if (arg instanceof Lectura) {
                     String temp = cuartetas.nuevoTemporal();
                     cuartetas.registrarTipoTemporal(temp, arg.getTipo());
                     cuartetas.agregar(OperadorCuarteta.LEER, null, null,
@@ -261,15 +262,10 @@ public class Llamada extends Expresion implements Instruccion {
         return temporal;
     }
 
-    /**
-     * Posicion (slot) del metodo en la vtable de su clase. Solo aplica a
-     * metodos publicos/protegidos (virtuales). Devuelve -1 si la llamada no es
-     * virtual o no hay tabla de vtables disponible.
-     */
     private int slotVirtual(Contexto contexto, SimboloFuncion funcion) {
         if (funcion == null || contexto.getVTables() == null
                 || funcion.getModAcceso()
-                        == com.ronaldo.cd3.compiler.api.enums.ModificadoresAcceso.PRIVATE) {
+                == ModificadoresAcceso.PRIVATE) {
             return -1;
         }
         String clase = funcion.getNombreClase();
@@ -281,15 +277,13 @@ public class Llamada extends Expresion implements Instruccion {
     }
 
     private String firmaDe(SimboloFuncion funcion) {
-        return com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos
-                .claveFuncion(funcion.getId(), tiposDe(funcion));
+        return TablaSimbolos.claveFuncion(funcion.getId(), tiposDe(funcion));
     }
 
     private List<Tipo> tiposDe(SimboloFuncion funcion) {
         List<Tipo> tipos = new ArrayList<>();
         if (funcion.getParametros() != null) {
-            for (com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro p
-                    : funcion.getParametros()) {
+            for (SimboloParametro p : funcion.getParametros()) {
                 tipos.add(p.getTipo());
             }
         }

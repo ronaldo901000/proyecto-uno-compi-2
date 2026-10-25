@@ -5,6 +5,7 @@ import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloClase;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Contexto {
     private int contadorCiclos;
     private boolean dentroSwitch;
     private boolean esLenguajeZ;
-    private com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables;
+    private TablaVTables vTables;
     private final ArrayDeque<String> pilaEtiquetasContinuar = new ArrayDeque<>();
     private final ArrayDeque<String> pilaEtiquetasRomper = new ArrayDeque<>();
     private String rutaPaquete;
@@ -38,12 +39,11 @@ public class Contexto {
         this.errores = new ArrayList<>();
     }
 
-    public com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables getVTables() {
+    public TablaVTables getVTables() {
         return vTables;
     }
 
-    public void setVTables(
-            com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables) {
+    public void setVTables( TablaVTables vTables) {
         this.vTables = vTables;
     }
 

@@ -304,11 +304,6 @@ public class TablaSimbolos {
         this.tamañoAmbito = this.siguientePosicion;
     }
 
-    @Override
-    public String toString() {
-        return "Ambito: " + nombreAmbito + " -> " + simbolos.keySet();
-    }
-
     public boolean isEsThis() {
         return esThis;
     }

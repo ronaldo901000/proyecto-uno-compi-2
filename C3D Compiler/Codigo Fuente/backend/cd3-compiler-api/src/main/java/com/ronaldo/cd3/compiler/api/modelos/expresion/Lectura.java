@@ -15,8 +15,6 @@ public class Lectura extends Expresion implements Instruccion {
 
     private final Direccion direccion = new Direccion();
     private Expresion argumento;
-    // Tipo esperado por el contexto (declaracion, asignacion, argumento, retorno).
-    // Si es null, se usa CADENA por defecto.
     private Tipo tipoEsperado;
 
     public Lectura(int fila, int columna) {
