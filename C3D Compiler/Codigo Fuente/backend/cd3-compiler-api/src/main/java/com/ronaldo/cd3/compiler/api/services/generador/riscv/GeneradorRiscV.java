@@ -15,49 +15,41 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Generador de codigo RISC-V (RV32). Recorre el IR con un
- * {@link EmisorRiscV} y ensambla la salida final: seccion .data (literales del
- * pool), .text (con un punto de entrada main) y las rutinas de soporte de
- * {@link RuntimeRiscV}.
- *
- * <p>Las vTables se generan con etiquetas de métodos (no direcciones numéricas)
- * solo para las clases cuyos métodos se generan en el cuerpo.
+ * Genera el codigo RISC-V para RARS a partir de las cuartetas:
+ * arma la seccion .data (literales y vTables), el .text con el punto de
+ * entrada y agrega las rutinas de soporte.
  */
 public class GeneradorRiscV {
-
-    private static final int BASE_MEMORIA = 0x00010000;
-
-    private final int direccionInicioHeap = 0x10040000;
 
     public String generar(ListaCuartetas cuartetas) {
         if (cuartetas == null || cuartetas.getCuartetas().isEmpty()) {
             return "";
         }
 
+        // Recorrer el IR y emitir el cuerpo .text
         MotorIR motor = new MotorIR(cuartetas);
         EmisorRiscV emisor = new EmisorRiscV(motor.getAmbiente());
         motor.recorrer(emisor);
         emisor.finalizar();
 
-        // Sección .data con strings y literales del pool (sin vTables todavía).
+        // Seccion .data con strings y literales del pool
         String seccionDatos = seccionDatos(motor.getAmbiente().getPoolLiterales());
 
-        // Cuerpo .text (sin vTables, que van en .data).
-        String cuerpo = generarCuerpo(emisor, cuartetas);
+        // Cuerpo .text
+        String cuerpo = emisor.getCuerpo();
 
-        // Extraer nombres de clase cuyos métodos se generan en el cuerpo.
+        // vTables solo para las clases cuyos metodos se generaron en el cuerpo
         Set<String> clasesConMetodos = extraerClasesConMetodos(cuerpo);
-
-        // Sección .data con vTables usando etiquetas de métodos, solo para clases con métodos.
         String seccionVTables = seccionVTables(cuartetas, clasesConMetodos);
 
-        // Ensamblar salida final.
+        // Ensamblar salida final
         StringBuilder codigo = new StringBuilder();
         codigo.append(seccionDatos);
         codigo.append(seccionVTables);
         codigo.append(".text\n");
         codigo.append(".globl main\n");
         codigo.append("main:\n");
+
         String entrada = buscarEntrada(cuartetas);
         if (entrada != null) {
             String real = "__entrada_" + entrada;
@@ -68,76 +60,10 @@ public class GeneradorRiscV {
         }
         codigo.append("    call z_exit\n\n");
         codigo.append(cuerpo);
+
         RuntimeRiscV runtime = new RuntimeRiscV();
         codigo.append(runtime.codigo());
         return codigo.toString();
-    }
-
-    /**
-     * Genera el cuerpo .text (sin sección .data ni vTables).
-     */
-    private String generarCuerpo(EmisorRiscV emisor, ListaCuartetas cuartetas) {
-        StringBuilder sb = new StringBuilder();
-        String cuerpo = emisor.getCuerpo();
-        sb.append(cuerpo);
-        return sb.toString();
-    }
-
-    /**
-     * Estima el tamaño en bytes de una sección de texto ensamblador.
-     * Cada línea que no es etiqueta ni directaiva cuenta como 4 bytes.
-     * Las directivas .align y .word/.space/.byte/.asciiz se estiman.
-     */
-    private int tamanioEnBytes(String seccionTexto) {
-        int tamanio = 0;
-        for (String linea : seccionTexto.split("\n")) {
-            String s = linea.trim();
-            if (s.isEmpty() || s.startsWith("#")) {
-                continue;
-            }
-            if (s.endsWith(":") && !s.startsWith(".")) {
-                continue; // etiqueta, no ocupa bytes
-            }
-            if (s.startsWith(".align")) {
-                try {
-                    int exp = Integer.parseInt(s.substring(s.indexOf(' ') + 1).trim());
-                    int alineacion = 1 << exp;
-                    while ((tamanio % alineacion) != 0) {
-                        tamanio++;
-                    }
-                } catch (Exception ex) {
-                    // ignorar
-                }
-                continue;
-            }
-            if (s.startsWith(".asciiz")) {
-                int ini = s.indexOf('"');
-                int fin = s.lastIndexOf('"');
-                if (ini >= 0 && fin > ini) {
-                    tamanio += (fin - ini - 1) + 1; // contenido + nulo
-                }
-                continue;
-            }
-            if (s.startsWith(".float")) {
-                tamanio += 4;
-                continue;
-            }
-            if (s.startsWith(".word")) {
-                tamanio += 4;
-                continue;
-            }
-            if (s.startsWith(".space") || s.startsWith(".zero")) {
-                try {
-                    tamanio += Integer.parseInt(s.substring(s.indexOf(' ') + 1).trim());
-                } catch (Exception ex) {
-                    // ignorar
-                }
-                continue;
-            }
-            // Cualquier otra cosa (instrucción) = 4 bytes.
-            tamanio += 4;
-        }
-        return tamanio;
     }
 
     private String seccionDatos(PoolLiterales pool) {
@@ -151,8 +77,8 @@ public class GeneradorRiscV {
                     datos.append(".asciz ").append(entrada.getValor());
                 } else {
                     double val = Double.parseDouble(entrada.getValor());
-                    int scaled = (int) Math.round(val * 1000.0);
-                    datos.append(".word ").append(scaled);
+                    int escalado = (int) Math.round(val * 1000.0);
+                    datos.append(".word ").append(escalado);
                 }
                 datos.append("\n");
             }
@@ -161,9 +87,8 @@ public class GeneradorRiscV {
     }
 
     /**
-     * Genera la sección de vTables usando etiquetas de métodos
-     * (no direcciones numéricas) para que Venus/RARS las resuelvan.
-     * Solo emite vtables para clases cuyos métodos se generan en el cuerpo.
+     * Genera la seccion de vTables usando etiquetas de metodos. Solo emite
+     * vTables para clases cuyos metodos se generan en el cuerpo.
      */
     private String seccionVTables(ListaCuartetas cuartetas, Set<String> clasesConMetodos) {
         TablaVTables vTables = (cuartetas != null) ? cuartetas.getVTables() : null;
@@ -173,7 +98,6 @@ public class GeneradorRiscV {
         StringBuilder datos = new StringBuilder();
         for (Map.Entry<String, List<EntradaVTable>> entrada
                 : vTables.getVTables().entrySet()) {
-            // Solo emitir vtable para clases cuyos métodos se generan
             if (!clasesConMetodos.contains(entrada.getKey())) {
                 continue;
             }
@@ -184,16 +108,17 @@ public class GeneradorRiscV {
             datos.append(".align 2\n");
             datos.append("__vtable_").append(entrada.getKey()).append(":\n");
             for (EntradaVTable entradaVTable : tabla) {
-                String etiqueta = entradaVTable.getEtiquetaImplementacion();
-                datos.append("    .word ").append(etiqueta).append("\n");
+                datos.append("    .word ")
+                        .append(entradaVTable.getEtiquetaImplementacion())
+                        .append("\n");
             }
         }
         return datos.toString();
     }
 
     /**
-     * Extrae los nombres de clase cuyas etiquetas de método aparecen en el cuerpo.
-     * Las etiquetas tienen el formato: metodo_Clase_metodo_N  o  constructor_Clase_N
+     * Extrae los nombres de clase cuyas etiquetas de metodo aparecen en el
+     * cuerpo. Formato: metodo_Clase_metodo_N o constructor_Clase_N
      */
     private Set<String> extraerClasesConMetodos(String cuerpo) {
         Set<String> clases = new HashSet<>();
@@ -240,32 +165,5 @@ public class GeneradorRiscV {
 
     private boolean esCadena(PoolLiterales.EntradaLiteral entrada) {
         return entrada.getValor() != null && entrada.getValor().trim().startsWith("\"");
-    }
-
-    private int alineacionExponente(int alineacion) {
-        int exponente = 0;
-        int valor = Math.max(1, alineacion);
-        while (valor > 1) {
-            valor >>= 1;
-            exponente++;
-        }
-        return exponente;
-    }
-
-    /**
-     * Genera el binario ELF32 RV32 listo para ejecutar con
-     * {@code qemu-riscv32}, ensamblando el texto de {@link #generar} con
-     * {@link EnsambladorRiscV32}.
-     */
-    public byte[] generarElf(ListaCuartetas cuartetas) {
-        String asm = generar(cuartetas);
-        EnsambladorRiscV32 ensamblador = new EnsambladorRiscV32(asm);
-        return ensamblador.ensamblar();
-    }
-
-    public int getEntryPoint(ListaCuartetas cuartetas) {
-        String asm = generar(cuartetas);
-        EnsambladorRiscV32 ensamblador = new EnsambladorRiscV32(asm);
-        return ensamblador.getEntryPoint();
     }
 }

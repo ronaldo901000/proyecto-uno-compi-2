@@ -30,9 +30,7 @@ public class LectorSalida implements Runnable {
                 n = r.read(buf);
             }
         } catch (IOException ignored) {
-            // Si el flujo se rompe, simplemente se termina la lectura
         } finally {
-            // Marcar que ya no llegara mas salida
             buffer.marcarFin();
         }
     }

@@ -16,7 +16,6 @@ public class SesionRars {
     private final OutputStreamWriter stdin;
     private final BufferSalida buffer = new BufferSalida();
 
-
     public SesionRars(String sessionId, String rarsJar, String archivoAsm, String workDir)
             throws IOException {
         this.sessionId = sessionId;
@@ -39,7 +38,6 @@ public class SesionRars {
     public String getSessionId() {
         return sessionId;
     }
-
 
     public void esperarSalida(long maxMs) {
         long fin = System.currentTimeMillis() + maxMs;
@@ -66,11 +64,9 @@ public class SesionRars {
         }
     }
 
-
     public String leerNuevo() {
         return buffer.extraer();
     }
-
 
     public String enviar(String texto) {
         if (texto != null && !buffer.haTerminadoLectura()) {
@@ -92,11 +88,9 @@ public class SesionRars {
         return buffer.haTerminadoLectura() && buffer.tamaño() == 0;
     }
 
-
     public boolean estaVivo() {
         return process.isAlive();
     }
-
 
     public void detener() {
         try {
