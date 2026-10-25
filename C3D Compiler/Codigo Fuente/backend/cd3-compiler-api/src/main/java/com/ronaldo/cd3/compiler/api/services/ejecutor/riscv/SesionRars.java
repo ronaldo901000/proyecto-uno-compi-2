@@ -1,22 +1,27 @@
-package com.ronaldo.cd3.compiler.api.services.generador.riscv;
+package com.ronaldo.cd3.compiler.api.services.ejecutor.riscv;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author ronaldo
+ */
 public class SesionRars {
 
     private final String sessionId;
     private final Process process;
     private final OutputStreamWriter stdin;
-    private final StringBuilder pendiente = new StringBuilder();
-    private final Object lock = new Object();
-    private volatile boolean finLectura = false;
+    private final BufferSalida buffer = new BufferSalida();
+
 
     public SesionRars(String sessionId, String rarsJar, String archivoAsm, String workDir)
             throws IOException {
         this.sessionId = sessionId;
 
+        // Comando: java -jar rars.jar nc sm archivo.s
         ProcessBuilder pb = new ProcessBuilder("java", "-jar", rarsJar, "nc", "sm", archivoAsm);
         pb.directory(new File(workDir));
         pb.redirectErrorStream(true);
@@ -24,20 +29,9 @@ public class SesionRars {
         this.process = pb.start();
         this.stdin = new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8);
 
-        Thread lector = new Thread(() -> {
-            try (Reader r = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
-                char[] buf = new char[1024];
-                int n;
-                while ((n = r.read(buf)) != -1) {
-                    synchronized (lock) {
-                        pendiente.append(buf, 0, n);
-                    }
-                }
-            } catch (IOException ignored) {
-            } finally {
-                finLectura = true;
-            }
-        }, "rars-lector-" + sessionId);
+        // Hilo en segundo plano que lee la salida del proceso
+        LectorSalida tarea = new LectorSalida(process.getInputStream(), buffer);
+        Thread lector = new Thread(tarea, "rars-lector-" + sessionId);
         lector.setDaemon(true);
         lector.start();
     }
@@ -46,23 +40,23 @@ public class SesionRars {
         return sessionId;
     }
 
+
     public void esperarSalida(long maxMs) {
         long fin = System.currentTimeMillis() + maxMs;
         int ultimo = -1;
         long ultimoCambio = System.currentTimeMillis();
         try {
             while (System.currentTimeMillis() < fin) {
-                int tam;
-                synchronized (lock) {
-                    tam = pendiente.length();
-                }
+                int tam = buffer.tamaño();
+
                 if (tam != ultimo) {
                     ultimo = tam;
                     ultimoCambio = System.currentTimeMillis();
                 } else if (System.currentTimeMillis() - ultimoCambio > 250 && tam > 0) {
                     return;
                 }
-                if (finLectura) {
+
+                if (buffer.haTerminadoLectura()) {
                     return;
                 }
                 Thread.sleep(40);
@@ -72,18 +66,17 @@ public class SesionRars {
         }
     }
 
+
     public String leerNuevo() {
-        synchronized (lock) {
-            String s = pendiente.toString();
-            pendiente.setLength(0);
-            return s;
-        }
+        return buffer.extraer();
     }
 
+
     public String enviar(String texto) {
-        if (texto != null && !finLectura) {
+        if (texto != null && !buffer.haTerminadoLectura()) {
             try {
                 stdin.write(texto);
+
                 if (!texto.endsWith("\n")) {
                     stdin.write("\n");
                 }
@@ -96,17 +89,14 @@ public class SesionRars {
     }
 
     public boolean terminado() {
-        if (!finLectura) {
-            return false;
-        }
-        synchronized (lock) {
-            return pendiente.length() == 0;
-        }
+        return buffer.haTerminadoLectura() && buffer.tamaño() == 0;
     }
+
 
     public boolean estaVivo() {
         return process.isAlive();
     }
+
 
     public void detener() {
         try {
@@ -115,7 +105,10 @@ public class SesionRars {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            try { stdin.close(); } catch (Exception ignored) { }
+            try {
+                stdin.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 }
