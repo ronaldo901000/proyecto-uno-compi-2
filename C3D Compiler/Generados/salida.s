@@ -1,503 +1,280 @@
 .data
 .align 2
-dbl_0: .word 0
+str_0: .asciz "Tipo de operacion desconocido"
 .align 2
-dbl_1: .word 100000
+str_1: .asciz "par"
 .align 2
-str_0: .asciz "Novato"
+str_2: .asciz "impar"
 .align 2
-str_1: .asciz "Aprendiz"
+str_3: .asciz "===== REGISTRO DE OPERACIONES ====="
 .align 2
-str_2: .asciz "Maestro del ahorcado"
+str_4: .asciz "Operaciones totales: "
 .align 2
-str_3: .asciz "----- MARCADOR -----"
+str_5: .asciz "Inserciones: "
 .align 2
-str_4: .asciz "Partidas: "
+str_6: .asciz "Eliminaciones: "
 .align 2
-str_5: .asciz " | Ganadas: "
+str_7: .asciz "Busquedas exitosas: "
 .align 2
-str_6: .asciz " | Perdidas: "
+str_8: .asciz "["
 .align 2
-str_7: .asciz "Racha actual: "
+str_9: .asciz " <-> "
 .align 2
-str_8: .asciz " | Mejor racha: "
+str_10: .asciz "]"
 .align 2
-str_9: .asciz "Victorias: "
+str_11: .asciz "=== LISTA DOBLEMENTE ENLAZADA ==="
 .align 2
-str_10: .asciz "%"
+str_12: .asciz "Lista inicial (adelante):"
 .align 2
-str_11: .asciz "      |"
+str_13: .asciz "Lista inicial (atras):"
 .align 2
-str_12: .asciz "  O   |"
+str_14: .asciz "Otra lista:"
 .align 2
-str_13: .asciz "  |   |"
+str_15: .asciz ""
 .align 2
-str_14: .asciz " -|   |"
+str_16: .asciz "1. Insertar al inicio    2. Insertar al final    3. Insertar en posicion"
 .align 2
-str_15: .asciz " -|-  |"
+str_17: .asciz "4. Eliminar inicio       5. Eliminar final       6. Eliminar posicion"
 .align 2
-str_16: .asciz " ^    |"
+str_18: .asciz "7. Eliminar por valor    8. Buscar valor         9. Invertir"
 .align 2
-str_17: .asciz " ^ ^  |"
+str_19: .asciz "10. Ordenar              11. Imprimir            12. Estadisticas"
 .align 2
-str_18: .asciz "  +---+"
+str_20: .asciz "13. Vaciar               0. Salir"
 .align 2
-str_19: .asciz "========="
+str_21: .asciz "Valor:"
 .align 2
-str_20: .asciz "Errores: "
+str_22: .asciz "Posicion:"
 .align 2
-str_21: .asciz "/"
+str_23: .asciz "Insertado en la posicion "
 .align 2
-str_22: .asciz " | Intentos restantes: "
+str_24: .asciz "Posicion invalida"
 .align 2
-str_23: .asciz "Letras usadas: "
+str_25: .asciz "Elemento eliminado del inicio"
 .align 2
-str_24: .asciz " "
+str_26: .asciz "Lista vacia"
 .align 2
-str_25: .asciz ""
+str_27: .asciz "Elemento eliminado del final"
 .align 2
-str_26: .asciz "Lenguaje con nombre de serpiente"
+str_28: .asciz "Eliminado el elemento de la posicion "
 .align 2
-str_27: .asciz "Traduce codigo fuente a otro lenguaje"
+str_29: .asciz "Valor a eliminar:"
 .align 2
-str_28: .asciz "El enemigo de la resistencia"
+str_30: .asciz "Valor "
 .align 2
-str_29: .asciz "Civilizacion aliada"
+str_31: .asciz " eliminado"
 .align 2
-str_30: .asciz "Codigo intermedio ejecutable"
+str_32: .asciz "El valor no existe"
 .align 2
-str_31: .asciz "Indice fuera de rango, se usa la palabra 0"
+str_33: .asciz "Valor a buscar:"
 .align 2
-str_32: .asciz "_ "
+str_34: .asciz "No encontrado"
 .align 2
-str_33: .asciz "Jugador"
+str_35: .asciz "Encontrado en el indice "
 .align 2
-str_34: .asciz "=============================="
+str_36: .asciz "Lista invertida"
 .align 2
-str_35: .asciz "     AHORCADO ZETARIANO       "
+str_37: .asciz "Lista ordenada"
 .align 2
-str_36: .asciz "Ingresa tu nombre:"
+str_38: .asciz "Adelante:"
 .align 2
-str_37: .asciz "Elige una palabra (0 a 4):"
+str_39: .asciz "Atras:"
 .align 2
-str_38: .asciz "Pista: "
+str_40: .asciz "La lista esta vacia"
 .align 2
-str_39: .asciz "Ingresa una letra minuscula:"
+str_41: .asciz "Tamano: "
 .align 2
-str_40: .asciz "Entrada invalida, solo letras de la a a la z"
+str_42: .asciz " ("
 .align 2
-str_41: .asciz "Ya usaste la letra "
+str_43: .asciz ")"
 .align 2
-str_42: .asciz "Bien! La letra "
+str_44: .asciz "Suma: "
 .align 2
-str_43: .asciz " esta en la palabra"
+str_45: .asciz "Maximo: "
 .align 2
-str_44: .asciz "Fallaste! La letra "
+str_46: .asciz "Primero: "
 .align 2
-str_45: .asciz " no esta"
+str_47: .asciz " | Ultimo: "
 .align 2
-str_46: .asciz "GANASTE! La palabra era:"
+str_48: .asciz "Lista vaciada"
 .align 2
-str_47: .asciz "PERDISTE. La palabra era:"
+str_49: .asciz "Saliendo..."
 .align 2
-str_48: .asciz "Puntaje de la partida: "
+str_50: .asciz "Opcion invalida"
 .align 2
-str_49: .asciz "Jugar otra vez? (1 = si, 0 = no)"
-.align 2
-str_50: .asciz "Puntaje total: "
-.align 2
-str_51: .asciz "Titulo obtenido: "
-.align 2
-str_52: .asciz "Gracias por jugar, "
-.align 2
-__vtable_Ahorcado:
-    .word metodo_Ahorcado_yaUsada_1
-    .word metodo_Ahorcado_intentar_2
-    .word metodo_Ahorcado_gano_3
-    .word metodo_Ahorcado_perdio_4
-    .word metodo_Ahorcado_terminoJuego_5
-    .word metodo_Ahorcado_intentosRestantes_6
-    .word metodo_Ahorcado_dibujar_7
-    .word metodo_Ahorcado_mostrarEstado_8
-.align 2
-__vtable_Palabra:
-    .word metodo_Palabra_agregarLetra_1
-    .word metodo_Palabra_contiene_2
-    .word metodo_Palabra_revelar_3
-    .word metodo_Palabra_estaCompleta_4
-    .word metodo_Palabra_revelarTodo_5
-    .word metodo_Palabra_imprimirProgreso_6
-.align 2
-__vtable_Diccionario:
-    .word metodo_Diccionario_obtener_1
+__vtable_ListaDoble:
+    .word metodo_ListaDoble_estaVacia_1
+    .word metodo_ListaDoble_insertarInicio_2
+    .word metodo_ListaDoble_insertarFinal_3
+    .word metodo_ListaDoble_insertarFinal_4
+    .word metodo_ListaDoble_insertarEn_5
+    .word metodo_ListaDoble_eliminarInicio_6
+    .word metodo_ListaDoble_eliminarFinal_7
+    .word metodo_ListaDoble_eliminarEn_8
+    .word metodo_ListaDoble_eliminarValor_9
+    .word metodo_ListaDoble_vaciar_10
+    .word metodo_ListaDoble_obtenerNodo_11
+    .word metodo_ListaDoble_obtener_12
+    .word metodo_ListaDoble_buscar_13
+    .word metodo_ListaDoble_maximo_14
+    .word metodo_ListaDoble_sumaRecursiva_15
+    .word metodo_ListaDoble_suma_16
+    .word metodo_ListaDoble_invertir_17
+    .word metodo_ListaDoble_ordenar_18
+    .word metodo_ListaDoble_imprimirAdelante_19
+    .word metodo_ListaDoble_imprimirAtras_20
 .text
 .globl main
 main:
     call __entrada_main
     call z_exit
 
-fun_validarLetra:
+fun_registrar:
     addi sp, sp, -28
     sw ra, 24(sp)
     sw fp, 20(sp)
     addi fp, sp, 28
     sw a0, -12(fp)
-    lw t1, -12(fp)
-    li t2, 97
-    slt t3, t1, t2
-    sw t3, -16(fp)
+    sw a1, -16(fp)
+    lw t6, -12(fp)
+    lw t1, 0(t6)
+    addi t3, t1, 1
+    lw t6, -12(fp)
+    sw t3, 0(t6)
     lw t1, -16(fp)
-    bnez t1, L2
-    j L1
-L1:
-    lw t1, -12(fp)
-    li t2, 122
-    slt t3, t2, t1
+    li t2, 1
+    sub t3, t1, t2
+    seqz t3, t3
     sw t3, -20(fp)
     lw t1, -20(fp)
-    sw t1, -24(fp)
-    j L3
-L2:
-    li t1, 1
-    sw t1, -24(fp)
-L3:
+    bnez t1, L2
+    lw t1, -16(fp)
+    li t2, 2
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -24(fp)
     lw t1, -24(fp)
-    seqz t3, t1
+    bnez t1, L3
+    lw t1, -16(fp)
+    li t2, 3
+    sub t3, t1, t2
+    seqz t3, t3
     sw t3, -28(fp)
-    lw a0, -28(fp)
-    j __epilogo_fun_validarLetra
-    j __epilogo_fun_validarLetra
-__epilogo_fun_validarLetra:
+    lw t1, -28(fp)
+    bnez t1, L4
+    j L5
+L2:
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    addi t3, t1, 1
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t3, 0(t6)
+    j L1
+L3:
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    addi t3, t1, 1
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t3, 0(t6)
+    j L1
+L4:
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    addi t3, t1, 1
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t3, 0(t6)
+    j L1
+L5:
+    la a0, str_0
+    call z_print_cadena
+    call z_print_salto
+    j L1
+L1:
+    j __epilogo_fun_registrar
+__epilogo_fun_registrar:
     lw t0, -8(fp)
     lw ra, -4(fp)
     addi sp, sp, 28
     mv fp, t0
     ret
 
-fun_calcularPuntaje:
-    addi sp, sp, -60
-    sw ra, 56(sp)
-    sw fp, 52(sp)
-    addi fp, sp, 60
+fun_esPar:
+    addi sp, sp, -28
+    sw ra, 24(sp)
+    sw fp, 20(sp)
+    addi fp, sp, 28
     sw a0, -12(fp)
-    sw a1, -16(fp)
-    sw a2, -20(fp)
     lw t1, -12(fp)
-    li t2, 10
+    li t2, 2
+    div t3, t1, t2
+    sw t3, -16(fp)
+    lw t1, -16(fp)
+    li t2, 2
     mul t3, t1, t2
+    sw t3, -20(fp)
+    lw t1, -12(fp)
+    lw t2, -20(fp)
+    sub t3, t1, t2
     sw t3, -24(fp)
     lw t1, -24(fp)
-    sw t1, -28(fp)
-    lw t1, -16(fp)
-    li t2, 5
-    mul t3, t1, t2
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    sw t1, -36(fp)
-    li t1, 0
-    sw t1, -40(fp)
-    lw t1, -16(fp)
     li t2, 0
     sub t3, t1, t2
     seqz t3, t3
-    sw t3, -44(fp)
-    lw t1, -44(fp)
-    bnez t1, L5
-    j L4
-L5:
-    li t1, 50
-    sw t1, -40(fp)
-L4:
-    lw t1, -28(fp)
-    lw t2, -36(fp)
+    sw t3, -28(fp)
+    lw a0, -28(fp)
+    j __epilogo_fun_esPar
+    j __epilogo_fun_esPar
+__epilogo_fun_esPar:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 28
+    mv fp, t0
+    ret
+
+fun_paridad:
+    addi sp, sp, -20
+    sw ra, 16(sp)
+    sw fp, 12(sp)
+    addi fp, sp, 20
+    sw a0, -12(fp)
+    lw a0, -12(fp)
+    call fun_esPar
+    sw a0, -16(fp)
+    lw t1, -16(fp)
+    li t2, 1
     sub t3, t1, t2
-    sw t3, -48(fp)
-    lw t1, -48(fp)
-    lw t2, -40(fp)
-    add t3, t1, t2
-    sw t3, -52(fp)
-    lw t1, -52(fp)
-    sw t1, -56(fp)
-    lw t1, -56(fp)
-    li t2, 0
-    slt t3, t1, t2
-    sw t3, -60(fp)
-    lw t1, -60(fp)
-    bnez t1, L7
+    seqz t3, t3
+    sw t3, -20(fp)
+    lw t1, -20(fp)
+    bnez t1, L8
+    j L7
+L8:
+    la a0, str_1
+    j __epilogo_fun_paridad
     j L6
 L7:
-    li t1, 0
-    sw t1, -56(fp)
+    la a0, str_2
+    j __epilogo_fun_paridad
 L6:
-    lw a0, -56(fp)
-    j __epilogo_fun_calcularPuntaje
-    j __epilogo_fun_calcularPuntaje
-__epilogo_fun_calcularPuntaje:
+    j __epilogo_fun_paridad
+__epilogo_fun_paridad:
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 60
+    addi sp, sp, 20
     mv fp, t0
     ret
 
-fun_registrarResultado:
-    addi sp, sp, -32
-    sw ra, 28(sp)
-    sw fp, 24(sp)
-    addi fp, sp, 32
-    sw a0, -12(fp)
-    sw a1, -16(fp)
-    sw a2, -20(fp)
-    lw t6, -12(fp)
-    lw t1, 0(t6)
-    li t2, 5
-    slt t3, t1, t2
-    sw t3, -24(fp)
-    lw t1, -24(fp)
-    bnez t1, L9
-    j L8
-L9:
-    lw t6, -12(fp)
-    lw t2, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t1, 0(t6)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t6, 0(t6)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t6, -12(fp)
-    lw t2, 0(t6)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-L8:
-    lw t6, -12(fp)
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -12(fp)
-    sw t3, 0(t6)
-    lw t1, -16(fp)
-    li t2, 1
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L12
-    j L11
-L12:
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    sw t3, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    sw t3, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t1, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t2, 0(t6)
-    slt t3, t2, t1
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    bnez t1, L14
-    j L13
-L14:
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t1, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    sw t1, 0(t6)
-L13:
-    j L10
-L11:
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    sw t3, 0(t6)
-    li t1, 0
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    sw t1, 0(t6)
-L10:
-    j __epilogo_fun_registrarResultado
-__epilogo_fun_registrarResultado:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 32
-    mv fp, t0
-    ret
-
-fun_sumarPuntajes:
-    addi sp, sp, -32
-    sw ra, 28(sp)
-    sw fp, 24(sp)
-    addi fp, sp, 32
-    sw a0, -12(fp)
-    li t1, 0
-    sw t1, -16(fp)
-    li t1, 0
-    sw t1, -20(fp)
-L15:
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -24(fp)
-    lw t1, -24(fp)
-    bnez t1, L16
-    j L18
-L16:
-    lw t2, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t1, 0(t6)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -28(fp)
-    lw t1, -16(fp)
-    lw t2, -28(fp)
-    add t3, t1, t2
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    sw t1, -16(fp)
-L17:
-    lw t1, -20(fp)
-    addi t3, t1, 1
-    sw t3, -20(fp)
-    j L15
-L18:
-    lw a0, -16(fp)
-    j __epilogo_fun_sumarPuntajes
-    j __epilogo_fun_sumarPuntajes
-__epilogo_fun_sumarPuntajes:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 32
-    mv fp, t0
-    ret
-
-fun_porcentajeVictorias:
-    addi sp, sp, -24
-    sw ra, 20(sp)
-    sw fp, 16(sp)
-    addi fp, sp, 24
-    sw a0, -12(fp)
-    lw t6, -12(fp)
-    lw t1, 0(t6)
-    li t2, 0
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -16(fp)
-    lw t1, -16(fp)
-    bnez t1, L20
-    j L19
-L20:
-    la a0, dbl_0
-    lw a0, 0(a0)
-    j __epilogo_fun_porcentajeVictorias
-L19:
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    la t2, dbl_1
-    lw t2, 0(t2)
-    mul t3, t1, t2
-    sw t3, -20(fp)
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    lw t2, 0(t6)
-    div t3, t1, t2
-    sw t3, -24(fp)
-    lw a0, -24(fp)
-    j __epilogo_fun_porcentajeVictorias
-    j __epilogo_fun_porcentajeVictorias
-__epilogo_fun_porcentajeVictorias:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 24
-    mv fp, t0
-    ret
-
-fun_titulo:
-    addi sp, sp, -32
-    sw ra, 28(sp)
-    sw fp, 24(sp)
-    addi fp, sp, 32
-    sw a0, -12(fp)
-    lw t1, -12(fp)
-    li t2, 100
-    div t3, t1, t2
-    sw t3, -16(fp)
-    lw t1, -16(fp)
-    sw t1, -20(fp)
-    la t1, str_0
-    sw t1, -24(fp)
-    lw t1, -20(fp)
-    li t2, 0
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L22
-    lw t1, -20(fp)
-    li t2, 1
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    bnez t1, L23
-    j L24
-L22:
-    la t1, str_0
-    sw t1, -24(fp)
-    j L21
-L23:
-    la t1, str_1
-    sw t1, -24(fp)
-    j L21
-L24:
-    la t1, str_2
-    sw t1, -24(fp)
-    j L21
-L21:
-    lw a0, -24(fp)
-    j __epilogo_fun_titulo
-    j __epilogo_fun_titulo
-__epilogo_fun_titulo:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 32
-    mv fp, t0
-    ret
-
-fun_mostrarMarcador:
-    addi sp, sp, -56
-    sw ra, 52(sp)
-    sw fp, 48(sp)
-    addi fp, sp, 56
+fun_imprimirRegistro:
+    addi sp, sp, -28
+    sw ra, 24(sp)
+    sw fp, 20(sp)
+    addi fp, sp, 28
     sw a0, -12(fp)
     la a0, str_3
     call z_print_cadena
@@ -518,21 +295,10 @@ fun_mostrarMarcador:
     call z_concat
     addi sp, sp, 12
     sw a0, -16(fp)
-    lw t1, -16(fp)
-    la t2, str_5
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -20(fp)
-    lw t1, -20(fp)
+    lw a0, -16(fp)
+    call z_print_cadena
+    call z_print_salto
+    la t1, str_5
     lw t6, -12(fp)
     addi t6, t6, 4
     lw t2, 0(t6)
@@ -548,22 +314,11 @@ fun_mostrarMarcador:
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
-    sw a0, -24(fp)
-    lw t1, -24(fp)
-    la t2, str_6
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -28(fp)
-    lw t1, -28(fp)
+    sw a0, -20(fp)
+    lw a0, -20(fp)
+    call z_print_cadena
+    call z_print_salto
+    la t1, str_6
     lw t6, -12(fp)
     addi t6, t6, 8
     lw t2, 0(t6)
@@ -579,8 +334,8 @@ fun_mostrarMarcador:
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
-    sw a0, -32(fp)
-    lw a0, -32(fp)
+    sw a0, -24(fp)
+    lw a0, -24(fp)
     call z_print_cadena
     call z_print_salto
     la t1, str_7
@@ -599,24 +354,1265 @@ fun_mostrarMarcador:
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
-    sw a0, -36(fp)
-    lw t1, -36(fp)
-    la t2, str_8
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -40(fp)
-    lw t1, -40(fp)
+    sw a0, -28(fp)
+    lw a0, -28(fp)
+    call z_print_cadena
+    call z_print_salto
+    j __epilogo_fun_imprimirRegistro
+__epilogo_fun_imprimirRegistro:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 28
+    mv fp, t0
+    ret
+
+constructor_Nodo_1:
+    addi sp, sp, -16
+    sw ra, 12(sp)
+    sw fp, 8(sp)
+    addi fp, sp, 16
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    lw t1, -16(fp)
     lw t6, -12(fp)
-    addi t6, t6, 16
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    j __epilogo_constructor_Nodo_1
+__epilogo_constructor_Nodo_1:
+    lw a0, -12(fp)
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 16
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_estaVacia_1:
+    addi sp, sp, -16
+    sw ra, 12(sp)
+    sw fp, 8(sp)
+    addi fp, sp, 16
+    sw a0, -12(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -16(fp)
+    lw a0, -16(fp)
+    j __epilogo_metodo_ListaDoble_estaVacia_1
+    j __epilogo_metodo_ListaDoble_estaVacia_1
+__epilogo_metodo_ListaDoble_estaVacia_1:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 16
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_insertarInicio_2:
+    addi sp, sp, -28
+    sw ra, 24(sp)
+    sw fp, 20(sp)
+    addi fp, sp, 28
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    li a0, 16
+    call z_alloc
+    sw a0, -20(fp)
+    lw a0, -20(fp)
+    lw a1, -16(fp)
+    call constructor_Nodo_1
+    sw a0, -20(fp)
+    lw t1, -20(fp)
+    sw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -28(fp)
+    lw t1, -28(fp)
+    bnez t1, L11
+    j L10
+L11:
+    lw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    lw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    j L9
+L10:
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    lw t6, -24(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    lw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t6, 0(t6)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    lw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+L9:
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    addi t3, t1, 1
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t3, 0(t6)
+    j __epilogo_metodo_ListaDoble_insertarInicio_2
+__epilogo_metodo_ListaDoble_insertarInicio_2:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 28
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_insertarFinal_3:
+    addi sp, sp, -28
+    sw ra, 24(sp)
+    sw fp, 20(sp)
+    addi fp, sp, 28
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    li a0, 16
+    call z_alloc
+    sw a0, -20(fp)
+    lw a0, -20(fp)
+    lw a1, -16(fp)
+    call constructor_Nodo_1
+    sw a0, -20(fp)
+    lw t1, -20(fp)
+    sw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -28(fp)
+    lw t1, -28(fp)
+    bnez t1, L14
+    j L13
+L14:
+    lw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    lw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    j L12
+L13:
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    lw t6, -24(fp)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    lw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    lw t1, -24(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+L12:
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    addi t3, t1, 1
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t3, 0(t6)
+    j __epilogo_metodo_ListaDoble_insertarFinal_3
+__epilogo_metodo_ListaDoble_insertarFinal_3:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 28
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_insertarFinal_4:
+    addi sp, sp, -28
+    sw ra, 24(sp)
+    sw fp, 20(sp)
+    addi fp, sp, 28
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    sw a2, -20(fp)
+    lw a0, -12(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 8(t0)
+    jalr t0
+    sw a0, -24(fp)
+    lw a0, -12(fp)
+    lw a1, -20(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 8(t0)
+    jalr t0
+    sw a0, -28(fp)
+    j __epilogo_metodo_ListaDoble_insertarFinal_4
+__epilogo_metodo_ListaDoble_insertarFinal_4:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 28
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_insertarEn_5:
+    addi sp, sp, -64
+    sw ra, 60(sp)
+    sw fp, 56(sp)
+    addi fp, sp, 64
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    sw a2, -20(fp)
+    lw t1, -16(fp)
+    li t2, 0
+    slt t3, t1, t2
+    sw t3, -24(fp)
+    lw t1, -24(fp)
+    bnez t1, L17
+    j L16
+L16:
+    lw t1, -16(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t2, 0(t6)
+    slt t3, t2, t1
+    sw t3, -28(fp)
+    lw t1, -28(fp)
+    sw t1, -32(fp)
+    j L18
+L17:
+    li t1, 1
+    sw t1, -32(fp)
+L18:
+    lw t1, -32(fp)
+    bnez t1, L19
+    j L15
+L19:
+    li a0, 0
+    j __epilogo_metodo_ListaDoble_insertarEn_5
+L15:
+    lw t1, -16(fp)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -36(fp)
+    lw t1, -36(fp)
+    bnez t1, L21
+    j L20
+L21:
+    lw a0, -12(fp)
+    lw a1, -20(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 4(t0)
+    jalr t0
+    sw a0, -40(fp)
+    li a0, 1
+    j __epilogo_metodo_ListaDoble_insertarEn_5
+L20:
+    lw t1, -16(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t2, 0(t6)
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -44(fp)
+    lw t1, -44(fp)
+    bnez t1, L23
+    j L22
+L23:
+    lw a0, -12(fp)
+    lw a1, -20(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 8(t0)
+    jalr t0
+    sw a0, -48(fp)
+    li a0, 1
+    j __epilogo_metodo_ListaDoble_insertarEn_5
+L22:
+    lw a0, -12(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 40(t0)
+    jalr t0
+    sw a0, -52(fp)
+    lw t1, -52(fp)
+    sw t1, -56(fp)
+    li a0, 16
+    call z_alloc
+    sw a0, -60(fp)
+    lw a0, -60(fp)
+    lw a1, -20(fp)
+    call constructor_Nodo_1
+    sw a0, -60(fp)
+    lw t1, -60(fp)
+    sw t1, -64(fp)
+    lw t6, -56(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    lw t6, -64(fp)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    lw t1, -56(fp)
+    lw t6, -64(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    lw t1, -64(fp)
+    lw t6, -56(fp)
+    addi t6, t6, 12
+    lw t6, 0(t6)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    lw t1, -64(fp)
+    lw t6, -56(fp)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    addi t3, t1, 1
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t3, 0(t6)
+    li a0, 1
+    j __epilogo_metodo_ListaDoble_insertarEn_5
+    j __epilogo_metodo_ListaDoble_insertarEn_5
+__epilogo_metodo_ListaDoble_insertarEn_5:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 64
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_eliminarInicio_6:
+    addi sp, sp, -20
+    sw ra, 16(sp)
+    sw fp, 12(sp)
+    addi fp, sp, 20
+    sw a0, -12(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -16(fp)
+    lw t1, -16(fp)
+    bnez t1, L25
+    j L24
+L25:
+    li a0, 0
+    j __epilogo_metodo_ListaDoble_eliminarInicio_6
+L24:
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t2, 0(t6)
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -20(fp)
+    lw t1, -20(fp)
+    bnez t1, L28
+    j L27
+L28:
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    j L26
+L27:
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t6, 0(t6)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t6, 0(t6)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+L26:
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    addi t3, t1, -1
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t3, 0(t6)
+    li a0, 1
+    j __epilogo_metodo_ListaDoble_eliminarInicio_6
+    j __epilogo_metodo_ListaDoble_eliminarInicio_6
+__epilogo_metodo_ListaDoble_eliminarInicio_6:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 20
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_eliminarFinal_7:
+    addi sp, sp, -20
+    sw ra, 16(sp)
+    sw fp, 12(sp)
+    addi fp, sp, 20
+    sw a0, -12(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -16(fp)
+    lw t1, -16(fp)
+    bnez t1, L30
+    j L29
+L30:
+    li a0, 0
+    j __epilogo_metodo_ListaDoble_eliminarFinal_7
+L29:
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t2, 0(t6)
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -20(fp)
+    lw t1, -20(fp)
+    bnez t1, L33
+    j L32
+L33:
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    j L31
+L32:
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+L31:
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    addi t3, t1, -1
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t3, 0(t6)
+    li a0, 1
+    j __epilogo_metodo_ListaDoble_eliminarFinal_7
+    j __epilogo_metodo_ListaDoble_eliminarFinal_7
+__epilogo_metodo_ListaDoble_eliminarFinal_7:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 20
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_eliminarEn_8:
+    addi sp, sp, -56
+    sw ra, 52(sp)
+    sw fp, 48(sp)
+    addi fp, sp, 56
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    lw t1, -16(fp)
+    li t2, 0
+    slt t3, t1, t2
+    sw t3, -20(fp)
+    lw t1, -20(fp)
+    bnez t1, L36
+    j L35
+L35:
+    lw t1, -16(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t2, 0(t6)
+    slt t3, t1, t2
+    xori t3, t3, 1
+    sw t3, -24(fp)
+    lw t1, -24(fp)
+    sw t1, -28(fp)
+    j L37
+L36:
+    li t1, 1
+    sw t1, -28(fp)
+L37:
+    lw t1, -28(fp)
+    bnez t1, L38
+    j L34
+L38:
+    li a0, 0
+    j __epilogo_metodo_ListaDoble_eliminarEn_8
+L34:
+    lw t1, -16(fp)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -32(fp)
+    lw t1, -32(fp)
+    bnez t1, L40
+    j L39
+L40:
+    lw a0, -12(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 20(t0)
+    jalr t0
+    sw a0, -36(fp)
+    lw a0, -36(fp)
+    j __epilogo_metodo_ListaDoble_eliminarEn_8
+L39:
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    li t2, 1
+    sub t3, t1, t2
+    sw t3, -40(fp)
+    lw t1, -16(fp)
+    lw t2, -40(fp)
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -44(fp)
+    lw t1, -44(fp)
+    bnez t1, L42
+    j L41
+L42:
+    lw a0, -12(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 24(t0)
+    jalr t0
+    sw a0, -48(fp)
+    lw a0, -48(fp)
+    j __epilogo_metodo_ListaDoble_eliminarEn_8
+L41:
+    lw a0, -12(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 40(t0)
+    jalr t0
+    sw a0, -52(fp)
+    lw t1, -52(fp)
+    sw t1, -56(fp)
+    lw t6, -56(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    lw t6, -56(fp)
+    addi t6, t6, 12
+    lw t6, 0(t6)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    lw t6, -56(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    lw t6, -56(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    addi t3, t1, -1
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t3, 0(t6)
+    li a0, 1
+    j __epilogo_metodo_ListaDoble_eliminarEn_8
+    j __epilogo_metodo_ListaDoble_eliminarEn_8
+__epilogo_metodo_ListaDoble_eliminarEn_8:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 56
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_eliminarValor_9:
+    addi sp, sp, -36
+    sw ra, 32(sp)
+    sw fp, 28(sp)
+    addi fp, sp, 36
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    lw a0, -12(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 48(t0)
+    jalr t0
+    sw a0, -20(fp)
+    lw t1, -20(fp)
+    sw t1, -24(fp)
+    li t1, 1
+    neg t3, t1
+    sw t3, -28(fp)
+    lw t1, -24(fp)
+    lw t2, -28(fp)
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -32(fp)
+    lw t1, -32(fp)
+    bnez t1, L44
+    j L43
+L44:
+    li a0, 0
+    j __epilogo_metodo_ListaDoble_eliminarValor_9
+L43:
+    lw a0, -12(fp)
+    lw a1, -24(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 28(t0)
+    jalr t0
+    sw a0, -36(fp)
+    lw a0, -36(fp)
+    j __epilogo_metodo_ListaDoble_eliminarValor_9
+    j __epilogo_metodo_ListaDoble_eliminarValor_9
+__epilogo_metodo_ListaDoble_eliminarValor_9:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 36
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_vaciar_10:
+    addi sp, sp, -12
+    sw ra, 8(sp)
+    sw fp, 4(sp)
+    addi fp, sp, 12
+    sw a0, -12(fp)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    j __epilogo_metodo_ListaDoble_vaciar_10
+__epilogo_metodo_ListaDoble_vaciar_10:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 12
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_obtenerNodo_11:
+    addi sp, sp, -56
+    sw ra, 52(sp)
+    sw fp, 48(sp)
+    addi fp, sp, 56
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    lw t1, -16(fp)
+    li t2, 0
+    slt t3, t1, t2
+    sw t3, -20(fp)
+    lw t1, -20(fp)
+    bnez t1, L47
+    j L46
+L46:
+    lw t1, -16(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t2, 0(t6)
+    slt t3, t1, t2
+    xori t3, t3, 1
+    sw t3, -24(fp)
+    lw t1, -24(fp)
+    sw t1, -28(fp)
+    j L48
+L47:
+    li t1, 1
+    sw t1, -28(fp)
+L48:
+    lw t1, -28(fp)
+    bnez t1, L49
+    j L45
+L49:
+    li a0, 0
+    j __epilogo_metodo_ListaDoble_obtenerNodo_11
+L45:
+    li t1, 0
+    sw t1, -32(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    li t2, 2
+    div t3, t1, t2
+    sw t3, -36(fp)
+    lw t1, -16(fp)
+    lw t2, -36(fp)
+    slt t3, t1, t2
+    sw t3, -40(fp)
+    lw t1, -40(fp)
+    bnez t1, L52
+    j L51
+L52:
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -32(fp)
+    li t1, 0
+    sw t1, -44(fp)
+L53:
+    lw t1, -44(fp)
+    lw t2, -16(fp)
+    slt t3, t1, t2
+    sw t3, -48(fp)
+    lw t1, -48(fp)
+    bnez t1, L54
+    j L56
+L54:
+    lw t6, -32(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    sw t1, -32(fp)
+L55:
+    lw t1, -44(fp)
+    addi t3, t1, 1
+    sw t3, -44(fp)
+    j L53
+L56:
+    j L50
+L51:
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    sw t1, -32(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    li t2, 1
+    sub t3, t1, t2
+    sw t3, -52(fp)
+    lw t1, -52(fp)
+    sw t1, -44(fp)
+L57:
+    lw t1, -44(fp)
+    lw t2, -16(fp)
+    slt t3, t2, t1
+    sw t3, -56(fp)
+    lw t1, -56(fp)
+    bnez t1, L58
+    j L60
+L58:
+    lw t6, -32(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    sw t1, -32(fp)
+L59:
+    lw t1, -44(fp)
+    addi t3, t1, -1
+    sw t3, -44(fp)
+    j L57
+L60:
+L50:
+    lw a0, -32(fp)
+    j __epilogo_metodo_ListaDoble_obtenerNodo_11
+    j __epilogo_metodo_ListaDoble_obtenerNodo_11
+__epilogo_metodo_ListaDoble_obtenerNodo_11:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 56
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_obtener_12:
+    addi sp, sp, -36
+    sw ra, 32(sp)
+    sw fp, 28(sp)
+    addi fp, sp, 36
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    lw a0, -12(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 40(t0)
+    jalr t0
+    sw a0, -20(fp)
+    lw t1, -20(fp)
+    sw t1, -24(fp)
+    lw t1, -24(fp)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -28(fp)
+    lw t1, -28(fp)
+    bnez t1, L62
+    j L63
+L62:
+    li t1, 1
+    neg t3, t1
+    sw t3, -32(fp)
+    lw t1, -32(fp)
+    sw t1, -36(fp)
+    j L61
+L63:
+    lw t6, -24(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -36(fp)
+    j L61
+L61:
+    lw a0, -36(fp)
+    j __epilogo_metodo_ListaDoble_obtener_12
+    j __epilogo_metodo_ListaDoble_obtener_12
+__epilogo_metodo_ListaDoble_obtener_12:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 36
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_buscar_13:
+    addi sp, sp, -36
+    sw ra, 32(sp)
+    sw fp, 28(sp)
+    addi fp, sp, 36
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+    li t1, 0
+    sw t1, -24(fp)
+L64:
+    lw t1, -20(fp)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -28(fp)
+    lw t1, -28(fp)
+    bnez t1, L65
+    j L66
+L65:
+    lw t6, -20(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    lw t2, -16(fp)
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -32(fp)
+    lw t1, -32(fp)
+    bnez t1, L68
+    j L67
+L68:
+    lw a0, -24(fp)
+    j __epilogo_metodo_ListaDoble_buscar_13
+L67:
+    lw t6, -20(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+    lw t1, -24(fp)
+    addi t3, t1, 1
+    sw t3, -24(fp)
+    j L64
+L66:
+    li t1, 1
+    neg t3, t1
+    sw t3, -36(fp)
+    lw a0, -36(fp)
+    j __epilogo_metodo_ListaDoble_buscar_13
+    j __epilogo_metodo_ListaDoble_buscar_13
+__epilogo_metodo_ListaDoble_buscar_13:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 36
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_maximo_14:
+    addi sp, sp, -32
+    sw ra, 28(sp)
+    sw fp, 24(sp)
+    addi fp, sp, 32
+    sw a0, -12(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -16(fp)
+    lw t1, -16(fp)
+    bnez t1, L70
+    j L69
+L70:
+    li a0, 0
+    j __epilogo_metodo_ListaDoble_maximo_14
+L69:
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t6, 0(t6)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t6, 0(t6)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    sw t1, -24(fp)
+L71:
+    lw t1, -24(fp)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -28(fp)
+    lw t1, -28(fp)
+    bnez t1, L72
+    j L73
+L72:
+    lw t6, -24(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    lw t2, -20(fp)
+    slt t3, t2, t1
+    sw t3, -32(fp)
+    lw t1, -32(fp)
+    bnez t1, L75
+    j L74
+L75:
+    lw t6, -24(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+L74:
+    lw t6, -24(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    sw t1, -24(fp)
+    j L71
+L73:
+    lw a0, -20(fp)
+    j __epilogo_metodo_ListaDoble_maximo_14
+    j __epilogo_metodo_ListaDoble_maximo_14
+__epilogo_metodo_ListaDoble_maximo_14:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 32
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_sumaRecursiva_15:
+    addi sp, sp, -28
+    sw ra, 24(sp)
+    sw fp, 20(sp)
+    addi fp, sp, 28
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    lw t1, -16(fp)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -20(fp)
+    lw t1, -20(fp)
+    bnez t1, L77
+    j L76
+L77:
+    li a0, 0
+    j __epilogo_metodo_ListaDoble_sumaRecursiva_15
+L76:
+    lw a0, -12(fp)
+    lw t6, -16(fp)
+    addi t6, t6, 8
+    lw a1, 0(t6)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 56(t0)
+    jalr t0
+    sw a0, -24(fp)
+    lw t6, -16(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    lw t2, -24(fp)
+    add t3, t1, t2
+    sw t3, -28(fp)
+    lw a0, -28(fp)
+    j __epilogo_metodo_ListaDoble_sumaRecursiva_15
+    j __epilogo_metodo_ListaDoble_sumaRecursiva_15
+__epilogo_metodo_ListaDoble_sumaRecursiva_15:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 28
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_suma_16:
+    addi sp, sp, -16
+    sw ra, 12(sp)
+    sw fp, 8(sp)
+    addi fp, sp, 16
+    sw a0, -12(fp)
+    lw a0, -12(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw a1, 0(t6)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 56(t0)
+    jalr t0
+    sw a0, -16(fp)
+    lw a0, -16(fp)
+    j __epilogo_metodo_ListaDoble_suma_16
+    j __epilogo_metodo_ListaDoble_suma_16
+__epilogo_metodo_ListaDoble_suma_16:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 16
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_invertir_17:
+    addi sp, sp, -24
+    sw ra, 20(sp)
+    sw fp, 16(sp)
+    addi fp, sp, 24
+    sw a0, -12(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -16(fp)
+    li t1, 0
+    sw t1, -20(fp)
+L78:
+    lw t1, -16(fp)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -24(fp)
+    lw t1, -24(fp)
+    bnez t1, L79
+    j L80
+L79:
+    lw t6, -16(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+    lw t6, -16(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    lw t6, -16(fp)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    lw t1, -20(fp)
+    lw t6, -16(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    lw t6, -16(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    sw t1, -16(fp)
+    j L78
+L80:
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    lw t1, -20(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    j __epilogo_metodo_ListaDoble_invertir_17
+__epilogo_metodo_ListaDoble_invertir_17:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 24
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_ordenar_18:
+    addi sp, sp, -40
+    sw ra, 36(sp)
+    sw fp, 32(sp)
+    addi fp, sp, 40
+    sw a0, -12(fp)
+L81:
+    li t1, 0
+    sw t1, -16(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+L83:
+    lw t1, -20(fp)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -24(fp)
+    lw t1, -24(fp)
+    bnez t1, L86
+    j L87
+L86:
+    lw t6, -20(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -28(fp)
+    lw t1, -28(fp)
+    sw t1, -32(fp)
+    j L88
+L87:
+    li t1, 0
+    sw t1, -32(fp)
+L88:
+    lw t1, -32(fp)
+    bnez t1, L84
+    j L85
+L84:
+    lw t6, -20(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    lw t6, -20(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 4
+    lw t2, 0(t6)
+    slt t3, t2, t1
+    sw t3, -36(fp)
+    lw t1, -36(fp)
+    bnez t1, L90
+    j L89
+L90:
+    lw t6, -20(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -40(fp)
+    lw t6, -20(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    lw t6, -20(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    lw t1, -40(fp)
+    lw t6, -20(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    li t1, 1
+    sw t1, -16(fp)
+L89:
+    lw t6, -20(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+    j L83
+L85:
+    lw t1, -16(fp)
+    bnez t1, L81
+    j L82
+L82:
+    j __epilogo_metodo_ListaDoble_ordenar_18
+__epilogo_metodo_ListaDoble_ordenar_18:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 40
+    mv fp, t0
+    ret
+
+metodo_ListaDoble_imprimirAdelante_19:
+    addi sp, sp, -40
+    sw ra, 36(sp)
+    sw fp, 32(sp)
+    addi fp, sp, 40
+    sw a0, -12(fp)
+    la t1, str_8
+    sw t1, -16(fp)
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+L91:
+    lw t1, -20(fp)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -24(fp)
+    lw t1, -24(fp)
+    bnez t1, L92
+    j L93
+L92:
+    lw t1, -16(fp)
+    lw t6, -20(fp)
+    addi t6, t6, 4
     lw t2, 0(t6)
     addi sp, sp, -12
     sw t1, 0(sp)
@@ -630,15 +1626,22 @@ fun_mostrarMarcador:
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
-    sw a0, -44(fp)
-    lw a0, -44(fp)
-    call z_print_cadena
-    call z_print_salto
-    lw a0, -12(fp)
-    call fun_porcentajeVictorias
-    sw a0, -48(fp)
-    la t1, str_9
-    lw t2, -48(fp)
+    sw a0, -28(fp)
+    lw t1, -28(fp)
+    sw t1, -16(fp)
+    lw t6, -20(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -32(fp)
+    lw t1, -32(fp)
+    bnez t1, L95
+    j L94
+L95:
+    lw t1, -16(fp)
+    la t2, str_9
     addi sp, sp, -12
     sw t1, 0(sp)
     sw t2, 4(sp)
@@ -646,13 +1649,21 @@ fun_mostrarMarcador:
     lw a0, 0(sp)
     sw a0, 8(sp)
     lw a0, 4(sp)
-    call z_ftoa
     mv a1, a0
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
-    sw a0, -52(fp)
-    lw t1, -52(fp)
+    sw a0, -36(fp)
+    lw t1, -36(fp)
+    sw t1, -16(fp)
+L94:
+    lw t6, -20(fp)
+    addi t6, t6, 8
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+    j L91
+L93:
+    lw t1, -16(fp)
     la t2, str_10
     addi sp, sp, -12
     sw t1, 0(sp)
@@ -665,1445 +1676,46 @@ fun_mostrarMarcador:
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
-    sw a0, -56(fp)
-    lw a0, -56(fp)
-    call z_print_cadena
-    call z_print_salto
-    j __epilogo_fun_mostrarMarcador
-__epilogo_fun_mostrarMarcador:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 56
-    mv fp, t0
-    ret
-
-metodo_Ahorcado_yaUsada_1:
-    addi sp, sp, -32
-    sw ra, 28(sp)
-    sw fp, 24(sp)
-    addi fp, sp, 32
-    sw a0, -12(fp)
-    sw a1, -16(fp)
-    li t1, 0
-    sw t1, -20(fp)
-L25:
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -24(fp)
-    lw t1, -24(fp)
-    bnez t1, L26
-    j L28
-L26:
-    lw t2, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lb t3, 0(t1)
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    lw t2, -16(fp)
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    bnez t1, L30
-    j L29
-L30:
-    li a0, 1
-    j __epilogo_metodo_Ahorcado_yaUsada_1
-L29:
-L27:
-    lw t1, -20(fp)
-    addi t3, t1, 1
-    sw t3, -20(fp)
-    j L25
-L28:
-    li a0, 0
-    j __epilogo_metodo_Ahorcado_yaUsada_1
-    j __epilogo_metodo_Ahorcado_yaUsada_1
-__epilogo_metodo_Ahorcado_yaUsada_1:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 32
-    mv fp, t0
-    ret
-
-metodo_Ahorcado_intentar_2:
-    addi sp, sp, -32
-    sw ra, 28(sp)
-    sw fp, 24(sp)
-    addi fp, sp, 32
-    sw a0, -12(fp)
-    sw a1, -16(fp)
-    lw a0, -12(fp)
-    lw a1, -16(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -20(fp)
-    lw t1, -20(fp)
-    bnez t1, L32
-    j L31
-L32:
-    li a0, 0
-    j __epilogo_metodo_Ahorcado_intentar_2
-L31:
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t1, 0(t6)
-    li t2, 40
-    slt t3, t1, t2
-    sw t3, -24(fp)
-    lw t1, -24(fp)
-    bnez t1, L34
-    j L33
-L34:
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t2, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t1, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t6, 0(t6)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t2, 0(t6)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 1
-    mul t2, t2, t4
-    add t6, t6, t2
-    sb t1, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    sw t3, 0(t6)
-L33:
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw a0, 0(t6)
-    lw a1, -16(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 4(t0)
-    jalr t0
-    sw a0, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L36
-    j L35
-L36:
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw a0, 0(t6)
-    lw a1, -16(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 8(t0)
-    jalr t0
-    sw a0, -32(fp)
-    li a0, 1
-    j __epilogo_metodo_Ahorcado_intentar_2
-L35:
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    sw t3, 0(t6)
-    li a0, 2
-    j __epilogo_metodo_Ahorcado_intentar_2
-    j __epilogo_metodo_Ahorcado_intentar_2
-__epilogo_metodo_Ahorcado_intentar_2:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 32
-    mv fp, t0
-    ret
-
-metodo_Ahorcado_gano_3:
-    addi sp, sp, -16
-    sw ra, 12(sp)
-    sw fp, 8(sp)
-    addi fp, sp, 16
-    sw a0, -12(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw a0, 0(t6)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 12(t0)
-    jalr t0
-    sw a0, -16(fp)
-    lw a0, -16(fp)
-    j __epilogo_metodo_Ahorcado_gano_3
-    j __epilogo_metodo_Ahorcado_gano_3
-__epilogo_metodo_Ahorcado_gano_3:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 16
-    mv fp, t0
-    ret
-
-metodo_Ahorcado_perdio_4:
-    addi sp, sp, -16
-    sw ra, 12(sp)
-    sw fp, 8(sp)
-    addi fp, sp, 16
-    sw a0, -12(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    xori t3, t3, 1
-    sw t3, -16(fp)
-    lw a0, -16(fp)
-    j __epilogo_metodo_Ahorcado_perdio_4
-    j __epilogo_metodo_Ahorcado_perdio_4
-__epilogo_metodo_Ahorcado_perdio_4:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 16
-    mv fp, t0
-    ret
-
-metodo_Ahorcado_terminoJuego_5:
-    addi sp, sp, -24
-    sw ra, 20(sp)
-    sw fp, 16(sp)
-    addi fp, sp, 24
-    sw a0, -12(fp)
-    lw a0, -12(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 8(t0)
-    jalr t0
-    sw a0, -16(fp)
-    lw t1, -16(fp)
-    bnez t1, L38
-    j L37
-L37:
-    lw a0, -12(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 12(t0)
-    jalr t0
-    sw a0, -20(fp)
-    lw t1, -20(fp)
-    sw t1, -24(fp)
-    j L39
-L38:
-    li t1, 1
-    sw t1, -24(fp)
-L39:
-    lw a0, -24(fp)
-    j __epilogo_metodo_Ahorcado_terminoJuego_5
-    j __epilogo_metodo_Ahorcado_terminoJuego_5
-__epilogo_metodo_Ahorcado_terminoJuego_5:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 24
-    mv fp, t0
-    ret
-
-metodo_Ahorcado_intentosRestantes_6:
-    addi sp, sp, -16
-    sw ra, 12(sp)
-    sw fp, 8(sp)
-    addi fp, sp, 16
-    sw a0, -12(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t1, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t2, 0(t6)
-    sub t3, t1, t2
-    sw t3, -16(fp)
-    lw a0, -16(fp)
-    j __epilogo_metodo_Ahorcado_intentosRestantes_6
-    j __epilogo_metodo_Ahorcado_intentosRestantes_6
-__epilogo_metodo_Ahorcado_intentosRestantes_6:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 16
-    mv fp, t0
-    ret
-
-metodo_Ahorcado_dibujar_7:
-    addi sp, sp, -48
-    sw ra, 44(sp)
-    sw fp, 40(sp)
-    addi fp, sp, 48
-    sw a0, -12(fp)
-    la t1, str_11
+    sw a0, -40(fp)
+    lw t1, -40(fp)
     sw t1, -16(fp)
-    la t1, str_11
-    sw t1, -20(fp)
-    la t1, str_11
-    sw t1, -24(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t2, 0
-    slt t3, t2, t1
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L41
-    j L40
-L41:
-    la t1, str_12
-    sw t1, -16(fp)
-L40:
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t2, 2
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    bnez t1, L44
-    j L43
-L44:
-    la t1, str_13
-    sw t1, -20(fp)
-    j L42
-L43:
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t2, 3
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -36(fp)
-    lw t1, -36(fp)
-    bnez t1, L46
-    j L45
-L46:
-    la t1, str_14
-    sw t1, -20(fp)
-    j L42
-L45:
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t2, 3
-    slt t3, t2, t1
-    sw t3, -40(fp)
-    lw t1, -40(fp)
-    bnez t1, L48
-    j L47
-L48:
-    la t1, str_15
-    sw t1, -20(fp)
-    j L42
-L47:
-L42:
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t2, 5
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -44(fp)
-    lw t1, -44(fp)
-    bnez t1, L51
-    j L50
-L51:
-    la t1, str_16
-    sw t1, -24(fp)
-    j L49
-L50:
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t2, 5
-    slt t3, t2, t1
-    sw t3, -48(fp)
-    lw t1, -48(fp)
-    bnez t1, L53
-    j L52
-L53:
-    la t1, str_17
-    sw t1, -24(fp)
-    j L49
-L52:
-L49:
-    la a0, str_18
-    call z_print_cadena
-    call z_print_salto
-    la a0, str_13
-    call z_print_cadena
-    call z_print_salto
     lw a0, -16(fp)
     call z_print_cadena
     call z_print_salto
-    lw a0, -20(fp)
-    call z_print_cadena
-    call z_print_salto
-    lw a0, -24(fp)
-    call z_print_cadena
-    call z_print_salto
-    la a0, str_11
-    call z_print_cadena
-    call z_print_salto
-    la a0, str_19
-    call z_print_cadena
-    call z_print_salto
-    j __epilogo_metodo_Ahorcado_dibujar_7
-__epilogo_metodo_Ahorcado_dibujar_7:
+    j __epilogo_metodo_ListaDoble_imprimirAdelante_19
+__epilogo_metodo_ListaDoble_imprimirAdelante_19:
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 48
+    addi sp, sp, 40
     mv fp, t0
     ret
 
-metodo_Ahorcado_mostrarEstado_8:
-    addi sp, sp, -56
-    sw ra, 52(sp)
-    sw fp, 48(sp)
-    addi fp, sp, 56
+metodo_ListaDoble_imprimirAtras_20:
+    addi sp, sp, -40
+    sw ra, 36(sp)
+    sw fp, 32(sp)
+    addi fp, sp, 40
     sw a0, -12(fp)
-    la t1, str_20
+    la t1, str_8
+    sw t1, -16(fp)
     lw t6, -12(fp)
     addi t6, t6, 8
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -16(fp)
-    lw t1, -16(fp)
-    la t2, str_21
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -20(fp)
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -24(fp)
-    lw t1, -24(fp)
-    la t2, str_22
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -28(fp)
-    lw a0, -12(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 20(t0)
-    jalr t0
-    sw a0, -32(fp)
-    lw t1, -28(fp)
-    lw t2, -32(fp)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -36(fp)
-    lw a0, -36(fp)
-    call z_print_cadena
-    call z_print_salto
-    la a0, str_23
-    call z_print_cadena
-    li t1, 0
-    sw t1, -40(fp)
-L54:
-    lw t1, -40(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -44(fp)
-    lw t1, -44(fp)
-    bnez t1, L55
-    j L57
-L55:
-    lw t2, -40(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 16
     lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lb t3, 0(t1)
-    sw t3, -48(fp)
-    lw t1, -48(fp)
-    la t2, str_24
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    call z_chr
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -52(fp)
-    lw a0, -52(fp)
-    call z_print_cadena
-L56:
-    lw t1, -40(fp)
-    addi t3, t1, 1
-    sw t3, -40(fp)
-    j L54
-L57:
-    la a0, str_25
-    call z_print_cadena
-    call z_print_salto
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw a0, 0(t6)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 20(t0)
-    jalr t0
-    sw a0, -56(fp)
-    j __epilogo_metodo_Ahorcado_mostrarEstado_8
-__epilogo_metodo_Ahorcado_mostrarEstado_8:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 56
-    mv fp, t0
-    ret
-
-constructor_Ahorcado_1:
-    addi sp, sp, -24
-    sw ra, 20(sp)
-    sw fp, 16(sp)
-    addi fp, sp, 24
-    sw a0, -12(fp)
-    sw a1, -16(fp)
-    sw a2, -20(fp)
-    lw t1, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    sw t1, 0(t6)
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    sw t1, 0(t6)
-    li t1, 0
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    sw t1, 0(t6)
-    li a0, 40
-    call z_alloc
-    sw a0, -24(fp)
-    lw t1, -24(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    sw t1, 0(t6)
-    li t1, 0
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    sw t1, 0(t6)
-    j __epilogo_constructor_Ahorcado_1
-__epilogo_constructor_Ahorcado_1:
-    lw a0, -12(fp)
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 24
-    mv fp, t0
-    ret
-
-metodo_Diccionario_obtener_1:
-    addi sp, sp, -216
-    sw ra, 212(sp)
-    sw fp, 208(sp)
-    addi fp, sp, 216
-    sw a0, -12(fp)
-    sw a1, -16(fp)
-    li t1, 0
     sw t1, -20(fp)
-    lw t1, -16(fp)
+L96:
+    lw t1, -20(fp)
     li t2, 0
     sub t3, t1, t2
-    seqz t3, t3
+    snez t3, t3
     sw t3, -24(fp)
     lw t1, -24(fp)
-    bnez t1, L59
-    lw t1, -16(fp)
-    li t2, 1
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L60
-    lw t1, -16(fp)
-    li t2, 2
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    bnez t1, L61
-    lw t1, -16(fp)
-    li t2, 3
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -36(fp)
-    lw t1, -36(fp)
-    bnez t1, L62
-    lw t1, -16(fp)
-    li t2, 4
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -40(fp)
-    lw t1, -40(fp)
-    bnez t1, L63
-    j L64
-L59:
-    li a0, 24
-    call z_alloc
-    sw a0, -44(fp)
-    lw t6, -44(fp)
-    la t1, __vtable_Palabra
-    sw t1, 0(t6)
-    lw a0, -44(fp)
-    li a1, 6
-    la a2, str_26
-    call constructor_Palabra_1
-    sw a0, -44(fp)
-    lw t1, -44(fp)
-    sw t1, -20(fp)
-    lw a0, -20(fp)
-    li a1, 112
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -48(fp)
-    lw a0, -20(fp)
-    li a1, 121
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -52(fp)
-    lw a0, -20(fp)
-    li a1, 116
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -56(fp)
-    lw a0, -20(fp)
-    li a1, 104
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -60(fp)
-    lw a0, -20(fp)
-    li a1, 111
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -64(fp)
-    lw a0, -20(fp)
-    li a1, 110
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -68(fp)
-    j L58
-L60:
-    li a0, 24
-    call z_alloc
-    sw a0, -72(fp)
-    lw t6, -72(fp)
-    la t1, __vtable_Palabra
-    sw t1, 0(t6)
-    lw a0, -72(fp)
-    li a1, 10
-    la a2, str_27
-    call constructor_Palabra_1
-    sw a0, -72(fp)
-    lw t1, -72(fp)
-    sw t1, -20(fp)
-    lw a0, -20(fp)
-    li a1, 99
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -76(fp)
-    lw a0, -20(fp)
-    li a1, 111
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -80(fp)
-    lw a0, -20(fp)
-    li a1, 109
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -84(fp)
-    lw a0, -20(fp)
-    li a1, 112
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -88(fp)
-    lw a0, -20(fp)
-    li a1, 105
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -92(fp)
-    lw a0, -20(fp)
-    li a1, 108
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -96(fp)
-    lw a0, -20(fp)
-    li a1, 97
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -100(fp)
-    lw a0, -20(fp)
-    li a1, 100
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -104(fp)
-    lw a0, -20(fp)
-    li a1, 111
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -108(fp)
-    lw a0, -20(fp)
-    li a1, 114
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -112(fp)
-    j L58
-L61:
-    li a0, 24
-    call z_alloc
-    sw a0, -116(fp)
-    lw t6, -116(fp)
-    la t1, __vtable_Palabra
-    sw t1, 0(t6)
-    lw a0, -116(fp)
-    li a1, 5
-    la a2, str_28
-    call constructor_Palabra_1
-    sw a0, -116(fp)
-    lw t1, -116(fp)
-    sw t1, -20(fp)
-    lw a0, -20(fp)
-    li a1, 99
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -120(fp)
-    lw a0, -20(fp)
-    li a1, 101
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -124(fp)
-    lw a0, -20(fp)
-    li a1, 114
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -128(fp)
-    lw a0, -20(fp)
-    li a1, 100
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -132(fp)
-    lw a0, -20(fp)
-    li a1, 111
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -136(fp)
-    j L58
-L62:
-    li a0, 24
-    call z_alloc
-    sw a0, -140(fp)
-    lw t6, -140(fp)
-    la t1, __vtable_Palabra
-    sw t1, 0(t6)
-    lw a0, -140(fp)
-    li a1, 9
-    la a2, str_29
-    call constructor_Palabra_1
-    sw a0, -140(fp)
-    lw t1, -140(fp)
-    sw t1, -20(fp)
-    lw a0, -20(fp)
-    li a1, 122
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -144(fp)
-    lw a0, -20(fp)
-    li a1, 101
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -148(fp)
-    lw a0, -20(fp)
-    li a1, 116
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -152(fp)
-    lw a0, -20(fp)
-    li a1, 97
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -156(fp)
-    lw a0, -20(fp)
-    li a1, 114
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -160(fp)
-    lw a0, -20(fp)
-    li a1, 105
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -164(fp)
-    lw a0, -20(fp)
-    li a1, 97
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -168(fp)
-    lw a0, -20(fp)
-    li a1, 110
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -172(fp)
-    lw a0, -20(fp)
-    li a1, 111
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -176(fp)
-    j L58
-L63:
-    li a0, 24
-    call z_alloc
-    sw a0, -180(fp)
-    lw t6, -180(fp)
-    la t1, __vtable_Palabra
-    sw t1, 0(t6)
-    lw a0, -180(fp)
-    li a1, 8
-    la a2, str_30
-    call constructor_Palabra_1
-    sw a0, -180(fp)
-    lw t1, -180(fp)
-    sw t1, -20(fp)
-    lw a0, -20(fp)
-    li a1, 98
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -184(fp)
-    lw a0, -20(fp)
-    li a1, 121
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -188(fp)
-    lw a0, -20(fp)
-    li a1, 116
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -192(fp)
-    lw a0, -20(fp)
-    li a1, 101
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -196(fp)
-    lw a0, -20(fp)
-    li a1, 99
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -200(fp)
-    lw a0, -20(fp)
-    li a1, 111
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -204(fp)
-    lw a0, -20(fp)
-    li a1, 100
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -208(fp)
-    lw a0, -20(fp)
-    li a1, 101
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -212(fp)
-    j L58
-L64:
-    la a0, str_31
-    call z_print_cadena
-    call z_print_salto
-    lw a0, -12(fp)
-    li a1, 0
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -216(fp)
-    lw t1, -216(fp)
-    sw t1, -20(fp)
-    j L58
-L58:
-    lw a0, -20(fp)
-    j __epilogo_metodo_Diccionario_obtener_1
-    j __epilogo_metodo_Diccionario_obtener_1
-__epilogo_metodo_Diccionario_obtener_1:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 216
-    mv fp, t0
-    ret
-
-constructor_Diccionario_1:
-    addi sp, sp, -12
-    sw ra, 8(sp)
-    sw fp, 4(sp)
-    addi fp, sp, 12
-    sw a0, -12(fp)
-    li t1, 5
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    sw t1, 0(t6)
-    j __epilogo_constructor_Diccionario_1
-__epilogo_constructor_Diccionario_1:
-    lw a0, -12(fp)
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 12
-    mv fp, t0
-    ret
-
-metodo_Palabra_agregarLetra_1:
-    addi sp, sp, -20
-    sw ra, 16(sp)
-    sw fp, 12(sp)
-    addi fp, sp, 20
-    sw a0, -12(fp)
-    sw a1, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t1, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -20(fp)
-    lw t1, -20(fp)
-    bnez t1, L66
-    j L65
-L66:
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t2, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t1, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw t6, 0(t6)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t2, 0(t6)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 1
-    mul t2, t2, t4
-    add t6, t6, t2
-    sb t1, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t2, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    li t1, 0
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t6, 0(t6)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t2, 0(t6)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 1
-    mul t2, t2, t4
-    add t6, t6, t2
-    sb t1, 0(t6)
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    sw t3, 0(t6)
-L65:
-    j __epilogo_metodo_Palabra_agregarLetra_1
-__epilogo_metodo_Palabra_agregarLetra_1:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 20
-    mv fp, t0
-    ret
-
-metodo_Palabra_contiene_2:
-    addi sp, sp, -32
-    sw ra, 28(sp)
-    sw fp, 24(sp)
-    addi fp, sp, 32
-    sw a0, -12(fp)
-    sw a1, -16(fp)
-    li t1, 0
-    sw t1, -20(fp)
-L67:
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -24(fp)
-    lw t1, -24(fp)
-    bnez t1, L68
-    j L70
-L68:
-    lw t2, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lb t3, 0(t1)
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    lw t2, -16(fp)
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    bnez t1, L72
-    j L71
-L72:
-    li a0, 1
-    j __epilogo_metodo_Palabra_contiene_2
-L71:
-L69:
-    lw t1, -20(fp)
-    addi t3, t1, 1
-    sw t3, -20(fp)
-    j L67
-L70:
-    li a0, 0
-    j __epilogo_metodo_Palabra_contiene_2
-    j __epilogo_metodo_Palabra_contiene_2
-__epilogo_metodo_Palabra_contiene_2:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 32
-    mv fp, t0
-    ret
-
-metodo_Palabra_revelar_3:
-    addi sp, sp, -48
-    sw ra, 44(sp)
-    sw fp, 40(sp)
-    addi fp, sp, 48
-    sw a0, -12(fp)
-    sw a1, -16(fp)
-    li t1, 0
-    sw t1, -20(fp)
-    li t1, 0
-    sw t1, -24(fp)
-L73:
-    lw t1, -24(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L74
-    j L76
-L74:
-    lw t2, -24(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lb t3, 0(t1)
-    sw t3, -32(fp)
-    lw t1, -32(fp)
-    lw t2, -16(fp)
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -36(fp)
-    lw t1, -36(fp)
-    bnez t1, L78
-    j L79
-L78:
-    lw t2, -24(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lb t3, 0(t1)
-    sw t3, -40(fp)
-    lw t1, -40(fp)
-    li t2, 0
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -44(fp)
-    lw t1, -44(fp)
-    sw t1, -48(fp)
-    j L80
-L79:
-    li t1, 0
-    sw t1, -48(fp)
-L80:
-    lw t1, -48(fp)
-    bnez t1, L81
-    j L77
-L81:
-    lw t2, -24(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    li t1, 1
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t6, 0(t6)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -24(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 1
-    mul t2, t2, t4
-    add t6, t6, t2
-    sb t1, 0(t6)
-    lw t1, -20(fp)
-    addi t3, t1, 1
-    sw t3, -20(fp)
-L77:
-L75:
-    lw t1, -24(fp)
-    addi t3, t1, 1
-    sw t3, -24(fp)
-    j L73
-L76:
-    lw a0, -20(fp)
-    j __epilogo_metodo_Palabra_revelar_3
-    j __epilogo_metodo_Palabra_revelar_3
-__epilogo_metodo_Palabra_revelar_3:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 48
-    mv fp, t0
-    ret
-
-metodo_Palabra_estaCompleta_4:
-    addi sp, sp, -28
-    sw ra, 24(sp)
-    sw fp, 20(sp)
-    addi fp, sp, 28
-    sw a0, -12(fp)
-    li t1, 0
-    sw t1, -16(fp)
-L82:
-    lw t1, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -20(fp)
-    lw t1, -20(fp)
-    bnez t1, L83
-    j L85
-L83:
-    lw t2, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lb t3, 0(t1)
-    sw t3, -24(fp)
-    lw t1, -24(fp)
-    seqz t3, t1
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L87
-    j L86
-L87:
-    li a0, 0
-    j __epilogo_metodo_Palabra_estaCompleta_4
-L86:
-L84:
-    lw t1, -16(fp)
-    addi t3, t1, 1
-    sw t3, -16(fp)
-    j L82
-L85:
-    li a0, 1
-    j __epilogo_metodo_Palabra_estaCompleta_4
-    j __epilogo_metodo_Palabra_estaCompleta_4
-__epilogo_metodo_Palabra_estaCompleta_4:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 28
-    mv fp, t0
-    ret
-
-metodo_Palabra_revelarTodo_5:
-    addi sp, sp, -20
-    sw ra, 16(sp)
-    sw fp, 12(sp)
-    addi fp, sp, 20
-    sw a0, -12(fp)
-    li t1, 0
-    sw t1, -16(fp)
-L88:
-    lw t1, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -20(fp)
-    lw t1, -20(fp)
-    bnez t1, L89
-    j L90
-L89:
-    lw t2, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    li t1, 1
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t6, 0(t6)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -16(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 1
-    mul t2, t2, t4
-    add t6, t6, t2
-    sb t1, 0(t6)
-    lw t1, -16(fp)
-    addi t3, t1, 1
-    sw t3, -16(fp)
-    j L88
-L90:
-    j __epilogo_metodo_Palabra_revelarTodo_5
-__epilogo_metodo_Palabra_revelarTodo_5:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 20
-    mv fp, t0
-    ret
-
-metodo_Palabra_imprimirProgreso_6:
-    addi sp, sp, -44
-    sw ra, 40(sp)
-    sw fp, 36(sp)
-    addi fp, sp, 44
-    sw a0, -12(fp)
-    la t1, str_25
-    sw t1, -16(fp)
-    li t1, 0
-    sw t1, -20(fp)
-L91:
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 12
-    lw t2, 0(t6)
-    slt t3, t1, t2
-    sw t3, -24(fp)
-    lw t1, -24(fp)
-    bnez t1, L92
-    j L94
-L92:
-    lw t2, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lb t3, 0(t1)
-    sw t3, -28(fp)
-    lw t1, -28(fp)
     bnez t1, L97
-    j L96
+    j L98
 L97:
-    lw t2, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    li t3, 1
-    mul t2, t2, t3
-    add t1, t1, t2
-    lb t3, 0(t1)
-    sw t3, -32(fp)
     lw t1, -16(fp)
-    lw t2, -32(fp)
+    lw t6, -20(fp)
+    addi t6, t6, 4
+    lw t2, 0(t6)
     addi sp, sp, -12
     sw t1, 0(sp)
     sw t2, 4(sp)
@@ -2111,14 +1723,50 @@ L97:
     lw a0, 0(sp)
     sw a0, 8(sp)
     lw a0, 4(sp)
-    call z_chr
+    call z_itoa
+    mv a1, a0
+    lw a0, 8(sp)
+    call z_concat
+    addi sp, sp, 12
+    sw a0, -28(fp)
+    lw t1, -28(fp)
+    sw t1, -16(fp)
+    lw t6, -20(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -32(fp)
+    lw t1, -32(fp)
+    bnez t1, L100
+    j L99
+L100:
+    lw t1, -16(fp)
+    la t2, str_9
+    addi sp, sp, -12
+    sw t1, 0(sp)
+    sw t2, 4(sp)
+    sw zero, 8(sp)
+    lw a0, 0(sp)
+    sw a0, 8(sp)
+    lw a0, 4(sp)
     mv a1, a0
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
     sw a0, -36(fp)
     lw t1, -36(fp)
-    la t2, str_24
+    sw t1, -16(fp)
+L99:
+    lw t6, -20(fp)
+    addi t6, t6, 12
+    lw t1, 0(t6)
+    sw t1, -20(fp)
+    j L96
+L98:
+    lw t1, -16(fp)
+    la t2, str_10
     addi sp, sp, -12
     sw t1, 0(sp)
     sw t2, 4(sp)
@@ -2133,497 +1781,767 @@ L97:
     sw a0, -40(fp)
     lw t1, -40(fp)
     sw t1, -16(fp)
-    j L95
-L96:
-    lw t1, -16(fp)
-    la t2, str_32
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -44(fp)
-    lw t1, -44(fp)
-    sw t1, -16(fp)
-L95:
-L93:
-    lw t1, -20(fp)
-    addi t3, t1, 1
-    sw t3, -20(fp)
-    j L91
-L94:
     lw a0, -16(fp)
     call z_print_cadena
     call z_print_salto
-    j __epilogo_metodo_Palabra_imprimirProgreso_6
-__epilogo_metodo_Palabra_imprimirProgreso_6:
+    j __epilogo_metodo_ListaDoble_imprimirAtras_20
+__epilogo_metodo_ListaDoble_imprimirAtras_20:
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 44
+    addi sp, sp, 40
     mv fp, t0
     ret
 
-constructor_Palabra_1:
-    addi sp, sp, -28
-    sw ra, 24(sp)
-    sw fp, 20(sp)
-    addi fp, sp, 28
+constructor_ListaDoble_1:
+    addi sp, sp, -12
+    sw ra, 8(sp)
+    sw fp, 4(sp)
+    addi fp, sp, 12
     sw a0, -12(fp)
-    sw a1, -16(fp)
-    sw a2, -20(fp)
-    lw t1, -16(fp)
-    li t2, 1
-    mul a0, t1, t2
-    addi a0, a0, 3
-    andi a0, a0, -4
-    call z_alloc
-    sw a0, -24(fp)
-    lw t1, -24(fp)
+    li t1, 0
     lw t6, -12(fp)
     addi t6, t6, 4
     sw t1, 0(t6)
-    lw t1, -16(fp)
-    li t2, 1
-    mul a0, t1, t2
-    addi a0, a0, 3
-    andi a0, a0, -4
-    call z_alloc
-    sw a0, -28(fp)
-    lw t1, -28(fp)
+    li t1, 0
     lw t6, -12(fp)
     addi t6, t6, 8
     sw t1, 0(t6)
-    lw t1, -16(fp)
+    li t1, 0
     lw t6, -12(fp)
     addi t6, t6, 12
     sw t1, 0(t6)
-    li t1, 0
-    lw t6, -12(fp)
-    addi t6, t6, 16
-    sw t1, 0(t6)
-    lw t1, -20(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 20
-    sw t1, 0(t6)
-    j __epilogo_constructor_Palabra_1
-__epilogo_constructor_Palabra_1:
+    j __epilogo_constructor_ListaDoble_1
+__epilogo_constructor_ListaDoble_1:
     lw a0, -12(fp)
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 28
+    addi sp, sp, 12
+    mv fp, t0
+    ret
+
+constructor_ListaDoble_2:
+    addi sp, sp, -20
+    sw ra, 16(sp)
+    sw fp, 12(sp)
+    addi fp, sp, 20
+    sw a0, -12(fp)
+    sw a1, -16(fp)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 4
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    li t1, 0
+    lw t6, -12(fp)
+    addi t6, t6, 12
+    sw t1, 0(t6)
+    lw a0, -12(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 8(t0)
+    jalr t0
+    sw a0, -20(fp)
+    j __epilogo_constructor_ListaDoble_2
+__epilogo_constructor_ListaDoble_2:
+    lw a0, -12(fp)
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 20
     mv fp, t0
     ret
 
 __entrada_main:
-    addi sp, sp, -172
-    sw ra, 168(sp)
-    sw fp, 164(sp)
-    addi fp, sp, 172
-    la t1, str_33
+    addi sp, sp, -284
+    sw ra, 280(sp)
+    sw fp, 276(sp)
+    addi fp, sp, 284
+    li t1, 0
     sw t1, -12(fp)
     li t1, 0
     sw t1, -16(fp)
-    li t1, 1
+    li t1, 0
     sw t1, -20(fp)
-    li t1, 97
+    li t1, 0
     sw t1, -24(fp)
     li t1, 0
     sw t1, -28(fp)
-    li t1, 0
-    sw t1, -32(fp)
-    li t1, 0
+    li a0, 16
+    call z_alloc
+    sw a0, -32(fp)
+    lw t6, -32(fp)
+    la t1, __vtable_ListaDoble
+    sw t1, 0(t6)
+    lw a0, -32(fp)
+    call constructor_ListaDoble_1
+    sw a0, -32(fp)
+    lw t1, -32(fp)
     sw t1, -36(fp)
-    li t1, 0
-    sw t1, -40(fp)
-    li a0, 8
+    li a0, 16
     call z_alloc
-    sw a0, -44(fp)
-    lw t6, -44(fp)
-    la t1, __vtable_Diccionario
+    sw a0, -40(fp)
+    lw t6, -40(fp)
+    la t1, __vtable_ListaDoble
     sw t1, 0(t6)
-    lw a0, -44(fp)
-    call constructor_Diccionario_1
-    sw a0, -44(fp)
-    lw t1, -44(fp)
-    sw t1, -48(fp)
-    li a0, 24
-    call z_alloc
-    sw a0, -52(fp)
-    lw t6, -52(fp)
-    la t1, __vtable_Ahorcado
-    sw t1, 0(t6)
-    lw a0, -48(fp)
-    li a1, 0
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -56(fp)
-    lw a0, -52(fp)
-    lw a1, -56(fp)
-    li a2, 6
-    call constructor_Ahorcado_1
-    sw a0, -52(fp)
-    lw t1, -52(fp)
-    sw t1, -60(fp)
-    li a0, 20
-    call z_alloc
-    sw a0, -64(fp)
+    lw a0, -40(fp)
+    li a1, 7
+    call constructor_ListaDoble_2
+    sw a0, -40(fp)
+    lw t1, -40(fp)
+    sw t1, -44(fp)
     li t1, 0
-    lw t6, -64(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    li t2, 0
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
+    addi t6, fp, -60
     sw t1, 0(t6)
     li t1, 0
-    lw t6, -64(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    li t2, 1
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-    li t1, 0
-    lw t6, -64(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    li t2, 2
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-    li t1, 0
-    lw t6, -64(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    li t2, 3
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-    li t1, 0
-    lw t6, -64(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    li t2, 4
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-    li t1, 0
-    addi t6, fp, -88
-    sw t1, 0(t6)
-    li t1, 0
-    addi t6, fp, -88
+    addi t6, fp, -60
     addi t6, t6, 4
     sw t1, 0(t6)
     li t1, 0
-    addi t6, fp, -88
+    addi t6, fp, -60
     addi t6, t6, 8
     sw t1, 0(t6)
     li t1, 0
-    addi t6, fp, -88
+    addi t6, fp, -60
     addi t6, t6, 12
     sw t1, 0(t6)
-    li t1, 0
-    addi t6, fp, -88
-    addi t6, t6, 16
-    sw t1, 0(t6)
+    la a0, str_11
+    call z_print_cadena
+    call z_print_salto
+    li t1, 1
+    sw t1, -64(fp)
+L101:
     lw t1, -64(fp)
-    addi t6, fp, -88
-    addi t6, t6, 20
-    sw t1, 0(t6)
-    la a0, str_34
-    call z_print_cadena
-    call z_print_salto
-    la a0, str_35
-    call z_print_cadena
-    call z_print_salto
-    la a0, str_34
-    call z_print_cadena
-    call z_print_salto
-    la a0, str_36
-    call z_print_cadena
-    call z_print_salto
-    li a0, 256
-    call z_alloc
+    li t2, 6
+    slt t3, t1, t2
+    sw t3, -68(fp)
+    lw t1, -68(fp)
+    bnez t1, L102
+    j L104
+L102:
+    lw t1, -64(fp)
+    li t2, 10
+    mul t3, t1, t2
+    sw t3, -72(fp)
+    lw a0, -36(fp)
+    lw a1, -72(fp)
     mv t0, a0
-    li a1, 256
-    call z_leer_cadena
-    mv a0, t0
+    lw t0, 0(t0)
+    lw t0, 8(t0)
+    jalr t0
+    sw a0, -76(fp)
+L103:
+    lw t1, -64(fp)
+    addi t3, t1, 1
+    sw t3, -64(fp)
+    j L101
+L104:
+    lw a0, -44(fp)
+    li a1, 8
+    li a2, 9
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 12(t0)
+    jalr t0
+    sw a0, -80(fp)
+    la a0, str_12
+    call z_print_cadena
+    call z_print_salto
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 72(t0)
+    jalr t0
+    sw a0, -84(fp)
+    la a0, str_13
+    call z_print_cadena
+    call z_print_salto
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 76(t0)
+    jalr t0
+    sw a0, -88(fp)
+    la a0, str_14
+    call z_print_cadena
+    call z_print_salto
+    lw a0, -44(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 72(t0)
+    jalr t0
+    sw a0, -92(fp)
+L105:
+    la a0, str_15
+    call z_print_cadena
+    call z_print_salto
+    la a0, str_16
+    call z_print_cadena
+    call z_print_salto
+    la a0, str_17
+    call z_print_cadena
+    call z_print_salto
+    la a0, str_18
+    call z_print_cadena
+    call z_print_salto
+    la a0, str_19
+    call z_print_cadena
+    call z_print_salto
+    la a0, str_20
+    call z_print_cadena
+    call z_print_salto
+    call z_leer_entero
     sw a0, -12(fp)
-L98:
-    la a0, str_37
+    lw t1, -12(fp)
+    li t2, 1
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -96(fp)
+    lw t1, -96(fp)
+    bnez t1, L109
+    j L108
+L109:
+    la a0, str_21
     call z_print_cadena
     call z_print_salto
     call z_leer_entero
     sw a0, -16(fp)
-    li a0, 24
-    call z_alloc
-    sw a0, -92(fp)
-    lw t6, -92(fp)
-    la t1, __vtable_Ahorcado
-    sw t1, 0(t6)
-    lw a0, -48(fp)
+    lw a0, -36(fp)
     lw a1, -16(fp)
     mv t0, a0
     lw t0, 0(t0)
-    lw t0, 0(t0)
-    jalr t0
-    sw a0, -96(fp)
-    lw a0, -92(fp)
-    lw a1, -96(fp)
-    li a2, 6
-    call constructor_Ahorcado_1
-    sw a0, -92(fp)
-    lw t1, -92(fp)
-    sw t1, -60(fp)
-    la a0, str_38
-    call z_print_cadena
-    lw t6, -60(fp)
-    addi t6, t6, 4
-    lw t6, 0(t6)
-    addi t6, t6, 20
-    lw a0, 0(t6)
-    call z_print_cadena
-    call z_print_salto
-L100:
-    lw a0, -60(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 16(t0)
+    lw t0, 4(t0)
     jalr t0
     sw a0, -100(fp)
-    lw t1, -100(fp)
-    li t2, 0
+    addi a0, fp, -60
+    li a1, 1
+    call fun_registrar
+    sw a0, -104(fp)
+    j L107
+L108:
+    lw t1, -12(fp)
+    li t2, 2
     sub t3, t1, t2
     seqz t3, t3
-    sw t3, -104(fp)
-    lw t1, -104(fp)
-    bnez t1, L101
-    j L102
-L101:
-    lw a0, -60(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 24(t0)
-    jalr t0
-    sw a0, -108(fp)
-    lw a0, -60(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 28(t0)
-    jalr t0
-    sw a0, -112(fp)
-    la a0, str_39
+    sw t3, -108(fp)
+    lw t1, -108(fp)
+    bnez t1, L111
+    j L110
+L111:
+    la a0, str_21
     call z_print_cadena
     call z_print_salto
-    call z_leer_caracter
-    sw a0, -24(fp)
-    lw a0, -24(fp)
-    call fun_validarLetra
+    call z_leer_entero
+    sw a0, -16(fp)
+    lw a0, -36(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 8(t0)
+    jalr t0
+    sw a0, -112(fp)
+    addi a0, fp, -60
+    li a1, 1
+    call fun_registrar
     sw a0, -116(fp)
-    lw t1, -116(fp)
-    li t2, 0
+    j L107
+L110:
+    lw t1, -12(fp)
+    li t2, 3
     sub t3, t1, t2
     seqz t3, t3
     sw t3, -120(fp)
     lw t1, -120(fp)
-    bnez t1, L104
-    j L103
-L104:
-    la a0, str_40
+    bnez t1, L113
+    j L112
+L113:
+    la a0, str_22
     call z_print_cadena
     call z_print_salto
-    j L100
-L103:
-    lw a0, -60(fp)
-    lw a1, -24(fp)
+    call z_leer_entero
+    sw a0, -20(fp)
+    la a0, str_21
+    call z_print_cadena
+    call z_print_salto
+    call z_leer_entero
+    sw a0, -16(fp)
+    lw a0, -36(fp)
+    lw a1, -20(fp)
+    lw a2, -16(fp)
     mv t0, a0
     lw t0, 0(t0)
-    lw t0, 4(t0)
+    lw t0, 16(t0)
     jalr t0
     sw a0, -124(fp)
     lw t1, -124(fp)
     sw t1, -28(fp)
     lw t1, -28(fp)
-    li t2, 0
+    li t2, 1
     sub t3, t1, t2
     seqz t3, t3
     sw t3, -128(fp)
     lw t1, -128(fp)
-    bnez t1, L107
-    j L106
-L107:
-    la a0, str_41
+    bnez t1, L116
+    j L115
+L116:
+    la a0, str_23
     call z_print_cadena
-    lw a0, -24(fp)
-    call z_print_caracter
+    lw a0, -20(fp)
+    call z_print_entero
     call z_print_salto
-    j L105
-L106:
-    lw t1, -28(fp)
-    li t2, 1
+    addi a0, fp, -60
+    li a1, 1
+    call fun_registrar
+    sw a0, -132(fp)
+    j L114
+L115:
+    la a0, str_24
+    call z_print_cadena
+    call z_print_salto
+L114:
+    j L107
+L112:
+    lw t1, -12(fp)
+    li t2, 4
     sub t3, t1, t2
     seqz t3, t3
-    sw t3, -132(fp)
-    lw t1, -132(fp)
-    bnez t1, L109
-    j L108
-L109:
-    la a0, str_42
-    call z_print_cadena
-    lw a0, -24(fp)
-    call z_print_caracter
-    la a0, str_43
-    call z_print_cadena
-    call z_print_salto
-    j L105
-L108:
-    la a0, str_44
-    call z_print_cadena
-    lw a0, -24(fp)
-    call z_print_caracter
-    la a0, str_45
-    call z_print_cadena
-    call z_print_salto
-L105:
-    j L100
-L102:
-    li t1, 0
-    sw t1, -32(fp)
-    lw a0, -60(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 8(t0)
-    jalr t0
-    sw a0, -136(fp)
+    sw t3, -136(fp)
     lw t1, -136(fp)
-    bnez t1, L112
-    j L111
-L112:
-    li t1, 1
-    sw t1, -40(fp)
-    lw t6, -60(fp)
-    addi t6, t6, 4
-    lw t6, 0(t6)
-    addi t6, t6, 12
-    lw a0, 0(t6)
-    lw t6, -60(fp)
-    addi t6, t6, 8
-    lw a1, 0(t6)
-    li a2, 6
-    call fun_calcularPuntaje
-    sw a0, -140(fp)
-    lw t1, -140(fp)
-    sw t1, -32(fp)
-    la a0, str_46
-    call z_print_cadena
-    call z_print_salto
-    j L110
-L111:
-    li t1, 0
-    sw t1, -40(fp)
-    la a0, str_47
-    call z_print_cadena
-    call z_print_salto
-L110:
-    lw a0, -60(fp)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 24(t0)
-    jalr t0
-    sw a0, -144(fp)
-    lw t6, -60(fp)
-    addi t6, t6, 4
-    lw a0, 0(t6)
-    mv t0, a0
-    lw t0, 0(t0)
-    lw t0, 16(t0)
-    jalr t0
-    sw a0, -148(fp)
-    lw t6, -60(fp)
-    addi t6, t6, 4
-    lw a0, 0(t6)
+    bnez t1, L118
+    j L117
+L118:
+    lw a0, -36(fp)
     mv t0, a0
     lw t0, 0(t0)
     lw t0, 20(t0)
     jalr t0
-    sw a0, -152(fp)
-    la a0, str_48
+    sw a0, -140(fp)
+    lw t1, -140(fp)
+    bnez t1, L121
+    j L120
+L121:
+    la a0, str_25
     call z_print_cadena
-    lw a0, -32(fp)
-    call z_print_entero
     call z_print_salto
-    addi a0, fp, -88
-    lw a1, -40(fp)
-    lw a2, -32(fp)
-    call fun_registrarResultado
+    addi a0, fp, -60
+    li a1, 2
+    call fun_registrar
+    sw a0, -144(fp)
+    j L119
+L120:
+    la a0, str_26
+    call z_print_cadena
+    call z_print_salto
+L119:
+    j L107
+L117:
+    lw t1, -12(fp)
+    li t2, 5
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -148(fp)
+    lw t1, -148(fp)
+    bnez t1, L123
+    j L122
+L123:
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 24(t0)
+    jalr t0
+    sw a0, -152(fp)
+    lw t1, -152(fp)
+    bnez t1, L126
+    j L125
+L126:
+    la a0, str_27
+    call z_print_cadena
+    call z_print_salto
+    addi a0, fp, -60
+    li a1, 2
+    call fun_registrar
     sw a0, -156(fp)
-    addi a0, fp, -88
-    call fun_mostrarMarcador
-    sw a0, -160(fp)
-    la a0, str_49
+    j L124
+L125:
+    la a0, str_26
+    call z_print_cadena
+    call z_print_salto
+L124:
+    j L107
+L122:
+    lw t1, -12(fp)
+    li t2, 6
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -160(fp)
+    lw t1, -160(fp)
+    bnez t1, L128
+    j L127
+L128:
+    la a0, str_22
     call z_print_cadena
     call z_print_salto
     call z_leer_entero
     sw a0, -20(fp)
-    lw t1, -20(fp)
+    lw a0, -36(fp)
+    lw a1, -20(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 28(t0)
+    jalr t0
+    sw a0, -164(fp)
+    lw t1, -164(fp)
+    sw t1, -28(fp)
+    lw t1, -28(fp)
     li t2, 1
     sub t3, t1, t2
     seqz t3, t3
-    sw t3, -164(fp)
-    lw t1, -164(fp)
-    bnez t1, L98
-    j L99
-L99:
-    addi a0, fp, -88
-    call fun_sumarPuntajes
-    sw a0, -168(fp)
+    sw t3, -168(fp)
     lw t1, -168(fp)
-    sw t1, -36(fp)
-    la a0, str_50
+    bnez t1, L131
+    j L130
+L131:
+    la a0, str_28
     call z_print_cadena
-    lw a0, -36(fp)
+    lw a0, -20(fp)
     call z_print_entero
     call z_print_salto
-    la a0, str_51
+    addi a0, fp, -60
+    li a1, 2
+    call fun_registrar
+    sw a0, -172(fp)
+    j L129
+L130:
+    la a0, str_24
+    call z_print_cadena
+    call z_print_salto
+L129:
+    j L107
+L127:
+    lw t1, -12(fp)
+    li t2, 7
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -176(fp)
+    lw t1, -176(fp)
+    bnez t1, L133
+    j L132
+L133:
+    la a0, str_29
+    call z_print_cadena
+    call z_print_salto
+    call z_leer_entero
+    sw a0, -16(fp)
+    lw a0, -36(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 32(t0)
+    jalr t0
+    sw a0, -180(fp)
+    lw t1, -180(fp)
+    sw t1, -28(fp)
+    lw t1, -28(fp)
+    li t2, 1
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -184(fp)
+    lw t1, -184(fp)
+    bnez t1, L136
+    j L135
+L136:
+    la a0, str_30
+    call z_print_cadena
+    lw a0, -16(fp)
+    call z_print_entero
+    la a0, str_31
+    call z_print_cadena
+    call z_print_salto
+    addi a0, fp, -60
+    li a1, 2
+    call fun_registrar
+    sw a0, -188(fp)
+    j L134
+L135:
+    la a0, str_32
+    call z_print_cadena
+    call z_print_salto
+L134:
+    j L107
+L132:
+    lw t1, -12(fp)
+    li t2, 8
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -192(fp)
+    lw t1, -192(fp)
+    bnez t1, L138
+    j L137
+L138:
+    la a0, str_33
+    call z_print_cadena
+    call z_print_salto
+    call z_leer_entero
+    sw a0, -16(fp)
+    lw a0, -36(fp)
+    lw a1, -16(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 48(t0)
+    jalr t0
+    sw a0, -196(fp)
+    lw t1, -196(fp)
+    sw t1, -24(fp)
+    li t1, 1
+    neg t3, t1
+    sw t3, -200(fp)
+    lw t1, -24(fp)
+    lw t2, -200(fp)
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -204(fp)
+    lw t1, -204(fp)
+    bnez t1, L141
+    j L140
+L141:
+    la a0, str_34
+    call z_print_cadena
+    call z_print_salto
+    j L139
+L140:
+    la a0, str_35
+    call z_print_cadena
+    lw a0, -24(fp)
+    call z_print_entero
+    call z_print_salto
+    addi a0, fp, -60
+    li a1, 3
+    call fun_registrar
+    sw a0, -208(fp)
+L139:
+    j L107
+L137:
+    lw t1, -12(fp)
+    li t2, 9
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -212(fp)
+    lw t1, -212(fp)
+    bnez t1, L143
+    j L142
+L143:
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 64(t0)
+    jalr t0
+    sw a0, -216(fp)
+    la a0, str_36
+    call z_print_cadena
+    call z_print_salto
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 72(t0)
+    jalr t0
+    sw a0, -220(fp)
+    j L107
+L142:
+    lw t1, -12(fp)
+    li t2, 10
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -224(fp)
+    lw t1, -224(fp)
+    bnez t1, L145
+    j L144
+L145:
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 68(t0)
+    jalr t0
+    sw a0, -228(fp)
+    la a0, str_37
+    call z_print_cadena
+    call z_print_salto
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 72(t0)
+    jalr t0
+    sw a0, -232(fp)
+    j L107
+L144:
+    lw t1, -12(fp)
+    li t2, 11
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -236(fp)
+    lw t1, -236(fp)
+    bnez t1, L147
+    j L146
+L147:
+    la a0, str_38
+    call z_print_cadena
+    call z_print_salto
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 72(t0)
+    jalr t0
+    sw a0, -240(fp)
+    la a0, str_39
+    call z_print_cadena
+    call z_print_salto
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 76(t0)
+    jalr t0
+    sw a0, -244(fp)
+    j L107
+L146:
+    lw t1, -12(fp)
+    li t2, 12
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -248(fp)
+    lw t1, -248(fp)
+    bnez t1, L149
+    j L148
+L149:
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 0(t0)
+    jalr t0
+    sw a0, -252(fp)
+    lw t1, -252(fp)
+    bnez t1, L152
+    j L151
+L152:
+    la a0, str_40
+    call z_print_cadena
+    call z_print_salto
+    j L150
+L151:
+    la a0, str_41
+    call z_print_cadena
+    lw t6, -36(fp)
+    addi t6, t6, 12
+    lw a0, 0(t6)
+    call z_print_entero
+    la a0, str_42
+    call z_print_cadena
+    lw t6, -36(fp)
+    addi t6, t6, 12
+    lw a0, 0(t6)
+    call fun_paridad
+    sw a0, -256(fp)
+    lw a0, -256(fp)
+    call z_print_cadena
+    la a0, str_43
+    call z_print_cadena
+    call z_print_salto
+    la a0, str_44
     call z_print_cadena
     lw a0, -36(fp)
-    call fun_titulo
-    sw a0, -172(fp)
-    lw a0, -172(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 60(t0)
+    jalr t0
+    sw a0, -260(fp)
+    lw a0, -260(fp)
+    call z_print_entero
+    call z_print_salto
+    la a0, str_45
+    call z_print_cadena
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 52(t0)
+    jalr t0
+    sw a0, -264(fp)
+    lw a0, -264(fp)
+    call z_print_entero
+    call z_print_salto
+    la a0, str_46
+    call z_print_cadena
+    lw t6, -36(fp)
+    addi t6, t6, 4
+    lw t6, 0(t6)
+    addi t6, t6, 4
+    lw a0, 0(t6)
+    call z_print_entero
+    la a0, str_47
+    call z_print_cadena
+    lw t6, -36(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 4
+    lw a0, 0(t6)
+    call z_print_entero
+    call z_print_salto
+L150:
+    j L107
+L148:
+    lw t1, -12(fp)
+    li t2, 13
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -268(fp)
+    lw t1, -268(fp)
+    bnez t1, L154
+    j L153
+L154:
+    lw a0, -36(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 36(t0)
+    jalr t0
+    sw a0, -272(fp)
+    la a0, str_48
     call z_print_cadena
     call z_print_salto
-    la a0, str_52
-    call z_print_cadena
-    lw a0, -12(fp)
+    j L107
+L153:
+    lw t1, -12(fp)
+    li t2, 0
+    sub t3, t1, t2
+    seqz t3, t3
+    sw t3, -276(fp)
+    lw t1, -276(fp)
+    bnez t1, L156
+    j L155
+L156:
+    la a0, str_49
     call z_print_cadena
     call z_print_salto
+    j L107
+L155:
+    la a0, str_50
+    call z_print_cadena
+    call z_print_salto
+L107:
+    lw t1, -12(fp)
+    li t2, 0
+    sub t3, t1, t2
+    snez t3, t3
+    sw t3, -280(fp)
+    lw t1, -280(fp)
+    bnez t1, L105
+    j L106
+L106:
+    addi a0, fp, -60
+    call fun_imprimirRegistro
+    sw a0, -284(fp)
 __epilogo_main:
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 172
+    addi sp, sp, 284
     mv fp, t0
     ret
 

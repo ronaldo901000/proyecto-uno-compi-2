@@ -222,23 +222,6 @@ public class ResolutorOperandos {
         return ultimo;
     }
 
-    private String primerIndice(String texto, int corchete) {
-        int profundidad = 0;
-        int inicio = corchete + 1;
-        for (int i = corchete; i < texto.length(); i++) {
-            char c = texto.charAt(i);
-            if (c == '[') {
-                profundidad++;
-            } else if (c == ']') {
-                profundidad--;
-                if (profundidad == 0) {
-                    return texto.substring(inicio, i);
-                }
-            }
-        }
-        return null;
-    }
-
     private String nombreSinIndices(String segmento) {
         int corchete = segmento.indexOf('[');
         return (corchete >= 0) ? segmento.substring(0, corchete) : segmento;

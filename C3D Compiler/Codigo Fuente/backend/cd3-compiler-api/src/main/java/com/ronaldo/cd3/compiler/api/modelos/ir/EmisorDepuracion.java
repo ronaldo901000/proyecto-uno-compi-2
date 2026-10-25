@@ -24,7 +24,7 @@ public class EmisorDepuracion implements EmisorIR {
     }
 
     @Override
-    public void emitirAsignacion(Operando destino, Operando origen) {
+    public void emitirAsignacion(Operando destino, Operando origen) {   
         registrar("ASIGNACION", destino, origen);
     }
 
@@ -131,11 +131,6 @@ public class EmisorDepuracion implements EmisorIR {
         return registro;
     }
 
-    public void imprimir() {
-        for (String linea : registro) {
-            System.out.println("    " + linea);
-        }
-    }
 
     private void registrar(String operacion, Operando... operandos) {
         StringBuilder sb = new StringBuilder(operacion);

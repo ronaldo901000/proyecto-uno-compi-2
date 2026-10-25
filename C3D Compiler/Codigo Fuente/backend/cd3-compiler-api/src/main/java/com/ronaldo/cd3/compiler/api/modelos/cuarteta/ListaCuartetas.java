@@ -281,9 +281,9 @@ public class ListaCuartetas {
         }
     }
 
-    public void registrarDimensionArreglo(String nombre, String expresionTamano) {
-        if (nombre != null && expresionTamano != null) {
-            this.dimensionesArreglo.put(nombre, expresionTamano);
+    public void registrarDimensionArreglo(String nombre, String expresionTamaño) {
+        if (nombre != null && expresionTamaño != null) {
+            this.dimensionesArreglo.put(nombre, expresionTamaño);
         }
     }
 

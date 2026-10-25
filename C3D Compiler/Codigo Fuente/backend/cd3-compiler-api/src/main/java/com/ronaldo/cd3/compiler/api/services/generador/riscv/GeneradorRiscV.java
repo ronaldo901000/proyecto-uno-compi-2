@@ -4,6 +4,7 @@ import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.enums.TipoOperando;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.Cuarteta;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
+import com.ronaldo.cd3.compiler.api.modelos.ir.EntradaLiteral;
 import com.ronaldo.cd3.compiler.api.modelos.ir.MotorIR;
 import com.ronaldo.cd3.compiler.api.modelos.ir.PoolLiterales;
 import com.ronaldo.cd3.compiler.api.modelos.vtable.EntradaVTable;
@@ -15,9 +16,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Genera el codigo RISC-V para RARS a partir de las cuartetas:
- * arma la seccion .data (literales y vTables), el .text con el punto de
- * entrada y agrega las rutinas de soporte.
+ * 
+ * @author ronaldo
  */
 public class GeneradorRiscV {
 
@@ -70,7 +70,7 @@ public class GeneradorRiscV {
         StringBuilder datos = new StringBuilder();
         datos.append(".data\n");
         if (pool != null) {
-            for (PoolLiterales.EntradaLiteral entrada : pool.getEntradas()) {
+            for (EntradaLiteral entrada : pool.getEntradas()) {
                 datos.append(".align 2\n");
                 datos.append(entrada.getEtiqueta()).append(": ");
                 if (esCadena(entrada)) {
@@ -163,7 +163,7 @@ public class GeneradorRiscV {
         return etiqueta.contains("_main_") || etiqueta.endsWith("main");
     }
 
-    private boolean esCadena(PoolLiterales.EntradaLiteral entrada) {
+    private boolean esCadena(EntradaLiteral entrada) {
         return entrada.getValor() != null && entrada.getValor().trim().startsWith("\"");
     }
 }

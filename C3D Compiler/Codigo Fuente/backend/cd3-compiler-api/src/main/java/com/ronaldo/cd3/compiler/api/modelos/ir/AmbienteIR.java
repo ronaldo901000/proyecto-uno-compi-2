@@ -47,7 +47,7 @@ public class AmbienteIR {
         if (!poolLiterales.requiereMemoria(literal.getTipo())) {
             return operando;
         }
-        PoolLiterales.EntradaLiteral entrada = poolLiterales.registrar(
+        EntradaLiteral entrada = poolLiterales.registrar(
                 literal.getTipo(), literal.getTexto());
         return new OperandoLiteral(literal.getTexto(), literal.getCategoria(),
                 literal.getTipo(), literal.getRol(), entrada.getEtiqueta());
