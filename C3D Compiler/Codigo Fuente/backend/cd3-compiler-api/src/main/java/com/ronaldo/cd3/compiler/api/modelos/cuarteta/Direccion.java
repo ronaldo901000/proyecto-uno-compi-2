@@ -22,9 +22,6 @@ public class Direccion {
             return ((AccesoVariable) expresion).getId();
         }
 
-        // "this.atributo" se parsea como LlamadaThis(AccesoVariable). Se
-        // conserva el prefijo "this." para no confundir el atributo con un
-        // parametro/local homonimo al resolver operandos.
         if (expresion instanceof LlamadaThis) {
             LlamadaThis llamadaThis = (LlamadaThis) expresion;
             if (!llamadaThis.esMetodo() && llamadaThis.getVariable() != null) {

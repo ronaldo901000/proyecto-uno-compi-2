@@ -4,6 +4,7 @@ import com.ronaldo.cd3.compiler.api.enums.OperadorCuarteta;
 import com.ronaldo.cd3.compiler.api.enums.TipoOperando;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.simbolos.SimboloParametro;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
+import com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -28,7 +29,7 @@ public class ListaCuartetas {
     private final Map<String, Map<String, Tipo>> arreglosDeclaradosPorUnidad;
     private final Map<String, String> dimensionesArreglo;
     private final Map<String, Tipo> tiposEstructuras;
-    private com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables;
+    private TablaVTables vTables;
     private String unidadActual;
     private int contadorTemporales;
     private int contadorEtiquetas;
@@ -51,12 +52,11 @@ public class ListaCuartetas {
         this.contadorEtiquetas = 0;
     }
 
-    public com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables getVTables() {
+    public TablaVTables getVTables() {
         return vTables;
     }
 
-    public void setVTables(
-            com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables) {
+    public void setVTables(TablaVTables vTables) {
         this.vTables = vTables;
     }
 
@@ -260,9 +260,12 @@ public class ListaCuartetas {
             categoriasOperandos.put(nombre, TipoOperando.VARIABLE);
         }
         if (nombre != null && tipo != null && this.unidadActual != null) {
-            this.variablesDeclaradasPorUnidad
-                    .computeIfAbsent(this.unidadActual, k -> new HashMap<>())
-                    .put(nombre, tipo);
+            Map<String, Tipo> variables = this.variablesDeclaradasPorUnidad.get(this.unidadActual);
+            if (variables == null) {
+                variables = new HashMap<>();
+                this.variablesDeclaradasPorUnidad.put(this.unidadActual, variables);
+            }
+            variables.put(nombre, tipo);
         }
     }
 
@@ -275,9 +278,12 @@ public class ListaCuartetas {
     public void registrarTipoArregloDeclarado(String nombre, Tipo tipoElemento) {
         this.registrarTipoArreglo(nombre, tipoElemento);
         if (nombre != null && tipoElemento != null && this.unidadActual != null) {
-            this.arreglosDeclaradosPorUnidad
-                    .computeIfAbsent(this.unidadActual, k -> new HashMap<>())
-                    .put(nombre, tipoElemento);
+            Map<String, Tipo> arreglos = this.arreglosDeclaradosPorUnidad.get(this.unidadActual);
+            if (arreglos == null) {
+                arreglos = new HashMap<>();
+                this.arreglosDeclaradosPorUnidad.put(this.unidadActual, arreglos);
+            }
+            arreglos.put(nombre, tipoElemento);
         }
     }
 
@@ -340,14 +346,22 @@ public class ListaCuartetas {
     public Map<String, Set<String>> getNombresDeclaradosPorUnidad() {
         Map<String, Set<String>> nombres = new HashMap<>();
         for (Map.Entry<String, Map<String, Tipo>> entrada : this.variablesDeclaradasPorUnidad.entrySet()) {
-            nombres.computeIfAbsent(entrada.getKey(), k -> new LinkedHashSet<>())
-                    .addAll(entrada.getValue().keySet());
+            agregarNombres(nombres, entrada.getKey(), entrada.getValue().keySet());
         }
         for (Map.Entry<String, Map<String, Tipo>> entrada : this.arreglosDeclaradosPorUnidad.entrySet()) {
-            nombres.computeIfAbsent(entrada.getKey(), k -> new LinkedHashSet<>())
-                    .addAll(entrada.getValue().keySet());
+            agregarNombres(nombres, entrada.getKey(), entrada.getValue().keySet());
         }
         return nombres;
+    }
+
+    private void agregarNombres(Map<String, Set<String>> nombres, String unidad,
+            Set<String> nuevos) {
+        Set<String> existentes = nombres.get(unidad);
+        if (existentes == null) {
+            existentes = new LinkedHashSet<>();
+            nombres.put(unidad, existentes);
+        }
+        existentes.addAll(nuevos);
     }
 
     public Tipo tipoDeFuncion(String nombre) {

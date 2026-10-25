@@ -14,21 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Construye y almacena las vtables (tablas virtuales de despacho) de todas las
- * clases Z. Cada vtable es una lista ordenada de {@link EntradaVTable}: la
- * posicion (slot) de cada entrada es la que se usa para el despacho dinamico.
- *
- * Regla de herencia estilo C++: la vtable del hijo se inicializa copiando la del
- * padre; un metodo que redeclara una firma existente sobreescribe esa posicion,
- * y uno nuevo se agrega al final.
- *
  * @author ronaldo
  */
 public class TablaVTables {
 
-    // nombre de clase -> vtable (lista ordenada; el indice es el slot)
     private final Map<String, List<EntradaVTable>> vTables = new HashMap<>();
-    // nombre de clase -> (firma -> slot)
     private final Map<String, Map<String, Integer>> slots = new HashMap<>();
 
     public static TablaVTables construir(TablaSimbolos tablaSimbolos) {
@@ -50,6 +40,7 @@ public class TablaVTables {
         }
         listas.put(clase.getId(), Boolean.TRUE);
 
+        // Construir primero al padre
         SimboloClase padre = clase.getClasePadre();
         if (padre != null) {
             construirDe(padre, listas);
@@ -88,10 +79,6 @@ public class TablaVTables {
         slots.put(clase.getId(), indice);
     }
 
-    /**
-     * Un metodo es virtual si es de instancia y puede ser sobreescrito (no
-     * privado). Los constructores no entran: no estan en getMetodosLista().
-     */
     private boolean esVirtual(SimboloFuncion metodo) {
         return metodo.esMetodo()
                 && metodo.getModAcceso() != ModificadoresAcceso.PRIVATE;
@@ -111,10 +98,6 @@ public class TablaVTables {
         return vTables.get(nombreClase);
     }
 
-    /**
-     * Posicion (slot) de una firma dentro de la vtable de la clase indicada.
-     * Devuelve -1 si la clase no tiene esa firma en su tabla.
-     */
     public int slotDe(String nombreClase, String firma) {
         Map<String, Integer> indice = slots.get(nombreClase);
         if (indice == null) {

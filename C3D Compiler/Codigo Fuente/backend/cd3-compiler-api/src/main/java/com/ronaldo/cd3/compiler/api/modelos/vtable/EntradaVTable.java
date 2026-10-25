@@ -1,9 +1,6 @@
 package com.ronaldo.cd3.compiler.api.modelos.vtable;
 
 /**
- * Entrada de una vtable: asocia la firma canonica de un metodo virtual con la
- * etiqueta (unidad) que lo implementa en una clase concreta.
- *
  * @author ronaldo
  */
 public class EntradaVTable {

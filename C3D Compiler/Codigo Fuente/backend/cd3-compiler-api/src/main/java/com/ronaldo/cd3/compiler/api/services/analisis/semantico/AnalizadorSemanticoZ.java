@@ -7,6 +7,7 @@ import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.cuarteta.ListaCuartetas;
 import com.ronaldo.cd3.compiler.api.modelos.tabla.TablaSimbolos;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.TablaTipos;
+import com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables;
 import java.util.List;
 import java.util.Set;
 
@@ -65,9 +66,7 @@ public class AnalizadorSemanticoZ {
 
         //Generacion de cuartetas solo para archivos importados
         if (!contexto.hayErrores() && !respuesta.isHayErrores()) {
-            com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables vTables
-                    = com.ronaldo.cd3.compiler.api.modelos.vtable.TablaVTables
-                            .construir(tablaSimbolos);
+            TablaVTables vTables= TablaVTables.construir(tablaSimbolos);
             cuartetas.setVTables(vTables);
 
             Contexto contextoGeneracion = new Contexto(tablaTipos, tablaSimbolos, tablaSimbolos);

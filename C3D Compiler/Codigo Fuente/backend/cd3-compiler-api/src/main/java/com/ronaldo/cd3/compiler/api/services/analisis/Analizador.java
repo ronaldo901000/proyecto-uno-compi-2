@@ -119,7 +119,6 @@ public class Analizador {
 
         if (!respuestaDTO.isHayErrores()) {
             respuestaDTO.setCodigoRiscV(new GeneradorRiscV().generar(cuartetas));
-            System.out.println(respuestaDTO.getCodigoRiscV());
         }
 
         return respuestaDTO;
