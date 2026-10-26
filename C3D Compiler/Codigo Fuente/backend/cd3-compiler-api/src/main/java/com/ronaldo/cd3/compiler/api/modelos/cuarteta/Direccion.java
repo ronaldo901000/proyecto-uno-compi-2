@@ -14,7 +14,6 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.LlamadaThis;
  */
 public class Direccion {
 
-
     public String lvalue(Expresion expresion, Contexto contexto,
             ListaCuartetas cuartetas) {
 
@@ -31,6 +30,9 @@ public class Direccion {
 
         if (expresion instanceof Acceso) {
             Acceso acceso = (Acceso) expresion;
+            if (llevaIndice(acceso.getObjeto())) {
+                return acceso.generarCuartetas(contexto, cuartetas);
+            }
             return lvalue(acceso.getObjeto(), contexto, cuartetas)
                     + "." + acceso.getAtributo();
         }
@@ -49,5 +51,15 @@ public class Direccion {
         }
 
         return expresion.generarCuartetas(contexto, cuartetas);
+    }
+
+    private boolean llevaIndice(Expresion expresion) {
+        if (expresion instanceof ExpIndice) {
+            return true;
+        }
+        if (expresion instanceof Acceso) {
+            return llevaIndice(((Acceso) expresion).getObjeto());
+        }
+        return false;
     }
 }

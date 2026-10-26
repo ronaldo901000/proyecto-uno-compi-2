@@ -386,13 +386,15 @@ public class ListaCuartetas {
         if (nombre == null || tipo == null || this.unidadActual == null) {
             return;
         }
-        this.tiposLocalesPorUnidad
-                .computeIfAbsent(this.unidadActual, k -> new HashMap<>())
-                .put(nombre, tipo);
+        Map<String, Tipo> locales = this.tiposLocalesPorUnidad.get(this.unidadActual);
+        if (locales == null) {
+            locales = new HashMap<>();
+            this.tiposLocalesPorUnidad.put(this.unidadActual, locales);
+        }
+        locales.put(nombre, tipo);
     }
 
     public void entrarUnidadEmision(String etiqueta) {
-        System.out.println("unidadEmision <- " + etiqueta);
         if (etiqueta != null
                 && !TipoOperando.ETIQUETA_INTERNA.equals(this.categoriasOperandos.get(etiqueta))) {
             this.unidadEmision = etiqueta;

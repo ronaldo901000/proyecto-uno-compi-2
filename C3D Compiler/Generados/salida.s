@@ -1,19 +1,9 @@
 .data
 .align 2
-str_0: .asciz "caso1="
-.align 2
-str_1: .asciz "caso2="
-.align 2
-str_2: .asciz "caso3="
-.align 2
-str_3: .asciz "caso4="
-.align 2
-str_4: .asciz "caso5="
-.align 2
-str_5: .asciz " "
+str_0: .asciz " "
 .align 2
 __vtable_Prueba:
-    .word metodo_Prueba_correr_2
+    .word metodo_Prueba_correr_1
 .text
 .globl main
 main:
@@ -44,14 +34,42 @@ __epilogo_constructor_Nodo_1:
     mv fp, t0
     ret
 
-metodo_Prueba_hacer_1:
-    addi sp, sp, -36
-    sw ra, 32(sp)
-    sw fp, 28(sp)
-    addi fp, sp, 36
+metodo_Prueba_correr_1:
+    addi sp, sp, -156
+    sw ra, 152(sp)
+    sw fp, 148(sp)
+    addi fp, sp, 156
     sw a0, -12(fp)
-    li a0, 12
+    li t1, 2
+    li t2, 2
+    addi sp, sp, -16
+    sw t1, 0(sp)
+    sw t2, 4(sp)
+    slli a0, t1, 2
     call z_alloc
+    sw a0, 8(sp)
+    sw zero, 12(sp)
+Lnew_0_loop:
+    lw t0, 12(sp)
+    lw t1, 0(sp)
+    bge t0, t1, Lnew_0_fin
+    lw a0, 4(sp)
+    li t2, 4
+    mul a0, a0, t2
+    addi a0, a0, 3
+    andi a0, a0, -4
+    call z_alloc
+    lw t3, 8(sp)
+    lw t0, 12(sp)
+    slli t4, t0, 2
+    add t3, t3, t4
+    sw a0, 0(t3)
+    addi t0, t0, 1
+    sw t0, 12(sp)
+    j Lnew_0_loop
+Lnew_0_fin:
+    lw a0, 8(sp)
+    addi sp, sp, 16
     sw a0, -16(fp)
     lw t1, -16(fp)
     sw t1, -20(fp)
@@ -59,30 +77,45 @@ metodo_Prueba_hacer_1:
     sw t1, -24(fp)
 L1:
     lw t1, -24(fp)
-    li t2, 3
+    li t2, 2
     slt t3, t1, t2
     sw t3, -28(fp)
     lw t1, -28(fp)
     bnez t1, L2
     j L4
 L2:
+    li t1, 0
+    sw t1, -32(fp)
+L5:
+    lw t1, -32(fp)
+    li t2, 2
+    slt t3, t1, t2
+    sw t3, -36(fp)
+    lw t1, -36(fp)
+    bnez t1, L6
+    j L8
+L6:
     li a0, 12
     call z_alloc
-    sw a0, -32(fp)
+    sw a0, -40(fp)
     lw t1, -24(fp)
     li t2, 10
     mul t3, t1, t2
-    sw t3, -36(fp)
-    lw a0, -32(fp)
-    lw a1, -36(fp)
+    sw t3, -44(fp)
+    lw t1, -44(fp)
+    lw t2, -32(fp)
+    add t3, t1, t2
+    sw t3, -48(fp)
+    lw a0, -40(fp)
+    lw a1, -48(fp)
     call constructor_Nodo_1
-    sw a0, -32(fp)
+    sw a0, -40(fp)
     lw t2, -24(fp)
     lw t1, -20(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
-    lw t1, -32(fp)
+    lw t2, -32(fp)
     lw t6, -20(fp)
     addi sp, sp, -4
     sw t6, 0(sp)
@@ -92,352 +125,180 @@ L2:
     li t4, 4
     mul t2, t2, t4
     add t6, t6, t2
+    lw t1, 0(t6)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t1, -40(fp)
+    lw t6, -20(fp)
+    addi sp, sp, -4
+    sw t6, 0(sp)
+    lw t2, -24(fp)
+    lw t6, 0(sp)
+    addi sp, sp, 4
+    slli t2, t2, 2
+    add t6, t6, t2
+    lw t6, 0(t6)
+    addi sp, sp, -4
+    sw t6, 0(sp)
+    lw t2, -32(fp)
+    lw t6, 0(sp)
+    addi sp, sp, 4
+    li t4, 4
+    mul t2, t2, t4
+    add t6, t6, t2
     sw t1, 0(t6)
+L7:
+    lw t1, -32(fp)
+    addi t3, t1, 1
+    sw t3, -32(fp)
+    j L5
+L8:
 L3:
     lw t1, -24(fp)
     addi t3, t1, 1
     sw t3, -24(fp)
     j L1
 L4:
-    lw a0, -20(fp)
-    j __epilogo_metodo_Prueba_hacer_1
-    j __epilogo_metodo_Prueba_hacer_1
-__epilogo_metodo_Prueba_hacer_1:
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 36
-    mv fp, t0
-    ret
-
-metodo_Prueba_correr_2:
-    addi sp, sp, -132
-    sw ra, 128(sp)
-    sw fp, 124(sp)
-    addi fp, sp, 132
-    sw a0, -12(fp)
-    call z_leer_entero
-    sw a0, -16(fp)
-    lw a0, -12(fp)
-    call metodo_Prueba_hacer_1
-    sw a0, -20(fp)
+    li t2, 1
     lw t1, -20(fp)
-    sw t1, -24(fp)
-    lw t1, -16(fp)
-    li t2, 1
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L6
-    j L5
-L6:
-    li t2, 2
-    lw t1, -24(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
     lw t3, 0(t1)
-    sw t3, -32(fp)
-    li t2, 1
-    lw t1, -24(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t1, -32(fp)
-    lw t6, -24(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -36(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-    li t2, 1
-    lw t1, -24(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -40(fp)
-    la t1, str_0
-    lw t6, -40(fp)
-    addi t6, t6, 8
-    lw t6, 0(t6)
-    addi t6, t6, 4
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -44(fp)
-    lw a0, -44(fp)
-    call z_print_cadena
-    call z_print_salto
-L5:
-    lw t1, -16(fp)
-    li t2, 2
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -48(fp)
-    lw t1, -48(fp)
-    bnez t1, L8
-    j L7
-L8:
+    sw t3, -52(fp)
     li t2, 0
-    lw t1, -24(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    li t1, 99
-    lw t6, -24(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -52(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-    li t2, 0
-    lw t1, -24(fp)
+    lw t1, -52(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
     lw t3, 0(t1)
     sw t3, -56(fp)
-    la t1, str_1
+    li t1, 77
     lw t6, -56(fp)
     addi t6, t6, 4
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -60(fp)
-    lw a0, -60(fp)
-    call z_print_cadena
-    call z_print_salto
-L7:
-    lw t1, -16(fp)
-    li t2, 3
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -64(fp)
-    lw t1, -64(fp)
-    bnez t1, L10
-    j L9
-L10:
-    li t2, 2
-    lw t1, -24(fp)
+    sw t1, 0(t6)
+    li t2, 1
+    lw t1, -20(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
-    lw t6, -24(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -68(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
+    lw t3, 0(t1)
+    sw t3, -60(fp)
+    li t2, 1
+    lw t1, -60(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -64(fp)
+    lw t6, -64(fp)
+    addi t6, t6, 4
     lw t1, 0(t6)
-    li t2, 5
+    li t2, 3
     add t3, t1, t2
-    sw t3, -72(fp)
-    lw t1, -72(fp)
-    lw t6, -24(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -68(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
+    sw t3, -68(fp)
+    lw t1, -68(fp)
+    lw t6, -64(fp)
+    addi t6, t6, 4
     sw t1, 0(t6)
-    li t2, 2
-    lw t1, -24(fp)
+    li t2, 0
+    lw t1, -20(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -72(fp)
+    li t2, 1
+    lw t1, -72(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
     lw t3, 0(t1)
     sw t3, -76(fp)
-    la t1, str_2
     lw t6, -76(fp)
     addi t6, t6, 4
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -80(fp)
-    lw a0, -80(fp)
-    call z_print_cadena
-    call z_print_salto
-L9:
-    lw t1, -16(fp)
-    li t2, 4
-    sub t3, t1, t2
-    seqz t3, t3
-    sw t3, -84(fp)
-    lw t1, -84(fp)
-    bnez t1, L12
-    j L11
-L12:
+    lw t1, 0(t6)
+    addi t3, t1, 1
+    lw t6, -76(fp)
+    addi t6, t6, 4
+    sw t3, 0(t6)
     li t2, 1
-    lw t1, -24(fp)
+    lw t1, -20(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
-    lw t6, -24(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -88(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -24(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -88(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t3, 0(t6)
+    lw t3, 0(t1)
+    sw t3, -80(fp)
     li t2, 1
-    lw t1, -24(fp)
+    lw t1, -80(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -84(fp)
+    li t2, 0
+    lw t1, -20(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -88(fp)
+    li t2, 0
+    lw t1, -88(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
     lw t3, 0(t1)
     sw t3, -92(fp)
-    la t1, str_3
+    lw t1, -84(fp)
     lw t6, -92(fp)
-    addi t6, t6, 4
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -96(fp)
-    lw a0, -96(fp)
-    call z_print_cadena
-    call z_print_salto
-L11:
-    lw t1, -16(fp)
-    li t2, 5
-    sub t3, t1, t2
-    seqz t3, t3
+    addi t6, t6, 8
+    sw t1, 0(t6)
+    li t2, 0
+    lw t1, -20(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -96(fp)
+    li t2, 0
+    lw t1, -96(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
     sw t3, -100(fp)
-    lw t1, -100(fp)
-    bnez t1, L14
-    j L13
-L14:
-    li t2, 0
-    lw t1, -24(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    li t1, 7
-    lw t6, -24(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -52(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-    li t2, 1
-    lw t1, -24(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    li t1, 8
-    lw t6, -24(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -88(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
+    li t1, 55
+    lw t6, -100(fp)
+    addi t6, t6, 8
+    lw t6, 0(t6)
+    addi t6, t6, 4
     sw t1, 0(t6)
     li t2, 0
-    lw t1, -24(fp)
+    lw t1, -20(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
     lw t3, 0(t1)
     sw t3, -104(fp)
-    la t1, str_4
-    lw t6, -104(fp)
+    li t2, 0
+    lw t1, -104(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -108(fp)
+    lw t6, -108(fp)
     addi t6, t6, 4
-    lw t2, 0(t6)
+    lw t1, 0(t6)
+    la t2, str_0
     addi sp, sp, -12
     sw t1, 0(sp)
     sw t2, 4(sp)
     sw zero, 8(sp)
     lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
     call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -108(fp)
-    lw t1, -108(fp)
-    la t2, str_5
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
     sw a0, 8(sp)
     lw a0, 4(sp)
     mv a1, a0
@@ -445,15 +306,22 @@ L14:
     call z_concat
     addi sp, sp, 12
     sw a0, -112(fp)
-    li t2, 1
-    lw t1, -24(fp)
+    li t2, 0
+    lw t1, -20(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
     lw t3, 0(t1)
     sw t3, -116(fp)
+    li t2, 1
+    lw t1, -116(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -120(fp)
     lw t1, -112(fp)
-    lw t6, -116(fp)
+    lw t6, -120(fp)
     addi t6, t6, 4
     lw t2, 0(t6)
     addi sp, sp, -12
@@ -464,34 +332,41 @@ L14:
     sw a0, 8(sp)
     lw a0, 4(sp)
     call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -120(fp)
-    lw t1, -120(fp)
-    la t2, str_5
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
     mv a1, a0
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
     sw a0, -124(fp)
-    li t2, 2
-    lw t1, -24(fp)
+    lw t1, -124(fp)
+    la t2, str_0
+    addi sp, sp, -12
+    sw t1, 0(sp)
+    sw t2, 4(sp)
+    sw zero, 8(sp)
+    lw a0, 0(sp)
+    sw a0, 8(sp)
+    lw a0, 4(sp)
+    mv a1, a0
+    lw a0, 8(sp)
+    call z_concat
+    addi sp, sp, 12
+    sw a0, -128(fp)
+    li t2, 1
+    lw t1, -20(fp)
     li t3, 4
     mul t2, t2, t3
     add t1, t1, t2
     lw t3, 0(t1)
-    sw t3, -128(fp)
-    lw t1, -124(fp)
-    lw t6, -128(fp)
+    sw t3, -132(fp)
+    li t2, 0
+    lw t1, -132(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -136(fp)
+    lw t1, -128(fp)
+    lw t6, -136(fp)
     addi t6, t6, 4
     lw t2, 0(t6)
     addi sp, sp, -12
@@ -506,16 +381,60 @@ L14:
     lw a0, 8(sp)
     call z_concat
     addi sp, sp, 12
-    sw a0, -132(fp)
-    lw a0, -132(fp)
+    sw a0, -140(fp)
+    lw t1, -140(fp)
+    la t2, str_0
+    addi sp, sp, -12
+    sw t1, 0(sp)
+    sw t2, 4(sp)
+    sw zero, 8(sp)
+    lw a0, 0(sp)
+    sw a0, 8(sp)
+    lw a0, 4(sp)
+    mv a1, a0
+    lw a0, 8(sp)
+    call z_concat
+    addi sp, sp, 12
+    sw a0, -144(fp)
+    li t2, 1
+    lw t1, -20(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -148(fp)
+    li t2, 1
+    lw t1, -148(fp)
+    li t3, 4
+    mul t2, t2, t3
+    add t1, t1, t2
+    lw t3, 0(t1)
+    sw t3, -152(fp)
+    lw t1, -144(fp)
+    lw t6, -152(fp)
+    addi t6, t6, 4
+    lw t2, 0(t6)
+    addi sp, sp, -12
+    sw t1, 0(sp)
+    sw t2, 4(sp)
+    sw zero, 8(sp)
+    lw a0, 0(sp)
+    sw a0, 8(sp)
+    lw a0, 4(sp)
+    call z_itoa
+    mv a1, a0
+    lw a0, 8(sp)
+    call z_concat
+    addi sp, sp, 12
+    sw a0, -156(fp)
+    lw a0, -156(fp)
     call z_print_cadena
     call z_print_salto
-L13:
-    j __epilogo_metodo_Prueba_correr_2
-__epilogo_metodo_Prueba_correr_2:
+    j __epilogo_metodo_Prueba_correr_1
+__epilogo_metodo_Prueba_correr_1:
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 132
+    addi sp, sp, 156
     mv fp, t0
     ret
 
