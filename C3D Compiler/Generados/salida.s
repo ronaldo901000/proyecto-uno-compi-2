@@ -1,451 +1,81 @@
 .data
 .align 2
-str_0: .asciz " "
+str_0: .asciz "Hola desde A"
 .align 2
-__vtable_Prueba:
-    .word metodo_Prueba_correr_1
+str_1: .asciz "Hola desde B"
+.align 2
+__vtable_A:
+    .word metodo_A_saludar_1
+.align 2
+__vtable_B:
+    .word metodo_B_saludar_1
 .text
 .globl main
 main:
     call __entrada_main
     call z_exit
 
-constructor_Nodo_1:
+metodo_A_saludar_1:
     addi sp, sp, -16
     sw ra, 12(sp)
     sw fp, 8(sp)
     addi fp, sp, 16
     sw a0, -12(fp)
-    sw a1, -16(fp)
-    lw t1, -16(fp)
-    lw t6, -12(fp)
-    addi t6, t6, 4
-    sw t1, 0(t6)
-    li t1, 0
-    lw t6, -12(fp)
-    addi t6, t6, 8
-    sw t1, 0(t6)
-    j __epilogo_constructor_Nodo_1
-__epilogo_constructor_Nodo_1:
-    lw a0, -12(fp)
-    lw t0, -8(fp)
-    lw ra, -4(fp)
-    addi sp, sp, 16
-    mv fp, t0
-    ret
-
-metodo_Prueba_correr_1:
-    addi sp, sp, -156
-    sw ra, 152(sp)
-    sw fp, 148(sp)
-    addi fp, sp, 156
-    sw a0, -12(fp)
-    li t1, 2
-    li t2, 2
-    addi sp, sp, -16
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    slli a0, t1, 2
-    call z_alloc
-    sw a0, 8(sp)
-    sw zero, 12(sp)
-Lnew_0_loop:
-    lw t0, 12(sp)
-    lw t1, 0(sp)
-    bge t0, t1, Lnew_0_fin
-    lw a0, 4(sp)
-    li t2, 4
-    mul a0, a0, t2
-    addi a0, a0, 3
-    andi a0, a0, -4
-    call z_alloc
-    lw t3, 8(sp)
-    lw t0, 12(sp)
-    slli t4, t0, 2
-    add t3, t3, t4
-    sw a0, 0(t3)
-    addi t0, t0, 1
-    sw t0, 12(sp)
-    j Lnew_0_loop
-Lnew_0_fin:
-    lw a0, 8(sp)
-    addi sp, sp, 16
-    sw a0, -16(fp)
-    lw t1, -16(fp)
-    sw t1, -20(fp)
-    li t1, 0
-    sw t1, -24(fp)
-L1:
-    lw t1, -24(fp)
-    li t2, 2
-    slt t3, t1, t2
-    sw t3, -28(fp)
-    lw t1, -28(fp)
-    bnez t1, L2
-    j L4
-L2:
-    li t1, 0
-    sw t1, -32(fp)
-L5:
-    lw t1, -32(fp)
-    li t2, 2
-    slt t3, t1, t2
-    sw t3, -36(fp)
-    lw t1, -36(fp)
-    bnez t1, L6
-    j L8
-L6:
-    li a0, 12
-    call z_alloc
-    sw a0, -40(fp)
-    lw t1, -24(fp)
-    li t2, 10
-    mul t3, t1, t2
-    sw t3, -44(fp)
-    lw t1, -44(fp)
-    lw t2, -32(fp)
-    add t3, t1, t2
-    sw t3, -48(fp)
-    lw a0, -40(fp)
-    lw a1, -48(fp)
-    call constructor_Nodo_1
-    sw a0, -40(fp)
-    lw t2, -24(fp)
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t2, -32(fp)
-    lw t6, -20(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -24(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    lw t1, 0(t6)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t1, -40(fp)
-    lw t6, -20(fp)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -24(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    slli t2, t2, 2
-    add t6, t6, t2
-    lw t6, 0(t6)
-    addi sp, sp, -4
-    sw t6, 0(sp)
-    lw t2, -32(fp)
-    lw t6, 0(sp)
-    addi sp, sp, 4
-    li t4, 4
-    mul t2, t2, t4
-    add t6, t6, t2
-    sw t1, 0(t6)
-L7:
-    lw t1, -32(fp)
-    addi t3, t1, 1
-    sw t3, -32(fp)
-    j L5
-L8:
-L3:
-    lw t1, -24(fp)
-    addi t3, t1, 1
-    sw t3, -24(fp)
-    j L1
-L4:
-    li t2, 1
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -52(fp)
-    li t2, 0
-    lw t1, -52(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -56(fp)
-    li t1, 77
-    lw t6, -56(fp)
-    addi t6, t6, 4
-    sw t1, 0(t6)
-    li t2, 1
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -60(fp)
-    li t2, 1
-    lw t1, -60(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -64(fp)
-    lw t6, -64(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    li t2, 3
-    add t3, t1, t2
-    sw t3, -68(fp)
-    lw t1, -68(fp)
-    lw t6, -64(fp)
-    addi t6, t6, 4
-    sw t1, 0(t6)
-    li t2, 0
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -72(fp)
-    li t2, 1
-    lw t1, -72(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -76(fp)
-    lw t6, -76(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    addi t3, t1, 1
-    lw t6, -76(fp)
-    addi t6, t6, 4
-    sw t3, 0(t6)
-    li t2, 1
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -80(fp)
-    li t2, 1
-    lw t1, -80(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -84(fp)
-    li t2, 0
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -88(fp)
-    li t2, 0
-    lw t1, -88(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -92(fp)
-    lw t1, -84(fp)
-    lw t6, -92(fp)
-    addi t6, t6, 8
-    sw t1, 0(t6)
-    li t2, 0
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -96(fp)
-    li t2, 0
-    lw t1, -96(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -100(fp)
-    li t1, 55
-    lw t6, -100(fp)
-    addi t6, t6, 8
-    lw t6, 0(t6)
-    addi t6, t6, 4
-    sw t1, 0(t6)
-    li t2, 0
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -104(fp)
-    li t2, 0
-    lw t1, -104(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -108(fp)
-    lw t6, -108(fp)
-    addi t6, t6, 4
-    lw t1, 0(t6)
-    la t2, str_0
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    call z_itoa
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -112(fp)
-    li t2, 0
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -116(fp)
-    li t2, 1
-    lw t1, -116(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -120(fp)
-    lw t1, -112(fp)
-    lw t6, -120(fp)
-    addi t6, t6, 4
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -124(fp)
-    lw t1, -124(fp)
-    la t2, str_0
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -128(fp)
-    li t2, 1
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -132(fp)
-    li t2, 0
-    lw t1, -132(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -136(fp)
-    lw t1, -128(fp)
-    lw t6, -136(fp)
-    addi t6, t6, 4
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -140(fp)
-    lw t1, -140(fp)
-    la t2, str_0
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -144(fp)
-    li t2, 1
-    lw t1, -20(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -148(fp)
-    li t2, 1
-    lw t1, -148(fp)
-    li t3, 4
-    mul t2, t2, t3
-    add t1, t1, t2
-    lw t3, 0(t1)
-    sw t3, -152(fp)
-    lw t1, -144(fp)
-    lw t6, -152(fp)
-    addi t6, t6, 4
-    lw t2, 0(t6)
-    addi sp, sp, -12
-    sw t1, 0(sp)
-    sw t2, 4(sp)
-    sw zero, 8(sp)
-    lw a0, 0(sp)
-    sw a0, 8(sp)
-    lw a0, 4(sp)
-    call z_itoa
-    mv a1, a0
-    lw a0, 8(sp)
-    call z_concat
-    addi sp, sp, 12
-    sw a0, -156(fp)
-    lw a0, -156(fp)
+    la t1, str_0
+    sw t1, -16(fp)
+    lw a0, -16(fp)
     call z_print_cadena
     call z_print_salto
-    j __epilogo_metodo_Prueba_correr_1
-__epilogo_metodo_Prueba_correr_1:
+    j __epilogo_metodo_A_saludar_1
+__epilogo_metodo_A_saludar_1:
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 156
+    addi sp, sp, 16
     mv fp, t0
     ret
 
-constructor_Prueba_1:
+constructor_A_1:
     addi sp, sp, -12
     sw ra, 8(sp)
     sw fp, 4(sp)
     addi fp, sp, 12
     sw a0, -12(fp)
-    j __epilogo_constructor_Prueba_1
-__epilogo_constructor_Prueba_1:
+    j __epilogo_constructor_A_1
+__epilogo_constructor_A_1:
+    lw a0, -12(fp)
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 12
+    mv fp, t0
+    ret
+
+metodo_B_saludar_1:
+    addi sp, sp, -16
+    sw ra, 12(sp)
+    sw fp, 8(sp)
+    addi fp, sp, 16
+    sw a0, -12(fp)
+    la t1, str_1
+    sw t1, -16(fp)
+    lw a0, -16(fp)
+    call z_print_cadena
+    call z_print_salto
+    j __epilogo_metodo_B_saludar_1
+__epilogo_metodo_B_saludar_1:
+    lw t0, -8(fp)
+    lw ra, -4(fp)
+    addi sp, sp, 16
+    mv fp, t0
+    ret
+
+constructor_B_1:
+    addi sp, sp, -12
+    sw ra, 8(sp)
+    sw fp, 4(sp)
+    addi fp, sp, 12
+    sw a0, -12(fp)
+    j __epilogo_constructor_B_1
+__epilogo_constructor_B_1:
     lw a0, -12(fp)
     lw t0, -8(fp)
     lw ra, -4(fp)
@@ -454,31 +84,48 @@ __epilogo_constructor_Prueba_1:
     ret
 
 __entrada_main:
-    addi sp, sp, -20
-    sw ra, 16(sp)
-    sw fp, 12(sp)
-    addi fp, sp, 20
-    li a0, 4
+    addi sp, sp, -32
+    sw ra, 28(sp)
+    sw fp, 24(sp)
+    addi fp, sp, 32
+    li a0, 8
     call z_alloc
     sw a0, -12(fp)
     lw t6, -12(fp)
-    la t1, __vtable_Prueba
+    la t1, __vtable_A
     sw t1, 0(t6)
     lw a0, -12(fp)
-    call constructor_Prueba_1
+    call constructor_A_1
     sw a0, -12(fp)
     lw t1, -12(fp)
     sw t1, -16(fp)
+    li a0, 8
+    call z_alloc
+    sw a0, -20(fp)
+    lw t6, -20(fp)
+    la t1, __vtable_B
+    sw t1, 0(t6)
+    lw a0, -20(fp)
+    call constructor_B_1
+    sw a0, -20(fp)
+    lw t1, -20(fp)
+    sw t1, -24(fp)
     lw a0, -16(fp)
     mv t0, a0
     lw t0, 0(t0)
     lw t0, 0(t0)
     jalr t0
-    sw a0, -20(fp)
+    sw a0, -28(fp)
+    lw a0, -24(fp)
+    mv t0, a0
+    lw t0, 0(t0)
+    lw t0, 0(t0)
+    jalr t0
+    sw a0, -32(fp)
 __epilogo_main:
     lw t0, -8(fp)
     lw ra, -4(fp)
-    addi sp, sp, 20
+    addi sp, sp, 32
     mv fp, t0
     ret
 
