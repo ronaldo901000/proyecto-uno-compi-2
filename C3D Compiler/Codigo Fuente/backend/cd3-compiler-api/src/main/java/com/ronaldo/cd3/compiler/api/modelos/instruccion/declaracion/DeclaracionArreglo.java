@@ -216,6 +216,11 @@ public class DeclaracionArreglo extends Declaracion {
                         null, id + "[" + i + "]", fila, columna);
             }
         }
+        if (valorExpresion != null) {
+            String dirValor = valorExpresion.generarCuartetas(contexto, cuartetas);
+            cuartetas.agregar(OperadorCuarteta.ASIGNACION, dirValor,
+                    null, id, fila, columna);
+        }
         return null;
     }
 

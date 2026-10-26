@@ -75,12 +75,79 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
             constructores.add(visitConstructor(c));
         }
 
+        // Si no hay constructor, por defecto se agrega uno vacio
+        if (constructores.isEmpty()) {
+            List<Instruccion> cuerpo = new ArrayList<>();
+            if (nombrePadre != null) {
+                cuerpo.add(new LlamadaSuperConstructor(new ArrayList<>(), fila, columna));
+            }
+            constructores.add(new ConstructorZ(ModificadoresAcceso.PUBLIC, nombre,
+                    new ArrayList<>(), cuerpo, fila, columna));
+        }
+
+        inyectarInicializadoresAtributos(atributos, constructores);
+
         List<Funcion> metodos = new ArrayList<>();
         for (LenguajeZParser.MetodoContext m : ctx.contenido().metodo()) {
             metodos.add(visitMetodo(m));
         }
 
         return new ClaseZ(nombre, nombrePadre, atributos, constructores, metodos, fila, columna);
+    }
+
+    private void inyectarInicializadoresAtributos(List<Declaracion> atributos,
+            List<ConstructorZ> constructores) {
+        List<Instruccion> inicializadores = new ArrayList<>();
+        for (Declaracion atributo : atributos) {
+            Expresion valor = null;
+            if (atributo instanceof DeclaracionVariable) {
+                valor = ((DeclaracionVariable) atributo).getValorInicial();
+            } else if (atributo instanceof DeclaracionArreglo) {
+                valor = ((DeclaracionArreglo) atributo).getValorExpresion();
+            }
+            if (atributo instanceof DeclaracionArreglo) {
+                DeclaracionArreglo arr = (DeclaracionArreglo) atributo;
+                List<Expresion> valores = arr.getValoresIniciales();
+                if (arr.getValorExpresion() == null && valores != null) {
+                    int f = atributo.getFila();
+                    int c = atributo.getColumna();
+
+                    List<Expresion> dims = new ArrayList<>();
+                    dims.add(new Literal(String.valueOf(valores.size()), TipoDato.ENTERO, f, c));
+                    LlamadaThis destino = new LlamadaThis(
+                            new AccesoVariable(atributo.getId(), f, c), null, f, c);
+                    inicializadores.add(new Asignacion(destino,
+                            new NewArreglo(atributo.getTipoDato(), dims, f, c),
+                            Operador.IGUAL, f, c));
+
+                    for (int i = 0; i < valores.size(); i++) {
+                        LlamadaThis base = new LlamadaThis(
+                                new AccesoVariable(atributo.getId(), f, c), null, f, c);
+                        Expresion indice = new Literal(String.valueOf(i), TipoDato.ENTERO, f, c);
+                        inicializadores.add(new Asignacion(
+                                new ExpIndice(base, indice, f, c),
+                                valores.get(i), Operador.IGUAL, f, c));
+                    }
+                    continue;
+                }
+            }
+            if (valor == null) {
+                continue;
+            }
+            int fila = atributo.getFila();
+            int columna = atributo.getColumna();
+            LlamadaThis destino = new LlamadaThis(
+                    new AccesoVariable(atributo.getId(), fila, columna), null, fila, columna);
+            inicializadores.add(new Asignacion(destino, valor, Operador.IGUAL, fila, columna));
+        }
+        if (inicializadores.isEmpty()) {
+            return;
+        }
+        for (ConstructorZ constructor : constructores) {
+            List<Instruccion> cuerpo = constructor.getCuerpo();
+            int pos = (!cuerpo.isEmpty() && cuerpo.get(0) instanceof LlamadaSuperConstructor) ? 1 : 0;
+            cuerpo.addAll(pos, inicializadores);
+        }
     }
 
     @Override
