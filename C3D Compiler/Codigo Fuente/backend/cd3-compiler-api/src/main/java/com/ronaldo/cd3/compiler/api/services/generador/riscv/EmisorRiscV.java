@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  * @author ronaldo
  */
 public class EmisorRiscV implements EmisorIR {
@@ -54,7 +54,6 @@ public class EmisorRiscV implements EmisorIR {
     public AmbienteIR getAmbiente() {
         return ambiente;
     }
-
 
     @Override
     public void emitirAsignacion(Operando destino, Operando origen) {
@@ -109,6 +108,7 @@ public class EmisorRiscV implements EmisorIR {
 
     @Override
     public void emitirEtiqueta(Operando etiqueta) {
+        ambiente.getCuartetas().entrarUnidadEmision(etiqueta.getTexto());
         control.emitirEtiqueta(etiqueta);
     }
 
@@ -125,7 +125,6 @@ public class EmisorRiscV implements EmisorIR {
         control.emitirCondicional(condicion, etiqueta);
     }
 
-
     @Override
     public void emitirImprimir(Operando valor, boolean conSaltoLinea) {
         unidad.asegurar();
@@ -137,7 +136,6 @@ public class EmisorRiscV implements EmisorIR {
         unidad.asegurar();
         cadenas.emitirLeer(destino);
     }
-
 
     @Override
     public void emitirPunteroInicio(Operando destino, Operando cantidad) {
@@ -156,7 +154,6 @@ public class EmisorRiscV implements EmisorIR {
         unidad.asegurar();
         memoria.emitirAccesoIndice(base, indice, destino);
     }
-
 
     @Override
     public void emitirParametro(Operando operando) {

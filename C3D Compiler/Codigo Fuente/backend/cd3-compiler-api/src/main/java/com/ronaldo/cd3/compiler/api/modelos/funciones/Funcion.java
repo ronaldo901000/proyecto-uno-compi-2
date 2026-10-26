@@ -194,6 +194,7 @@ public class Funcion extends Nodo implements Verificable, Generable {
 
         for (SimboloParametro parametro : simbolo.getParametros()) {
             cuartetas.registrarTipoVariable(parametro.getId(), parametro.getTipo());
+            cuartetas.registrarTipoLocal(parametro.getId(), parametro.getTipo());
         }
         cuartetas.registrarParametrosFuncion(simbolo.getEtiquetaInicio(),
                 simbolo.getParametros());

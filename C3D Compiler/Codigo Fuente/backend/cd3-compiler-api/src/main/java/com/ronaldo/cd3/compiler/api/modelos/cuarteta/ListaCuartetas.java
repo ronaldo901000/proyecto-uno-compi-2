@@ -29,6 +29,8 @@ public class ListaCuartetas {
     private final Map<String, Map<String, Tipo>> arreglosDeclaradosPorUnidad;
     private final Map<String, String> dimensionesArreglo;
     private final Map<String, Tipo> tiposEstructuras;
+    private final Map<String, Map<String, Tipo>> tiposLocalesPorUnidad;
+    private String unidadEmision;
     private TablaVTables vTables;
     private String unidadActual;
     private int contadorTemporales;
@@ -45,6 +47,7 @@ public class ListaCuartetas {
         this.variablesDeclaradasPorUnidad = new HashMap<>();
         this.arreglosDeclaradosPorUnidad = new HashMap<>();
         this.dimensionesArreglo = new HashMap<>();
+        this.tiposLocalesPorUnidad = new HashMap<>();
         this.tiposEstructuras = new HashMap<>();
         this.vTables = null;
         this.unidadActual = null;
@@ -255,6 +258,7 @@ public class ListaCuartetas {
 
     public void registrarTipoVariableDeclarada(String nombre, Tipo tipo) {
         this.registrarTipoVariable(nombre, tipo);
+        this.registrarTipoLocal(nombre, tipo);
         TipoOperando cat = categoriasOperandos.get(nombre);
         if (cat == TipoOperando.TEMPORAL) {
             categoriasOperandos.put(nombre, TipoOperando.VARIABLE);
@@ -328,10 +332,24 @@ public class ListaCuartetas {
     }
 
     public Tipo tipoDeVariable(String nombre) {
+        String unidad = unidadParaConsulta();
+        if (unidad != null) {
+            Map<String, Tipo> locales = this.tiposLocalesPorUnidad.get(unidad);
+            if (locales != null && locales.containsKey(nombre)) {
+                return locales.get(nombre);
+            }
+        }
         return this.tiposVariables.get(nombre);
     }
 
     public Tipo tipoDeArreglo(String nombre) {
+        String unidad = unidadParaConsulta();
+        if (unidad != null) {
+            Map<String, Tipo> arreglos = this.arreglosDeclaradosPorUnidad.get(unidad);
+            if (arreglos != null && arreglos.containsKey(nombre)) {
+                return arreglos.get(nombre);
+            }
+        }
         return this.tiposArreglos.get(nombre);
     }
 
@@ -362,6 +380,27 @@ public class ListaCuartetas {
             nombres.put(unidad, existentes);
         }
         existentes.addAll(nuevos);
+    }
+
+    public void registrarTipoLocal(String nombre, Tipo tipo) {
+        if (nombre == null || tipo == null || this.unidadActual == null) {
+            return;
+        }
+        this.tiposLocalesPorUnidad
+                .computeIfAbsent(this.unidadActual, k -> new HashMap<>())
+                .put(nombre, tipo);
+    }
+
+    public void entrarUnidadEmision(String etiqueta) {
+        System.out.println("unidadEmision <- " + etiqueta);
+        if (etiqueta != null
+                && !TipoOperando.ETIQUETA_INTERNA.equals(this.categoriasOperandos.get(etiqueta))) {
+            this.unidadEmision = etiqueta;
+        }
+    }
+
+    private String unidadParaConsulta() {
+        return (this.unidadEmision != null) ? this.unidadEmision : this.unidadActual;
     }
 
     public Tipo tipoDeFuncion(String nombre) {

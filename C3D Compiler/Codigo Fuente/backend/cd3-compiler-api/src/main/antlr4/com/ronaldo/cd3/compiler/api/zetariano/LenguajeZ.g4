@@ -215,7 +215,11 @@ expr_base
     | expr_base PUNTO ID                                    # expAcceso
     | expr_base PUNTO llamada_metodo                        # expLlamadaEncadenada
     | expr_base CORCH_A expresion CORCH_C                   # expIndice
+    | expr_base MAS_MAS                                     # expPostIncremento
+    | expr_base MENOS_MENOS                                 # expPostDecremento
     | fun_leer                                              # expFunLeer
+    | MAS_MAS expr_base                                     # expPreIncremento
+    | MENOS_MENOS expr_base                                 # expPreDecremento
     | NOT expr_base                                         # expNot
     | MENOS expr_base                                       # expNegativo
     | MAS expr_base                                         # expPositivo

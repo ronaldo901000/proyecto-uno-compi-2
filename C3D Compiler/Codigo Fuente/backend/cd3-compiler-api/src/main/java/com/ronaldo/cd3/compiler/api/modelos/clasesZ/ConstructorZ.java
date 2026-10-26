@@ -68,6 +68,7 @@ public class ConstructorZ extends Nodo implements Verificable, Generable {
         cuartetas.agregarEtiqueta(simbolo.getEtiquetaInicio(), fila, columna);
         for (SimboloParametro parametro : simbolo.getParametros()) {
             cuartetas.registrarTipoVariable(parametro.getId(), parametro.getTipo());
+            cuartetas.registrarTipoLocal(parametro.getId(), parametro.getTipo());
         }
         cuartetas.registrarParametrosFuncion(simbolo.getEtiquetaInicio(),
                 simbolo.getParametros());

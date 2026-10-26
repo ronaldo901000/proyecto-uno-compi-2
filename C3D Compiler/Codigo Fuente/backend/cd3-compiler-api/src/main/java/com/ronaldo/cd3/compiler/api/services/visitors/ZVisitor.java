@@ -10,6 +10,7 @@ import com.ronaldo.cd3.compiler.api.modelos.expresion.Acceso;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.AccesoVariable;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.ExpIndice;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Expresion;
+import com.ronaldo.cd3.compiler.api.modelos.expresion.IncDecExpresion;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Lectura;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Literal;
 import com.ronaldo.cd3.compiler.api.modelos.expresion.Llamada;
@@ -585,9 +586,10 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
         int columna = ctx.start.getCharPositionInLine();
         String tipoDato = ctx.tipo_dato_general().getText();
         String nombre = ctx.ID().getText();
-        boolean esArreglo = !ctx.CORCH_A().isEmpty();
+        int dimensiones = ctx.CORCH_A().size();
+        boolean esArreglo = dimensiones > 0;
         boolean esStruct = (ctx.tipo_dato_general().ID() != null);
-        return new Parametro(tipoDato, nombre, esArreglo, esStruct, fila, columna);
+        return new Parametro(tipoDato, nombre, esArreglo, dimensiones, esStruct, fila, columna);
     }
 
     @Override
@@ -931,6 +933,30 @@ public class ZVisitor extends LenguajeZBaseVisitor<Visitable> {
             }
         }
         return resultado;
+    }
+
+    @Override
+    public IncDecExpresion visitExpPostIncremento(LenguajeZParser.ExpPostIncrementoContext ctx) {
+        return new IncDecExpresion((Expresion) visit(ctx.expr_base()), Operador.INCREMENTO,
+                false, ctx.start.getLine(), ctx.start.getCharPositionInLine());
+    }
+
+    @Override
+    public IncDecExpresion visitExpPostDecremento(LenguajeZParser.ExpPostDecrementoContext ctx) {
+        return new IncDecExpresion((Expresion) visit(ctx.expr_base()), Operador.DECREMENTO,
+                false, ctx.start.getLine(), ctx.start.getCharPositionInLine());
+    }
+
+    @Override
+    public IncDecExpresion visitExpPreIncremento(LenguajeZParser.ExpPreIncrementoContext ctx) {
+        return new IncDecExpresion((Expresion) visit(ctx.expr_base()), Operador.INCREMENTO,
+                true, ctx.start.getLine(), ctx.start.getCharPositionInLine());
+    }
+
+    @Override
+    public IncDecExpresion visitExpPreDecremento(LenguajeZParser.ExpPreDecrementoContext ctx) {
+        return new IncDecExpresion((Expresion) visit(ctx.expr_base()), Operador.DECREMENTO,
+                true, ctx.start.getLine(), ctx.start.getCharPositionInLine());
     }
 
     @Override

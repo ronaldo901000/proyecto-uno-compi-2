@@ -5,7 +5,8 @@ import com.ronaldo.cd3.compiler.api.modelos.contexto.Contexto;
 import com.ronaldo.cd3.compiler.api.modelos.nodo.Nodo;
 import com.ronaldo.cd3.compiler.api.modelos.semantica.reglas.Reglas;
 import com.ronaldo.cd3.compiler.api.modelos.tipos.Tipo;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -17,17 +18,27 @@ public class Parametro extends Nodo implements Verificable {
     private String tipoDato;
     private String nombre;
     private boolean esArreglo;
+    private int dimensiones;
     private boolean esStruct;
     private Tipo tipo;
 
-    public Parametro(String tipoDato, String nombre, boolean esArreglo, 
+    public Parametro(String tipoDato, String nombre, boolean esArreglo,
             boolean esStruct, int fila, int columna) {
-        
+        this(tipoDato, nombre, esArreglo, esArreglo ? 1 : 0, esStruct, fila, columna);
+    }
+
+    public Parametro(String tipoDato, String nombre, boolean esArreglo, int dimensiones,
+            boolean esStruct, int fila, int columna) {
         super(fila, columna);
         this.tipoDato = tipoDato;
         this.nombre = nombre;
         this.esArreglo = esArreglo;
+        this.dimensiones = dimensiones;
         this.esStruct = esStruct;
+    }
+
+    public int getDimensiones() {
+        return dimensiones;
     }
 
     public String getTipoDato() {
@@ -56,8 +67,11 @@ public class Parametro extends Nodo implements Verificable {
         if (reglas.esError(base)) {
             this.tipo = base;
         } else if (esArreglo) {
-            this.tipo = contexto.getTablaTipos().getArreglo(
-                    base, Collections.singletonList(0));
+            List<Integer> dims = new ArrayList<>();
+            for (int i = 0; i < dimensiones; i++) {
+                dims.add(0);
+            }
+            this.tipo = contexto.getTablaTipos().getArreglo(base, dims);
         } else {
             this.tipo = base;
         }
