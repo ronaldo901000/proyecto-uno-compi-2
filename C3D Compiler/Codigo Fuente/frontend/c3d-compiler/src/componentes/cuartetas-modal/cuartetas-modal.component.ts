@@ -13,14 +13,18 @@ export class CuartetasModalComponent implements OnInit {
 
   cerrar = output<void>();
 
-  constructor(private resService: RespuestaCompilacionService) {}
+  constructor(private resService: RespuestaCompilacionService) { }
 
   ngOnInit(): void {
     this.cargarCuartetas();
   }
 
   cargarCuartetas() {
-    this.cuartetas.set(this.resService.getRespuesta()?.cuartetas || []);
+    const o = ['FIJAR_VTABLE', 'PUNTERO_INICIO', 'LLAMADA_VIRTUAL'];
+    this.cuartetas.set(
+      (this.resService.getRespuesta()?.cuartetas || [])
+        .filter(c => !o.includes(c.operador))
+    );
   }
 
   onCerrar() {
