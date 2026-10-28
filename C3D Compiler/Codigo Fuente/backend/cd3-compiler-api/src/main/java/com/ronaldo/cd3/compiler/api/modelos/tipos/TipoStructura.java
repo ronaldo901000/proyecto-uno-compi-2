@@ -150,8 +150,6 @@ public class TipoStructura extends Tipo {
 
     @Override
     public boolean esPorReferencia() {
-        // Las clases Z son por referencia (viven en el heap). Las estructuras
-        // de Y son por valor: residen directamente en el frame.
         return esClase();
     }
 
