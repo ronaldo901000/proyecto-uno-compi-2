@@ -85,7 +85,7 @@ public class TiposRiscV {
     }
 
     /**
-     * Tamano del elemento al que apunta un acceso por indice: 4 si es una
+     * Tamaño del elemento al que apunta un acceso por indice: 4 si es una
      * fila (puntero) o struct, 1 si la hoja es char
      */
     public int tamañoElementoIndice(OperandoIndice indice) {

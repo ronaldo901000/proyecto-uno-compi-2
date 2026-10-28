@@ -32,7 +32,7 @@ public class GeneradorRiscV {
         motor.recorrer(emisor);
         emisor.finalizar();
 
-        // Seccion .data con strings y literales del pool
+        // Seccion .data con strings y literales 
         String seccionDatos = seccionDatos(motor.getAmbiente().getPoolLiterales());
 
         // Cuerpo .text
@@ -116,10 +116,8 @@ public class GeneradorRiscV {
         return datos.toString();
     }
 
-    /**
-     * Extrae los nombres de clase cuyas etiquetas de metodo aparecen en el
-     * cuerpo. Formato: metodo_Clase_metodo_N o constructor_Clase_N
-     */
+
+    
     private Set<String> extraerClasesConMetodos(String cuerpo) {
         Set<String> clases = new HashSet<>();
         if (cuerpo == null) {

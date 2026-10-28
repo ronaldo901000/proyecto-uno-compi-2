@@ -36,7 +36,6 @@ public class MemoriaRiscV {
             copiarStruct(destino, origen);
             return;
         }
-        // Coercion: destino decimal y origen entero -> promover (x1000)
         if (tipos.esDecimal(destino) && !tipos.esDecimal(origen) && tipos.esEntero(origen)) {
             acceso.cargarValor(origen, "t1");
             aritmetica.promover("t1");
@@ -61,7 +60,6 @@ public class MemoriaRiscV {
 
     
     public void emitirPunteroInicio(Operando destino, Operando cantidad) {
-        // Arreglo 1D con tamaño NO constante: calcular bytes en ejecucion
         if (destino != null && destino.getTipo() instanceof TipoArreglo
                 && cantidad != null && !(cantidad instanceof OperandoLiteral)) {
             Tipo base = ((TipoArreglo) destino.getTipo()).getTipoBase();
